@@ -18,37 +18,10 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::group(['middleware' => 'check-lang'], function (){
-
-    Route::group(['prefix' => 'auth','middleware' => 'jwt'], function () {
-
-    Route::get('getProfile',[UserController::class,'getProfile']);
-    Route::post('updateProfile',[UserController::class,'updateProfile']);
-    Route::post('logout',[UserController::class,'logout']);
-    Route::post('changePassword',[UserController::class,'changePassword']);
-    Route::post('deleteAccount',[UserController::class,'deleteAccount']);
-
-    });
+Route::post('checkPhone',  [ForgotPasswordController::class,'checkPhone']);
 
 
-    Route::get('setting',[UserController::class,'setting'])->middleware('jwt');
 
-    Route::group(['prefix' => 'orders','middleware' => ['jwt','check-client-auth']], function () {
-
-        Route::get('getAllPlaces',[OrderController::class,'getAllPlaces']);
-        Route::get('ordersCompleted',[OrderController::class,'ordersCompleted']);
-        Route::get('ordersNotCompleted',[OrderController::class,'ordersNotCompleted']);
-        Route::post('addNewOrder',[OrderController::class,'addNewOrder']);
-        Route::get('orderDetail/{id}',[OrderController::class,'orderDetail']);
-        Route::post('addPaymentForOrder/{id}',[OrderController::class,'addPaymentForOrder']);
-        Route::post('updateOrder/{id}',[OrderController::class,'updateOrder']);
-        Route::delete('deleteOrder/{id}',[OrderController::class,'deleteOrder']);
-
-
-    });
-
-
-    Route::post('checkPhone',  [ForgotPasswordController::class,'checkPhone']);
     Route::post('resetPassword', [ResetPasswordController::class,'resetPassword']);
 
 
@@ -68,4 +41,3 @@ Route::group(['middleware' => 'check-lang'], function (){
 
     });
 
-});

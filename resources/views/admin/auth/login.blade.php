@@ -28,7 +28,7 @@
     </main>
     <div class="welcome-container">
         <h1 class="heading-secondary">مرحبا بعودتك <span class="lg">{{($setting->title_ar) ?? 'تطبيق'}}</span></h1>
-        <img src="{{ asset($setting->logo) ?? asset('assets/uploads/logo.png')}}" alt="login" style="max-width:450px;mix-blend-mode: multiply">
+        <img src="{{ asset('assets/uploads/logo.png')}}" alt="login" style="max-width:450px;mix-blend-mode: multiply">
     </div>
 </div>
 
