@@ -2,7 +2,7 @@
 <aside class="app-sidebar">
     <div class="side-header">
         <a class="header-brand1" href="{{route('adminHome')}}">
-            <img src="{{ asset($setting->logo) ?? asset('assets/uploads/logo.png')}}"
+            <img src="{{  asset('assets/uploads/logo.png')}}"
                  class="header-brand-img light-logo1" alt="logo">
         </a>
         <!-- LOGO -->
