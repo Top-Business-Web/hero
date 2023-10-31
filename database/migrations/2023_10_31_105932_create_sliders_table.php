@@ -20,10 +20,6 @@ class CreateSlidersTable extends Migration
             $table->text('link');
             $table->boolean('status')->default(false);
 
-            $table->integer('created_by')->unsigned()->nullable();
-            $table->integer('updated_by')->unsigned()->nullable();
-            $table->integer('deleted_by')->unsigned()->nullable();
-
             $table->timestamps();
             $table->softDeletes();
         });

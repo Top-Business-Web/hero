@@ -17,6 +17,8 @@ class CreateResetCodePasswordsTable extends Migration
             $table->bigIncrements('id');
             $table->string('phone');
             $table->timestamps();
+            $table->softDeletes();
+
         });
     }
 

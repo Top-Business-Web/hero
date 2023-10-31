@@ -24,10 +24,6 @@ class CreateAreasTable extends Migration
                 ->cascadeOnDelete()->cascadeOnUpdate();
 
 
-            $table->integer('created_by')->unsigned()->nullable();
-            $table->integer('updated_by')->unsigned()->nullable();
-            $table->integer('deleted_by')->unsigned()->nullable();
-
             $table->timestamps();
             $table->softDeletes();
         });
