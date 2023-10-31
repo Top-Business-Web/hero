@@ -20,6 +20,8 @@ class CreateAdminsTable extends Migration
             $table->string('password');
             $table->string('image')->nullable();
             $table->timestamps();
+            $table->softDeletes();
+
         });
     }
 
