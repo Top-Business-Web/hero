@@ -22,7 +22,6 @@ class DriverRepository implements DriverInterface
             return DataTables::of($driver)
                 ->addColumn('action', function ($driver) {
                     return '
-                            <button type="button" data-id="' . $driver->id . '" class="btn btn-pill btn-info-light editBtn"><i class="fa fa-edit"></i></button>
                             <button class="btn btn-pill btn-danger-light" data-toggle="modal" data-target="#delete_modal"
                                     data-id="' . $driver->id . '" data-title="' . $driver->name . '">
                                     <i class="fas fa-trash"></i>
@@ -31,17 +30,14 @@ class DriverRepository implements DriverInterface
                 })
                 ->editColumn('image', function ($driver) {
                     return '
-                    <img alt="image" onclick="window.open(this.src)" class="avatar avatar-md rounded-circle" src="' . asset($driver->image) . '">
+                    <img alt="image" onclick="window.open(this.src)" class="avatar avatar-md rounded-circle" src="' . asset($driver->img) . '">
                     ';
                 })
                 ->editColumn('status', function ($user) {
                     if ($user->status == 1)
-                        return '<span class="btn btn-sm btn-success">مفعل</span>';
+                        return '<button class="btn btn-sm btn-success statusBtn" data-id="' . $user->id . '">مفعل</button>';
                     else
-                        return '<span class="btn btn-sm btn-danger">غير مفعل</span>';
-                })
-                ->editColumn('city_id', function ($user) {
-                    return $user->city->name_ar;
+                        return '<button class="btn btn-sm btn-danger statusBtn" data-id="' . $user->id . '">غير مفعل</button>';
                 })
                 ->escapeColumns([])
                 ->make(true);
@@ -111,6 +107,5 @@ class DriverRepository implements DriverInterface
         }
         $driver->delete();
         return response(['message' => 'تم الحذف بنجاح', 'status' => 200], 200);
-
     }
 }
