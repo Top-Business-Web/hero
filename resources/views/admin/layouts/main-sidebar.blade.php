@@ -51,6 +51,13 @@
         </li>
 
         <li class="slide">
+            <a class="side-menu__item" href="{{route('slider.index')}}">
+                <i class="fa fa-image side-menu__icon"></i>
+                <span class="side-menu__label">صور متحركة</span>
+            </a>
+        </li>
+
+        <li class="slide">
             <a class="side-menu__item" href="{{route('warehouse.index')}}">
                 <i class="fa fa-warehouse side-menu__icon"></i>
                 <span class="side-menu__label">المخازن</span>

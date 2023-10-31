@@ -10,6 +10,7 @@ use App\Interfaces\CityInterface;
 use App\Interfaces\SettingInterface;
 use App\Interfaces\AuthInterface;
 use App\Interfaces\DriverInterface;
+use App\Interfaces\SliderInterface;
 use App\Interfaces\UserInterface;
 
 use App\Repository\Api\OrderRepository as OrderApiRepository;
@@ -21,6 +22,7 @@ use App\Repository\AuthRepository;
 use App\Repository\CityRepository;
 use App\Repository\DriverRepository;
 use App\Repository\SettingRepository;
+use App\Repository\SliderRepository;
 use App\Repository\UserRepository;
 
 use Illuminate\Support\ServiceProvider;
@@ -42,6 +44,7 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(UserInterface::class,UserRepository::class);
         $this->app->bind(DriverInterface::class,DriverRepository::class);
         $this->app->bind(CityInterface::class,CityRepository::class);
+        $this->app->bind(SliderInterface::class,SliderRepository::class);
         $this->app->bind(SettingInterface::class,SettingRepository::class);
 
         // ----------------------------------------------------------------
