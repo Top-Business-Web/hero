@@ -22,7 +22,6 @@ class CityRepository implements CityInterface
                                     data-id="' . $city->id . '" data-title="' . $city->name . '">
                                     <i class="fas fa-trash"></i>
                             </button>
-                            <a class="text-white btn btn-pill btn-success">المناطق</a>
                        ';
                 })
                 ->escapeColumns([])
@@ -61,12 +60,6 @@ class CityRepository implements CityInterface
             return response()->json(['status' => 200]);
         else
             return response()->json(['status' => 405]);
-    }
-
-    public function showArea($request, $id): JsonResponse
-    {
-        $areas = Area::query()->where('city_id', '=', $id)->select('id', 'name', 'city_id')->get();
-        
     }
 
     public function delete($request)

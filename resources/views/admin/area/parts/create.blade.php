@@ -1,11 +1,20 @@
 <div class="modal-body">
-    <form id="addForm" class="addForm" method="POST" enctype="multipart/form-data" action="{{route('city.store')}}">
+    <form id="addForm" class="addForm" method="POST" action="{{ route('area.store') }}">
         @csrf
         <div class="form-group">
             <div class="row">
-                <div class="col-12">
-                    <label for="name_ar" class="form-control-label">الاسم</label>
-                    <input type="text" class="form-control" name="name" id="name" placeholder="مثال : بغداد" required>
+                <div class="col-6">
+                    <label for="name_ar" class="form-control-label">اسم المنطقة</label>
+                    <input type="text" class="form-control" name="name" id="name" placeholder="مثال : بغداد"
+                        required>
+                </div>
+                <div class="col-6">
+                    <label for="name_ar" class="form-control-label">المدن</label>
+                    <select name="city_id" id="" class="form-control">
+                        @foreach ($cities as $city)
+                            <option value="{{ $city->id }}">{{ $city->name }}</option>
+                        @endforeach
+                    </select>
                 </div>
             </div>
         </div>
@@ -19,8 +28,4 @@
 
 <script>
     $('.dropify').dropify();
-    $(document).ready(function () {
-        $('select').select2();
-    });
 </script>
-

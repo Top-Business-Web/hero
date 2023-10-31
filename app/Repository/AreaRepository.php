@@ -2,12 +2,13 @@
 
 namespace App\Repository;
 
-use App\Interfaces\CityInterface;
 use App\Models\Area;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Yajra\DataTables\DataTables;
+use App\Interfaces\AreaInterface;
+use App\Models\City;
+use Symfony\Component\HttpFoundation\JsonResponse;
 
-class CityRepository implements CityInterface
+class AreaRepository implements AreaInterface
 {
     public function index($request)
     {
@@ -21,58 +22,55 @@ class CityRepository implements CityInterface
                                     data-id="' . $area->id . '" data-title="' . $area->name . '">
                                     <i class="fas fa-trash"></i>
                             </button>
-                            <a class="text-white btn btn-pill btn-success">المناطق</a>
                        ';
+                })
+                ->editColumn('city_id', function ($area) {
+                    return $area->city->name;
                 })
                 ->escapeColumns([])
                 ->make(true);
         } else {
-            return view('admin.city.index');
+            return view('admin.area.index');
         }
     }
 
     public function create()
     {
-        return view('admin.city.parts.create');
+        $cities = City::query()->select('id', 'name')->get();
+        return view('admin.area.parts.create', compact('cities'));
     }
 
     public function store($request): JsonResponse
     {
         $inputs = $request->all();
-        if (City::query()->create($inputs))
+        if (Area::query()->create($inputs))
             return response()->json(['status' => 200]);
         else
             return response()->json(['status' => 405]);
     }
 
-    public function edit($city)
+    public function edit($area)
     {
-        return view('admin.city.parts.edit', compact('city'));
+        $cities = City::query()->select('id', 'name')->get();
+        return view('admin.area.parts.edit', compact('area', 'cities'));
     }
 
     public function update($request, $id): JsonResponse
     {
         $inputs = $request->except('id');
 
-        $city = City::query()->findOrFail($id);
+        $area = Area::query()->findOrFail($id);
 
-        if ($city->update($inputs))
+        if ($area->update($inputs))
             return response()->json(['status' => 200]);
         else
             return response()->json(['status' => 405]);
     }
 
-    public function showArea($request, $id): JsonResponse
-    {
-        $areas = Area::query()->where('city_id', '=', $id)->select('id', 'name', 'city_id')->get();
-        
-    }
-
     public function delete($request)
     {
-        $city = City::query()->where('id', $request->id)->first();
-
-        $city->delete();
+        $area = Area::query()->where('id', $request->id)->first();
+        $area->delete();
         return response(['message' => 'تم الحذف بنجاح', 'status' => 200], 200);
     }
 }

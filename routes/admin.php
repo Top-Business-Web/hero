@@ -2,6 +2,7 @@
 
 
 use App\Http\Controllers\Admin\AdminController;
+use App\Http\Controllers\Admin\AreaController;
 use App\Http\Controllers\Admin\AuthController;
 use App\Http\Controllers\Admin\CityController;
 use App\Http\Controllers\Admin\DriverController;
@@ -49,8 +50,8 @@ Route::group(['prefix'=>'admin','middleware'=>'auth:admin'],function (){
     Route::POST('city/delete',[CityController::class,'delete'])->name('city_delete');
 
     #============================ Area =====================================
-    Route::resource('area',CityController::class);
-    Route::POST('area/delete',[CityController::class,'delete'])->name('area_delete');
+    Route::resource('area',AreaController::class);
+    Route::POST('area/delete',[AreaController::class,'delete'])->name('area_delete');
 
     #============================ warehouse ================================
     Route::resource('warehouse',WarehouseController::class);
