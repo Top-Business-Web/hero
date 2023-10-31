@@ -18,18 +18,15 @@ class UserResource extends JsonResource
 
             'id' => $this->id,
             'name' => $this->name,
-            'image' => asset($this->image),
             'email' => $this->email,
             'phone' => $this->phone,
-            'national_id' => (int)$this->national_id,
-            'city' => new CityResource($this->city),
+            'image' => asset($this->image),
+            'birth' => $this->birth,
             'type' => $this->type,
-            'user_type' => $this->user_type,
             'status' => $this->status ? 'active' : 'block',
             'token' => 'Bearer ' . $this->token,
             'created_at' => $this->created_at->format('Y-m-d'),
             'updated_at' => $this->created_at->format('Y-m-d'),
-
         ];
     }
 }

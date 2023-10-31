@@ -18,26 +18,27 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::post('checkPhone',  [ForgotPasswordController::class,'checkPhone']);
+Route::post('auth/register', [UserController::class, 'register']);
+Route::post('auth/login', [UserController::class, 'login']);
+
+Route::group(['prefix' => 'auth', 'middleware' => 'jwt'], function () {
+
+    Route::get('getProfile', [UserController::class, 'getProfile']);
+    Route::post('updateProfile', [UserController::class, 'updateProfile']);
+    Route::post('logout', [UserController::class, 'logout']);
+    Route::post('changePassword', [UserController::class, 'changePassword']);
+    Route::post('deleteAccount', [UserController::class, 'deleteAccount']);
+
+});
 
 
 
-Route::post('resetPassword', [ResetPasswordController::class,'resetPassword']);
 
-
-    Route::get('cities',[UserController::class,'getAllCities']);
-    Route::post('auth/register',[UserController::class,'register']);
-    Route::post('auth/login',[UserController::class,'login']);
+Route::post('checkPhone', [ForgotPasswordController::class, 'checkPhone']);
+Route::post('resetPassword', [ResetPasswordController::class, 'resetPassword']);
 
 
 
-    Route::group(['prefix' => 'driver/orders','middleware' => ['jwt','check-auth-type']], function () {
+Route::get('cities', [UserController::class, 'getAllCities']);
 
-        Route::get('allOrdersOfDriver',[\App\Http\Controllers\Api\Driver\OrderController::class,'allOrdersOfDriver']);
-        Route::get('allOrdersCompletedPayment',[\App\Http\Controllers\Api\Driver\OrderController::class,'allOrdersCompletedPayment']);
-        Route::get('orderDetail/{id}',[\App\Http\Controllers\Api\Driver\OrderController::class,'orderDetail']);
-        Route::post('changeOrderStatus/{id}',[\App\Http\Controllers\Api\Driver\OrderController::class,'changeOrderStatus']);
-
-
-    });
-
+Route::get('setting', [UserController::class, 'setting'])->middleware('jwt');
