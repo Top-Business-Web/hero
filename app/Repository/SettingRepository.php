@@ -14,7 +14,8 @@ class SettingRepository implements SettingInterface
 
     public function index()
     {
-            return view('admin.setting.index');
+        $settings = Setting::query()->select('id', 'logo', 'trip_insurance', 'rewards', 'about', 'support', 'safety_roles', 'polices', 'km', 'vat')->first();
+        return view('admin.setting.index', compact('settings'));
     }
 
     public function update($request, $id): JsonResponse
