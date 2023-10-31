@@ -1,15 +1,23 @@
 <div class="modal-body">
-    <form id="updateForm" method="POST" enctype="multipart/form-data" action="{{route('city.update',$city->id)}}">
+    <form id="updateForm" method="POST" enctype="multipart/form-data" action="{{route('area.update',$area->id)}}">
         @csrf
         @method('PUT')
-        <input type="hidden" value="{{$city->id}}" name="id">
+        <input type="hidden" value="{{$area->id}}" name="id">
 
         <div class="form-group">
             <div class="row">
-                <div class="col-12">
-                    <label for="name" class="form-control-label">الاسم</label>
-                    <input type="text" class="form-control" value="{{ $city->name }}" name="name" id="name"
-                           placeholder="مثال : الرياض" required>
+                <div class="col-6">
+                    <label for="name_ar" class="form-control-label">اسم المنطقة</label>
+                    <input type="text" class="form-control" name="name" value="{{ $area->name }}" id="name" placeholder="مثال : عمر ايبلي"
+                        required>
+                </div>
+                <div class="col-6">
+                    <label for="name_ar" class="form-control-label">المدن</label>
+                    <select name="city_id" id="" class="form-control">
+                        @foreach ($cities as $city)
+                            <option value="{{ $city->id }}" {{ $city->id == $area->city_id ? 'selected' : '' }}>{{ $city->name }}</option>
+                        @endforeach
+                    </select>
                 </div>
             </div>
         </div>

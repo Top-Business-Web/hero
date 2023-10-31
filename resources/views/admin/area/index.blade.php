@@ -68,7 +68,7 @@
             <div class="modal-dialog modal-lg" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="example-Modal3">بيانات المدينة</h5>
+                        <h5 class="modal-title" id="example-Modal3">بيانات المنطقة</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
@@ -88,16 +88,17 @@
         var columns = [
             {data: 'id', name: 'id'},
             {data: 'name', name: 'name'},
+            {data: 'city_id', name: 'city_id'},
             {data: 'action', name: 'action', orderable: false, searchable: false},
         ]
-        showData('{{route('city.index')}}', columns);
+        showData('{{route('area.index')}}', columns);
         // Delete Using Ajax
-        deleteScript('{{route('city_delete')}}');
+        deleteScript('{{route('area_delete')}}');
         // Add Using Ajax
-        showAddModal('{{route('city.create')}}');
+        showAddModal('{{route('area.create')}}');
         addScript();
         // Add Using Ajax
-        showEditModal('{{route('city.edit',':id')}}');
+        showEditModal('{{route('area.edit',':id')}}');
         editScript();
     </script>
 @endsection
