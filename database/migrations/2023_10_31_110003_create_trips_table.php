@@ -31,14 +31,14 @@ class CreateTripsTable extends Migration
             $table->string('name')->nullable();
             $table->string('phone')->nullable();
 
-            $table->unsignedBigInteger('client_id')->nullable();
-            $table->foreign('client_id')
-                ->on('clients')->references('id')
+            $table->unsignedBigInteger('user_id')->nullable();
+            $table->foreign('user_id')
+                ->on('users')->references('id')
                 ->cascadeOnDelete()->cascadeOnUpdate();
 
             $table->unsignedBigInteger('driver_id')->nullable();
             $table->foreign('driver_id')
-                ->on('clients')->references('id')
+                ->on('users')->references('id')
                 ->cascadeOnDelete()->cascadeOnUpdate();
 
             $table->timestamps();

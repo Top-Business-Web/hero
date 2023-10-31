@@ -22,7 +22,7 @@ Route::post('checkPhone',  [ForgotPasswordController::class,'checkPhone']);
 
 
 
-    Route::post('resetPassword', [ResetPasswordController::class,'resetPassword']);
+Route::post('resetPassword', [ResetPasswordController::class,'resetPassword']);
 
 
     Route::get('cities',[UserController::class,'getAllCities']);
