@@ -1,9 +1,9 @@
 @extends('admin/layouts/master')
 
 @section('title')
-    {{($setting->name_en) ?? ''}} | المدن
+    {{($setting->name_en) ?? ''}} | المناطق
 @endsection
-@section('page_name') المدن   @endsection
+@section('page_name') المناطق   @endsection
 @section('content')
 
     <div class="row">
@@ -26,6 +26,7 @@
                             <thead>
                             <tr class="fw-bolder text-muted bg-light">
                                 <th class="min-w-25px">#</th>
+                                <th class="min-w-50px">اسم المنطقة</th>
                                 <th class="min-w-50px">اسم المدينة</th>
                                 <th class="min-w-50px rounded-end">العمليات</th>
                             </tr>

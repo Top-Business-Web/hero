@@ -24,8 +24,7 @@ class CityRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name_ar' => 'required|unique:cities,name_ar,' . $this->id,
-            'name_en' => 'required|unique:cities,name_en,' . $this->id,
+            'name' => 'required|unique:cities,name,' . $this->id,
         ];
     }
 
@@ -33,9 +32,7 @@ class CityRequest extends FormRequest
     {
         return [
             'name_ar.required' => 'اسم المدينة باللغة العربية مطلوب',
-            'name_en.required' => 'اسم المدينة باللغة الانجليزية مطلوب',
             'name_ar.unique' => 'اسم المدينة باللغة العربية موجود من قبل',
-            'name_en.unique' => 'اسم المدينة باللغة الانجليزية موجود من قبل',
         ];
     }
 }

@@ -48,6 +48,10 @@ Route::group(['prefix'=>'admin','middleware'=>'auth:admin'],function (){
     Route::resource('city',CityController::class);
     Route::POST('city/delete',[CityController::class,'delete'])->name('city_delete');
 
+    #============================ Area =====================================
+    Route::resource('area',CityController::class);
+    Route::POST('area/delete',[CityController::class,'delete'])->name('area_delete');
+
     #============================ warehouse ================================
     Route::resource('warehouse',WarehouseController::class);
     Route::POST('warehouse/delete',[WarehouseController::class,'delete'])->name('warehouse_delete');

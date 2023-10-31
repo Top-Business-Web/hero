@@ -4,7 +4,6 @@ namespace App\Repository;
 
 use App\Interfaces\CityInterface;
 use App\Models\Area;
-use App\Models\City;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Yajra\DataTables\DataTables;
 
@@ -13,13 +12,13 @@ class CityRepository implements CityInterface
     public function index($request)
     {
         if ($request->ajax()) {
-            $city = City::query()->latest()->get();
-            return DataTables::of($city)
-                ->addColumn('action', function ($city) {
+            $area = Area::query()->latest()->get();
+            return DataTables::of($area)
+                ->addColumn('action', function ($area) {
                     return '
-                            <button type="button" data-id="' . $city->id . '" class="btn btn-pill btn-info-light editBtn"><i class="fa fa-edit"></i></button>
+                            <button type="button" data-id="' . $area->id . '" class="btn btn-pill btn-info-light editBtn"><i class="fa fa-edit"></i></button>
                             <button class="btn btn-pill btn-danger-light" data-toggle="modal" data-target="#delete_modal"
-                                    data-id="' . $city->id . '" data-title="' . $city->name . '">
+                                    data-id="' . $area->id . '" data-title="' . $area->name . '">
                                     <i class="fas fa-trash"></i>
                             </button>
                             <a class="text-white btn btn-pill btn-success">المناطق</a>
