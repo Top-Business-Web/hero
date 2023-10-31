@@ -23,16 +23,10 @@
         </li>
 
         <li class="slide">
-            <a class="side-menu__item" data-toggle="slide" href="#">
-                <i class="fa fa-user-check side-menu__icon"></i>
-                <span class="side-menu__label">المستخدمين</span><i class="angle fa fa-angle-left"></i>
+            <a class="side-menu__item" href="{{ route('userPerson.index') }}">
+                <i class="fa fa-users side-menu__icon"></i>
+                <span class="side-menu__label">المستخدمين</span>
             </a>
-            <ul class="slide-menu">
-
-                <li><a href="{{ route('userPerson.index') }}" class="slide-item">الافراد</a></li>
-                <li><a href="{{ route('userCompany.index') }}" class="slide-item">الشركات</a></li>
-
-            </ul>
         </li>
 
         <li class="slide">

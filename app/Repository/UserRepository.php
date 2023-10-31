@@ -16,7 +16,7 @@ class UserRepository implements UserInterface
     {
         if ($request->ajax()) {
             $users = User::query()
-                ->where('user_type', 'person')->latest()->get();
+            ->where('type', '=', 'user')->latest()->get();
             return DataTables::of($users)
                 ->addColumn('action', function ($users) {
                     return '
@@ -28,7 +28,7 @@ class UserRepository implements UserInterface
                 })
                 ->editColumn('image', function ($users) {
                     return '
-                    <img alt="image" onclick="window.open(this.src)" class="avatar avatar-md rounded-circle" src="' . asset($users->image) . '">
+                    <img alt="image" onclick="window.open(this.src)" class="avatar avatar-md rounded-circle" src="' . asset($users->img) . '">
                     ';
                 })
                 ->editColumn('status', function ($user) {
@@ -36,9 +36,6 @@ class UserRepository implements UserInterface
                         return '<button class="btn btn-sm btn-success statusBtn" data-id="' . $user->id . '">مفعل</button>';
                     else
                         return '<button class="btn btn-sm btn-danger statusBtn" data-id="' . $user->id . '">غير مفعل</button>';
-                })
-                ->editColumn('city_id', function ($user) {
-                    return $user->city->name_ar;
                 })
                 ->escapeColumns([])
                 ->make(true);
@@ -102,13 +99,10 @@ class UserRepository implements UserInterface
 
         $user->save();
 
-        if ($user->status == 1){
+        if ($user->status == 1) {
             return response()->json('200');
-        }else {
+        } else {
             return response()->json('201');
         }
-
     }
-
-
 }
