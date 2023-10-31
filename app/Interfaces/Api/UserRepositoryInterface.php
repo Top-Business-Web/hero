@@ -10,6 +10,7 @@ interface UserRepositoryInterface{
 
     public function getAllCities(): JsonResponse;
     public function register(Request $request): JsonResponse;
+    public function registerDriver(Request $request): JsonResponse;
     public function login(Request $request);
     public function getProfile(Request $request): JsonResponse;
     public function updateProfile(Request $request): JsonResponse;

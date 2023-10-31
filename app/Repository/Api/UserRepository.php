@@ -10,6 +10,7 @@ use App\Models\City;
 use App\Models\Setting;
 use App\Models\User;
 use App\Repository\ResponseApi;
+use App\Traits\PhotoTrait;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -17,85 +18,83 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 
 
-class UserRepository extends ResponseApi implements UserRepositoryInterface{
-
-
+class UserRepository extends ResponseApi implements UserRepositoryInterface
+{
+    use PhotoTrait;
     public function getAllCities(): JsonResponse
     {
-
-        $cities  = CityResource::collection(City::get());
-
-        return self::returnResponseDataApi( $cities,"تم الحصول علي بيانات جميع المدن بنجاح",200);
-
+        $cities = City::with('areas')->get();
+        return self::returnResponseDataApi($cities, "تم الحصول علي بيانات جميع المدن بنجاح", 200);
     }
 
     public function register(Request $request): JsonResponse
     {
-
         try {
 
             $rules = [
                 'name' => 'required|string|max:50',
                 'email' => 'required|email|unique:users,email',
-                'password' => 'required|min:6|confirmed',
-                'national_id' => 'required|numeric|unique:users,national_id',
-                'phone' => 'required|numeric|unique:users,phone',
-                'city_id' => 'required|exists:cities,id',
-                'type' => 'required|in:user',
-                'user_type' => 'required|in:person,company',
-
+                'phone' => 'required|numeric|unique:users,email',
+                'img' => 'required|image',
+                'type' => 'required|in:user,driver',
+                'birth' => 'required'
             ];
-
             $validator = Validator::make($request->all(), $rules, [
                 'email.unique' => 406,
                 'phone.numeric' => 407,
-                'password.confirmed' => 408,
+                'phone.unique' => 408,
             ]);
+
 
             if ($validator->fails()) {
                 $errors = collect($validator->errors())->flatten(1)[0];
-
                 if (is_numeric($errors)) {
                     $errors_arr = [
                         406 => 'Failed,Email already exists',
                         407 => 'Failed,Phone number must be an number',
-                        408 => 'Failed,Password must be confirmed',
+                        408 => 'Failed,Phone already exists',
                     ];
-
                     $code = collect($validator->errors())->flatten(1)[0];
                     return self::returnResponseDataApi(null, $errors_arr[$errors] ?? 500, $code);
                 }
-                return self::returnResponseDataApi(null,$validator->errors()->first(),422);
+                return self::returnResponseDataApi(null, $validator->errors()->first(), 422);
+            }
+
+            if($request->hasFile('img')){
+                $image = $this->saveImage($request->img,'uploads/users','photo');
             }
 
             $storeNewUser = User::create([
                 'name' => $request->name,
                 'email' => $request->email,
-                'password' => Hash::make($request->password),
-                'national_id' => $request->national_id,
+                'password' => Hash::make('123456'),
                 'phone' => $request->phone,
-                'image' => 'uploads/users/avatar.png',
-                'city_id' => $request->city_id,
+                'img' => $image ?? 'uploads/users/avatar.png',
                 'type' => $request->type,
-                'user_type' => $request->user_type,
+                'birth' => $request->birth,
                 'status' => 1
             ]);
 
             if (isset($storeNewUser)) {
-
-                $storeNewUser['token'] = auth()->guard('user-api')->attempt($request->only(['email', 'password']));
+                $credentials = ['phone' => $request->phone,'password' => '123456'];
+                $storeNewUser['token'] = auth()->guard('user-api')->attempt($credentials);
                 return self::returnResponseDataApi(new UserResource($storeNewUser), "تم تسجيل بيانات المستخدم بنجاح", 200);
 
-            }else{
+            } else {
 
-                return self::returnResponseDataApi(null,"يوجد خطاء ما اثناء دخول البيانات",500,500);
+                return self::returnResponseDataApi(null, "يوجد خطاء ما اثناء دخول البيانات", 500, 500);
 
             }
         } catch (\Exception $exception) {
 
-            return self::returnResponseDataApi($exception->getMessage(),500,false,500);
+            return self::returnResponseDataApi($exception->getMessage(), 500, false, 500);
         }
 
+    }
+
+    public function registerDriver(Request $request): JsonResponse
+    {
+        return '';
     }
 
 
@@ -104,13 +103,10 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface{
 
         try {
             $rules = [
-                'email' => 'required|email|exists:users,email',
-                'password' => 'required|min:6',
-                'type' => 'required|in:user,driver',
+                'phone' => 'required|exists:users,phone',
             ];
             $validator = Validator::make($request->all(), $rules, [
-                'email.exists' => 409,
-                'type.in' => 410,
+                'phone.exists' => 409,
             ]);
 
             if ($validator->fails()) {
@@ -119,27 +115,26 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface{
                 if (is_numeric($errors)) {
 
                     $errors_arr = [
-                        409 => 'Failed,Email not exists',
-                        410 => 'Failed,The type must be an user or driver',
+                        409 => 'Failed,phone not exists',
                     ];
 
                     $code = collect($validator->errors())->flatten(1)[0];
-                    return self::returnResponseDataApi(null,$errors_arr[$errors] ?? 500, $code);
+                    return self::returnResponseDataApi(null, $errors_arr[$errors] ?? 500, $code);
                 }
-                return self::returnResponseDataApi(null,$validator->errors()->first(),422,422);
+                return self::returnResponseDataApi(null, $validator->errors()->first(), 422, 422);
             }
-
-            $token = Auth::guard('user-api')->attempt($request->only(['email', 'password','type']));
+            $credentials = ['phone' => $request->phone,'password' => '123456'];
+            $token = Auth::guard('user-api')->attempt($credentials);
             if (!$token) {
-                return self::returnResponseDataApi(null, "يانات الدخول غير صحيحه برجاء المحاوله مره اخري", 403,403);
+                return self::returnResponseDataApi(null, "يانات الدخول غير صحيحه برجاء المحاوله مره اخري", 403, 403);
             }
             $user = Auth::guard('user-api')->user();
             $user['token'] = $token;
-            return self::returnResponseDataApi(new UserResource($user),"تم تسجيل الدخول بنجاح",200);
+            return self::returnResponseDataApi(new UserResource($user), "تم تسجيل الدخول بنجاح", 200);
 
         } catch (\Exception $exception) {
 
-            return self::returnResponseDataApi(null,$exception->getMessage(),500);
+            return self::returnResponseDataApi(null, $exception->getMessage(), 500);
         }
 
     }
@@ -156,7 +151,7 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface{
 
         } catch (\Exception $exception) {
 
-            return self::returnResponseDataApi(null,$exception->getMessage(),500);
+            return self::returnResponseDataApi(null, $exception->getMessage(), 500);
         }
     }
 
@@ -183,14 +178,14 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface{
                     ];
 
                     $code = collect($validator->errors())->flatten(1)[0];
-                    return self::returnResponseDataApi( $errors_arr[$errors] ?? 500, $code,200);
+                    return self::returnResponseDataApi($errors_arr[$errors] ?? 500, $code, 200);
                 }
-                return self::returnResponseDataApi(null,$validator->errors()->first(),422);
+                return self::returnResponseDataApi(null, $validator->errors()->first(), 422);
             }
 
             $user = Auth::guard('user-api')->user();
 
-            if (Hash::check($request->current_password,$user->password)) {
+            if (Hash::check($request->current_password, $user->password)) {
 
                 $user->update(['password' => Hash::make($request->new_password)]);
 
@@ -199,20 +194,20 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface{
                     $user->token = $request->bearerToken();
                     return self::returnResponseDataApi(new UserResource($user), "تم تغيير كلمه المرور بنجاح", 200);
 
-                }else{
+                } else {
 
-                    return self::returnResponseDataApi(null,"يوجد مشكله اثناء تغيير كلمه المرور",500,500);
+                    return self::returnResponseDataApi(null, "يوجد مشكله اثناء تغيير كلمه المرور", 500, 500);
                 }
             } else {
 
-                return self::returnResponseDataApi(null,"كلمه المرور القديمه غير صحيحه برجاء كتابه كلمه السر صحيحه لمتابعه التغيير",403,403);
+                return self::returnResponseDataApi(null, "كلمه المرور القديمه غير صحيحه برجاء كتابه كلمه السر صحيحه لمتابعه التغيير", 403, 403);
 
             }
 
 
         } catch (\Exception $exception) {
 
-            return self::returnResponseDataApi($exception->getMessage(),500,false,500);
+            return self::returnResponseDataApi($exception->getMessage(), 500, false, 500);
         }
 
     }
@@ -250,7 +245,7 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface{
                     return self::returnResponseDataApi(null, $errors_arr[$errors] ?? 500, $code);
 
                 }
-                return self::returnResponseDataApi(null,$validator->errors()->first(),422);
+                return self::returnResponseDataApi(null, $validator->errors()->first(), 422);
             }
 
             $user = Auth::guard('user-api')->user();
@@ -267,7 +262,7 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface{
                 'name' => $request->name,
                 'email' => $request->email,
                 'phone' => $request->phone,
-                'image' => $request->file('image') != null ? 'uploads/users/'.$profileImage : $user->image,
+                'image' => $request->file('image') != null ? 'uploads/users/' . $profileImage : $user->image,
                 'city_id' => $request->city_id,
             ]);
 
@@ -276,14 +271,14 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface{
                 $user->token = $request->bearerToken();
                 return self::returnResponseDataApi(new UserResource($user), "تم تسجيل بيانات المستخدم بنجاح", 200);
 
-            }else{
+            } else {
 
-                return self::returnResponseDataApi(null,"يوجد خطاء ما اثناء  البيانات",500,500);
+                return self::returnResponseDataApi(null, "يوجد خطاء ما اثناء  البيانات", 500, 500);
 
             }
         } catch (\Exception $exception) {
 
-            return self::returnResponseDataApi($exception->getMessage(),500,false,500);
+            return self::returnResponseDataApi($exception->getMessage(), 500, false, 500);
         }
     }
 
@@ -292,11 +287,11 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface{
 
         try {
             Auth::guard('user-api')->logout();
-            return self::returnResponseDataApi(null,"تم تسجيل الخروج بنجاح",200);
+            return self::returnResponseDataApi(null, "تم تسجيل الخروج بنجاح", 200);
 
         } catch (\Exception $exception) {
 
-            return self::returnResponseDataApi(null,$exception->getMessage(),500,500);
+            return self::returnResponseDataApi(null, $exception->getMessage(), 500, 500);
         }
     }
 
@@ -307,23 +302,22 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface{
         try {
 
             $user = Auth::guard('user-api')->user();
-            if($user->type == 'driver'){
+            if ($user->type == 'driver') {
 
-                return self::returnResponseDataApi(null,"حساب السائق غير مصرح له بالحذف",403,403);
+                return self::returnResponseDataApi(null, "حساب السائق غير مصرح له بالحذف", 403, 403);
 
-            }else{
+            } else {
                 $user->delete();
                 Auth::guard('user-api')->logout();
-                return self::returnResponseDataApi(null,"تم حذف الحساب بنجاح وتم تسجيل الخروج من التطبيق",200);
+                return self::returnResponseDataApi(null, "تم حذف الحساب بنجاح وتم تسجيل الخروج من التطبيق", 200);
             }
 
 
         } catch (\Exception $exception) {
 
-            return self::returnResponseDataApi(null,$exception->getMessage(),500,500);
+            return self::returnResponseDataApi(null, $exception->getMessage(), 500, 500);
         }
     }
-
 
 
     public function setting(): JsonResponse
@@ -333,19 +327,19 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface{
 
             $setting = Setting::query()->first();
 
-            if(!$setting){
+            if (!$setting) {
 
-                return self::returnResponseDataApi(null,"لا يوجد اي اعدادات بالموقع الي الان",404,404);
+                return self::returnResponseDataApi(null, "لا يوجد اي اعدادات بالموقع الي الان", 404, 404);
 
-            }else{
+            } else {
 
-                return self::returnResponseDataApi(new SettingResource($setting),"تم الحصول علي بيانات الشروط والاحكام بنجاح",200);
+                return self::returnResponseDataApi(new SettingResource($setting), "تم الحصول علي بيانات الشروط والاحكام بنجاح", 200);
             }
 
 
         } catch (\Exception $exception) {
 
-            return self::returnResponseDataApi(null,$exception->getMessage(),500,500);
+            return self::returnResponseDataApi(null, $exception->getMessage(), 500, 500);
         }
     }
 }
