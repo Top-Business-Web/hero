@@ -28,7 +28,6 @@
                                 <th class="min-w-125px">الايميل</th>
                                 <th class="min-w-125px">الهاتف</th>
                                 <th class="min-w-125px">رقم الهوية</th>
-                                <th class="min-w-125px">المدينه</th>
                                 <th class="min-w-50px">الحالة</th>
                                 <th class="min-w-50px rounded-end">العمليات</th>
                             </tr>
@@ -93,8 +92,7 @@
             {data: 'name', name: 'name'},
             {data: 'email', name: 'email'},
             {data: 'phone', name: 'phone'},
-            {data: 'national_id', name: 'national_id'},
-            {data: 'city_id', name: 'city_id'},
+            {data: 'birth', name: 'birth'},
             {data: 'status', name: 'status'},
             {data: 'action', name: 'action', orderable: false, searchable: false},
         ]
