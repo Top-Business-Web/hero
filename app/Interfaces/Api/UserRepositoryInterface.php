@@ -9,6 +9,7 @@ interface UserRepositoryInterface{
 
 
     public function getAllCities(): JsonResponse;
+    public function getAllAreas(): JsonResponse;
     public function register(Request $request): JsonResponse;
     public function registerDriver(Request $request): JsonResponse;
     public function login(Request $request);

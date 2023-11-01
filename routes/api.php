@@ -23,6 +23,9 @@ Route::post('auth/login', [UserController::class, 'login']);
 
 Route::group(['prefix' => 'auth', 'middleware' => 'jwt'], function () {
 
+    Route::post('storeDriverDetails', [UserController::class, 'registerDriver']);
+
+
     Route::get('getProfile', [UserController::class, 'getProfile']);
     Route::post('updateProfile', [UserController::class, 'updateProfile']);
     Route::post('logout', [UserController::class, 'logout']);
@@ -40,5 +43,6 @@ Route::post('resetPassword', [ResetPasswordController::class, 'resetPassword']);
 
 
 Route::get('cities', [UserController::class, 'getAllCities']);
+Route::get('areas', [UserController::class, 'getAllAreas']);
 
 Route::get('setting', [UserController::class, 'setting'])->middleware('jwt');

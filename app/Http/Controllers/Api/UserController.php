@@ -23,10 +23,20 @@ class UserController extends Controller{
 
         return $this->userRepositoryInterface->getAllCities();
     }
+    public function getAllAreas(): JsonResponse{
+
+        return $this->userRepositoryInterface->getAllAreas();
+    }
 
     public function register(Request $request): JsonResponse{
 
         return $this->userRepositoryInterface->register($request);
+
+    }
+
+    public function registerDriver(Request $request): JsonResponse{
+
+        return $this->userRepositoryInterface->registerDriver($request);
 
     }
 
