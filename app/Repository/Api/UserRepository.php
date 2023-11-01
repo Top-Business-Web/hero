@@ -2,11 +2,15 @@
 
 namespace App\Repository\Api;
 
+use App\Http\Resources\AreaResource;
 use App\Http\Resources\CityResource;
+use App\Http\Resources\DriverResource;
 use App\Http\Resources\SettingResource;
 use App\Http\Resources\UserResource;
 use App\Interfaces\Api\UserRepositoryInterface;
+use App\Models\Area;
 use App\Models\City;
+use App\Models\DriverDetails;
 use App\Models\Setting;
 use App\Models\User;
 use App\Repository\ResponseApi;
@@ -23,8 +27,13 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
     use PhotoTrait;
     public function getAllCities(): JsonResponse
     {
-        $cities = City::with('areas')->get();
+        $cities = City::with('area')->get();
         return self::returnResponseDataApi($cities, "تم الحصول علي بيانات جميع المدن بنجاح", 200);
+    }
+    public function getAllAreas(): JsonResponse
+    {
+        $area = Area::with('city')->get();
+        return self::returnResponseDataApi(AreaResource::collection($area), "تم الحصول علي بيانات جميع المدن بنجاح", 200);
     }
 
     public function register(Request $request): JsonResponse
@@ -94,7 +103,48 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
 
     public function registerDriver(Request $request): JsonResponse
     {
-        return '';
+        try {
+
+            $rules = [
+                'bike_type' => 'required',
+                'bike_model' => 'required',
+                'bike_color' => 'required',
+                'area_id' => 'required',
+            ];
+            $validator = Validator::make($request->all(), $rules);
+
+            if ($validator->fails()) {
+                $errors = collect($validator->errors())->flatten(1)[0];
+                if (is_numeric($errors)) {
+                    $code = collect($validator->errors())->flatten(1)[0];
+                    return self::returnResponseDataApi(null, 500, $code);
+                }
+                return self::returnResponseDataApi(null, $validator->errors()->first(), 422);
+            }
+            $user_id = Auth::user()->id;
+            $storeNewDriverDetails = DriverDetails::updateOrCreate([
+                'driver_id' => $user_id
+            ],[
+                'bike_type' => $request->bike_type,
+                'bike_model' => $request->bike_model,
+                'bike_color' => $request->bike_color,
+                'area_id' => $request->area_id,
+                'driver_id' => $user_id
+            ]);
+
+            if (isset($storeNewDriverDetails)) {
+                $storeNewDriverDetails = new DriverResource($storeNewDriverDetails);
+                return self::returnResponseDataApi($storeNewDriverDetails, "تم تسجيل بيانات السائق بنجاح", 200);
+            } else {
+
+                return self::returnResponseDataApi(null, "يوجد خطاء ما اثناء دخول البيانات", 500, 500);
+
+            }
+        } catch (\Exception $exception) {
+
+            return self::returnResponseDataApi($exception->getMessage(), 500, false, 500);
+        }
+
     }
 
 
