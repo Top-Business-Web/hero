@@ -2,12 +2,14 @@
 
 
 use App\Http\Controllers\Admin\AdminController;
+use App\Http\Controllers\Admin\AreaController;
 use App\Http\Controllers\Admin\AuthController;
 use App\Http\Controllers\Admin\CityController;
 use App\Http\Controllers\Admin\DriverController;
 use App\Http\Controllers\Admin\InvoiceSettingController;
 use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\Admin\SettingController;
+use App\Http\Controllers\Admin\SliderController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\WarehouseController;
 
@@ -49,8 +51,13 @@ Route::group(['prefix'=>'admin','middleware'=>'auth:admin'],function (){
     Route::POST('city/delete',[CityController::class,'delete'])->name('city_delete');
 
     #============================ Area =====================================
-    Route::resource('area',CityController::class);
-    Route::POST('area/delete',[CityController::class,'delete'])->name('area_delete');
+    Route::resource('area',AreaController::class);
+    Route::POST('area/delete',[AreaController::class,'delete'])->name('area_delete');
+
+    #============================ Slider =====================================
+    Route::resource('slider',SliderController::class);
+    Route::POST('slider/delete',[SliderController::class,'delete'])->name('slider_delete');
+    Route::POST('change-status-slider',[SliderController::class,'changeStatus'])->name('changeStatus');
 
     #============================ warehouse ================================
     Route::resource('warehouse',WarehouseController::class);

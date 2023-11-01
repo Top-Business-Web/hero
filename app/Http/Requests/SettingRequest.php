@@ -24,12 +24,15 @@ class SettingRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name_ar' => 'required',
-            'name_en' => 'required',
-            'logo' => 'nullable',
-            'conditions_ar' => 'required',
-            'conditions_en' => 'required',
-            'shipment_price' => 'required',
+            'logo' => 'sometimes|image',
+            'trip_insurance' => 'required',
+            'rewards' => 'nullable',
+            'about' => 'required',
+            'support' => 'required',
+            'safety_roles' => 'required',
+            'polices' => 'required',
+            'km' => 'required',
+            'vat' => 'required',
         ];
     }
 

@@ -2,9 +2,7 @@
 
 namespace App\Interfaces;
 
-use App\Models\City;
-
-Interface AreaInterface {
+Interface SliderInterface {
 
     public function index($request);
 
@@ -14,7 +12,9 @@ Interface AreaInterface {
 
     public function store($request);
 
-    public function edit($area);
+    public function edit($slider);
+
+    public function changeStatus($request);
 
     public function update($request, $id);
 

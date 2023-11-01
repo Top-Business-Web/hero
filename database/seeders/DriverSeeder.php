@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 
 class DriverSeeder extends Seeder
 {
@@ -21,6 +22,7 @@ class DriverSeeder extends Seeder
                 'phone' => '010454552655',
                 'img' => 'assets/uploads/driver.jpeg',
                 'birth' => '2023-10-11',
+                'password' => Hash::make('123456'),
                 'type' => 'driver',
                 'status' => '0',
             ],
@@ -30,6 +32,7 @@ class DriverSeeder extends Seeder
                 'phone' => '0105456452',
                 'img' => 'assets/uploads/driver.jpeg',
                 'birth' => '2023-10-11',
+                'password' => Hash::make('123456'),
                 'type' => 'driver',
                 'status' => '0',
             ],
@@ -39,6 +42,7 @@ class DriverSeeder extends Seeder
                 'phone' => '010458666664',
                 'img' => 'assets/uploads/driver.jpeg',
                 'birth' => '2023-10-11',
+                'password' => Hash::make('123456'),
                 'type' => 'driver',
                 'status' => '0',
             ],
@@ -48,6 +52,7 @@ class DriverSeeder extends Seeder
                 'phone' => '01054564577',
                 'img' => 'assets/uploads/driver.jpeg',
                 'birth' => '2023-10-11',
+                'password' => Hash::make('123456'),
                 'type' => 'driver',
                 'status' => '0',
             ],
