@@ -3,19 +3,17 @@
 namespace App\Providers;
 
 use App\Interfaces\AdminInterface;
-use App\Interfaces\Api\OrderRepositoryInterface;
-use App\Interfaces\Api\UserRepositoryInterface;
+use App\Interfaces\Api\Driver\DriverRepositoryInterface;
+use App\Interfaces\Api\User\UserRepositoryInterface;
+use App\Repository\Api\User\UserRepository as UserApiRepository;
+use App\Repository\Api\Driver\DriverRepository as DriverApiRepository;
 use App\Interfaces\AreaInterface;
-use App\Interfaces\CityInterface;
-use App\Interfaces\SettingInterface;
 use App\Interfaces\AuthInterface;
+use App\Interfaces\CityInterface;
 use App\Interfaces\DriverInterface;
+use App\Interfaces\SettingInterface;
 use App\Interfaces\SliderInterface;
 use App\Interfaces\UserInterface;
-
-use App\Repository\Api\OrderRepository as OrderApiRepository;
-use App\Repository\Api\UserRepository as UserApiRepository;
-
 use App\Repository\AdminRepository;
 use App\Repository\AreaRepository;
 use App\Repository\AuthRepository;
@@ -24,7 +22,6 @@ use App\Repository\DriverRepository;
 use App\Repository\SettingRepository;
 use App\Repository\SliderRepository;
 use App\Repository\UserRepository;
-
 use Illuminate\Support\ServiceProvider;
 
 
@@ -53,8 +50,7 @@ class RepositoryServiceProvider extends ServiceProvider
 
         // start Api classes and interfaces
         $this->app->bind(UserRepositoryInterface::class,UserApiRepository::class);
-        $this->app->bind(OrderRepositoryInterface::class,OrderApiRepository::class);
-        $this->app->bind(\App\Interfaces\Api\Driver\OrderRepositoryInterface::class,\App\Repository\Api\Driver\OrderRepository::class);
+        $this->app->bind(DriverRepositoryInterface::class,DriverApiRepository::class);
         // ----------------------------------------------------------------
 
     }
