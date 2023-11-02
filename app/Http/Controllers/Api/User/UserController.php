@@ -58,5 +58,9 @@ class UserController extends Controller{
         return $this->userRepositoryInterface->setting();
     }
 
+    public function editProfile(Request $request) : JsonResponse
+    {
+        return $this->userRepositoryInterface->editProfile($request);
+    }
 
 }

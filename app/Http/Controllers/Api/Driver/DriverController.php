@@ -26,23 +26,28 @@ class DriverController extends Controller
         return $this->driverRepository->registerDriverDoc($request);
     } // registerDriverDoc
 
-    public function checkDocument(Request $request)
+    public function checkDocument(Request $request): JsonResponse
     {
         return $this->driverRepository->checkDocument($request);
     } // checkDocument
 
-    public function changeStatus(Request $request)
+    public function changeStatus(Request $request): JsonResponse
     {
         return $this->driverRepository->changeStatus($request);
     } // changeStatus
-    public function updateDriverDetails(Request $request)
+    public function updateDriverDetails(Request $request): JsonResponse
     {
         return $this->driverRepository->updateDriverDetails($request);
     } // updateDriverDetails
 
-    public function updateDriverDocument(Request $request)
+    public function updateDriverDocument(Request $request): JsonResponse
     {
         return $this->driverRepository->updateDriverDocument($request);
+    } // updateDriverDocument
+
+    public function quickTrip(Request $request): JsonResponse
+    {
+        return $this->driverRepository->quickTrip($request);
     }
 
 }

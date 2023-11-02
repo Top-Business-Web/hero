@@ -12,6 +12,7 @@ class Trip extends Model
 
     protected $fillable = [
         'type',
+        'trip_type',
         'from_address',
         'from_long',
         'from_lat',
@@ -27,15 +28,16 @@ class Trip extends Model
         'phone',
         'user_id',
         'driver_id',
+        'ended'
     ];
 
     public function driver(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'driver_id', 'id');
+        return $this->belongsTo(User::class,'driver_id','id');
     }
 
     public function user(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'user_id', 'id');
+        return $this->belongsTo(User::class,'user_id','id');
     }
 }

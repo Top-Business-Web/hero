@@ -17,29 +17,30 @@ class CreateTripsTable extends Migration
             $table->id();
 
             $table->enum('type', ['complete', 'new', 'reject']);
+            $table->enum('trip_type', ['scheduled','normal','quick'])->default('normal');
             $table->text('from_address');
             $table->bigInteger('from_long');
             $table->bigInteger('from_lat');
             $table->text('to_address');
             $table->bigInteger('to_long');
             $table->bigInteger('to_lat');
-            $table->time('time_ride');
-            $table->time('time_arrive');
-            $table->bigInteger('distance');
-            $table->string('time');
-            $table->double('price', 10, 2);
+            $table->time('time_ride')->nullable();
+            $table->time('time_arrive')->nullable();
+            $table->bigInteger('distance')->nullable();
+            $table->string('time')->nullable();
+            $table->double('price', 10, 2)->nullable();
             $table->string('name')->nullable();
             $table->string('phone')->nullable();
-
             $table->unsignedBigInteger('user_id')->nullable();
+            $table->unsignedBigInteger('driver_id')->nullable();
+            $table->boolean('ended')->default(false);
+            $table->foreign('driver_id')
+                ->on('users')->references('id')
+                ->cascadeOnDelete()->cascadeOnUpdate();
             $table->foreign('user_id')
                 ->on('users')->references('id')
                 ->cascadeOnDelete()->cascadeOnUpdate();
 
-            $table->unsignedBigInteger('driver_id')->nullable();
-            $table->foreign('driver_id')
-                ->on('users')->references('id')
-                ->cascadeOnDelete()->cascadeOnUpdate();
 
             $table->timestamps();
             $table->softDeletes();
