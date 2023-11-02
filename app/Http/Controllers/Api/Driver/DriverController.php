@@ -45,9 +45,9 @@ class DriverController extends Controller
         return $this->driverRepository->updateDriverDocument($request);
     } // updateDriverDocument
 
-    public function instantTrip(Request $request): JsonResponse
+    public function quickTrip(Request $request): JsonResponse
     {
-        return $this->driverRepository->instantTrip($request);
+        return $this->driverRepository->quickTrip($request);
     }
 
 }
