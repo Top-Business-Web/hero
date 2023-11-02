@@ -46,7 +46,7 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
             $rules = [
                 'name' => 'required|string|max:50',
                 'email' => 'required|email|unique:users,email',
-                'phone' => 'required|numeric|unique:users,email',
+                'phone' => 'required|numeric|unique:users,phone',
                 'img' => 'required|image',
                 'type' => 'required|in:user,driver',
                 'birth' => 'required'
@@ -229,4 +229,64 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
         $home['user'] = new UserResource(User::find(Auth::user()->id));
         return self::returnResponseDataApi($home, "تم الحصول علي بيانات الرئيسية بنجاح", 200);
     } // user home
+
+    public function editProfile(Request $request): JsonResponse
+    {
+        $user = User::find(Auth::user()->id);
+        try {
+            $rules = [
+                'name' => 'required|string|max:50',
+                'email' => 'required|email|unique:users,email,'.$user->id,
+                'phone' => 'required|numeric|unique:users,phone,'.$user->id,
+                'img' => 'image',
+                'birth' => 'required'
+            ];
+            $validator = Validator::make($request->all(), $rules, [
+                'email.unique' => 406,
+                'phone.numeric' => 407,
+                'phone.unique' => 408,
+            ]);
+
+            if ($validator->fails()) {
+                $firstError = $validator->errors()->first();
+
+                if (is_numeric($firstError)) {
+                    $errorsArr = [
+                        406 => 'Failed, Email already exists',
+                        407 => 'Failed, Phone number must be a number',
+                        408 => 'Failed, Phone already exists',
+                    ];
+                    return self::returnResponseDataApi(null, $errorsArr[$firstError] ?? 'Error occurred', $firstError);
+                }
+
+                return self::returnResponseDataApi(null, $firstError, 422);
+            }
+
+            if ($request->hasFile('img')) {
+                $image = $this->saveImage($request->img, 'uploads/users', 'photo');
+                if (file_exists($user->img)) {
+                    unlink($user->img);
+                }
+            }else {
+               $image = $user->img;
+            }
+
+            $user->name = $request->name;
+            $user->email = $request->email;
+            $user->phone = $request->phone;
+            $user->img = $image;
+            $user->birth = $request->birth;
+            $user->save();
+
+            if ($user->save()) {
+                return self::returnResponseDataApi(new UserResource($user), "تم تحديث بيانات المستخدم بنجاح", 200);
+            } else {
+                return self::returnResponseDataApi(null, "يوجد خطاء ما اثناء دخول البيانات", 500, 500);
+            }
+
+        } catch (\Exception $exception) {
+
+            return self::returnResponseDataApi(null, $exception->getMessage(), 500, 500);
+        }
+    }
 }
