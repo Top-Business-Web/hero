@@ -17,6 +17,7 @@ class TripSeeder extends Seeder
         $data = [
             [
                 'type' => 'complete',
+                'trip_type' =>'with',
                 'from_address' => '123 Main Street, City',
                 'from_long' => '-123.456789',
                 'from_lat' => '12.345678',
@@ -35,6 +36,7 @@ class TripSeeder extends Seeder
             ],
             [
                 'type' => 'new',
+                'trip_type' =>'with',
                 'from_address' => '789 Oak Avenue, Townsville',
                 'from_long' => '-123.789012',
                 'from_lat' => '45.678901',
@@ -53,6 +55,7 @@ class TripSeeder extends Seeder
             ],
             [
                 'type' => 'new',
+                'trip_type' =>'with',
                 'from_address' => '456 Elm Street, Another City',
                 'from_long' => '-78.901234',
                 'from_lat' => '34.567890',
@@ -71,6 +74,7 @@ class TripSeeder extends Seeder
             ],
             [
                 'type' => 'new',
+                'trip_type' =>'with',
                 'from_address' => '123 Main Street, City',
                 'from_long' => '-123.456789',
                 'from_lat' => '12.345678',

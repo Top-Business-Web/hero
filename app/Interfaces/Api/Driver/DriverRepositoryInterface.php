@@ -15,5 +15,4 @@ interface DriverRepositoryInterface{
     public function updateDriverDocument(Request $request): JsonResponse;
     public function startQuickTrip(Request $request): JsonResponse;
     public function endQuickTrip(Request $request): JsonResponse;
-    public function startTripWith(Request $request): JsonResponse;
 }

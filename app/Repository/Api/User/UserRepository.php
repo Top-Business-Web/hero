@@ -5,6 +5,7 @@ namespace App\Repository\Api\User;
 use App\Http\Resources\AreaResource;
 use App\Http\Resources\CityResource;
 use App\Http\Resources\SettingResource;
+use App\Http\Resources\TripResource;
 use App\Http\Resources\UserResource;
 use App\Interfaces\Api\User\UserRepositoryInterface;
 use App\Models\Area;
@@ -229,7 +230,6 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
         $home['user'] = new UserResource(User::find(Auth::user()->id));
         return self::returnResponseDataApi($home, "تم الحصول علي بيانات الرئيسية بنجاح", 200);
     } // user home
-
     public function editProfile(Request $request): JsonResponse
     {
         $user = User::find(Auth::user()->id);
@@ -288,5 +288,76 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
 
             return self::returnResponseDataApi(null, $exception->getMessage(), 500, 500);
         }
+    } // edit profile
+    public function startTripWithTrack(Request $request): JsonResponse
+    {
+        try {
+            $rules = [
+                'from_address' => 'required',
+                'from_long' => 'required',
+                'from_lat' => 'required',
+                'to_address' => 'required',
+                'to_long' => 'required',
+                'to_lat' => 'required',
+            ];
+            $validator = Validator::make($request->all(), $rules);
+            if ($validator->fails()) {
+                $firstError = $validator->errors()->first();
+                return self::returnResponseDataApi(null, $firstError, 422);
+            }
+            $checkQuickTrip = Trip::query()
+                ->where('user_id', '=', Auth::user()->id)
+                ->where('ended', '=', 0)->latest()->first();
+            if ($checkQuickTrip) {
+                return self::returnResponseDataApi(null, 'هناك رحلة حالية لم تنتهي بعد لنفس العميل', 200, 200);
+            }
+
+            $createQuickTrip = Trip::query()
+                ->create([
+                    'from_address' => $request->from_address,
+                    'from_long' => $request->from_long,
+                    'from_lat' => $request->from_lat,
+                    'to_address' => $request->to_address,
+                    'to_long' => $request->to_long,
+                    'to_lat' => $request->to_lat,
+                    'user_id' => Auth::user()->id,
+                    'type' => 'new',
+                    'trip_type' => 'with',
+                ]);
+
+            if (isset($createQuickTrip)) {
+                return self::returnResponseDataApi(new TripResource($createQuickTrip), "تم انشاء رحلة بوجهه بنجاح", 201, 200);
+            } else {
+                return self::returnResponseDataApi(null, "يوجد خطاء ما اثناء دخول البيانات", false, 500);
+            }
+
+
+        } catch (\Exception $exception) {
+            return self::returnResponseDataApi($exception->getMessage(), 500, false, 500);
+        }
     }
+
+    public function cancelTrip(Request $request): JsonResponse
+    {
+        try {
+            $trip = Trip::query()
+                ->where('user_id','=',Auth::user()->id)
+                ->where('type','=','new')
+                ->where('ended','=',0)
+                ->first();
+            if ($trip) {
+                $trip->delete();
+                return self::returnResponseDataApi(null,'تم الغاء الرحلة بنجاح',200);
+            }else {
+                return self::returnResponseDataApi(null, "لا يوجد لديك اي رحلة جديدة", 500, 500);
+            }
+        }catch (\Exception $exception) {
+            return self::returnResponseDataApi($exception->getMessage(), 500, false, 500);
+        }
+    }
+    public function endTripWithoutTrack(Request $request): JsonResponse
+    {
+
+    }
+
 }
