@@ -7,6 +7,7 @@ use App\Http\Resources\DriverResource;
 use App\Interfaces\Api\Driver\DriverRepositoryInterface;
 use App\Models\DriverDetails;
 use App\Models\DriverDocuments;
+use App\Models\Trip;
 use App\Models\User;
 use App\Repository\ResponseApi;
 use App\Traits\PhotoTrait;
@@ -272,13 +273,47 @@ class DriverRepository extends ResponseApi implements DriverRepositoryInterface
         }
     } // update Driver Document
 
-    public function instantTrip(Request $request): JsonResponse
+    public function quickTrip(Request $request): JsonResponse
     {
         try {
             $rules = [
-
+                'from_address' => 'required',
+                'from_long' => 'required',
+                'from_lat' => 'required',
+                'to_address' => 'required',
+                'to_long' => 'required',
+                'to_lat' => 'required',
+                'name' => 'required',
+                'phone' => 'required',
             ];
-            return self::returnResponseDataApi(null, 777, false, 500);
+            $validator = Validator::make($request->all(), $rules);
+            if ($validator->fails()) {
+                $firstError = $validator->errors()->first();
+                return self::returnResponseDataApi(null, $firstError, 422);
+            }
+
+            $createQuickTrip = Trip::query()
+                ->create([
+                    'from_address' => $request->from_address,
+                    'from_long' => $request->from_long,
+                    'from_lat' => $request->from_lat,
+                    'to_address' => $request->to_address,
+                    'to_long' => $request->to_long,
+                    'to_lat' => $request->to_lat,
+                    'name' => $request->name,
+                    'phone' => $request->phone,
+                    'driver_id' => Auth::user()->id,
+                    'type' => 'new',
+                    'trip_type' => 'quick',
+                ]);
+
+            if (isset($createQuickTrip)){
+                return self::returnResponseDataApi(null, "تم بدأ الرحلة الفورية بنجاح وصول سعيد", 200, 200);
+            } else {
+                return self::returnResponseDataApi(null, "يوجد خطاء ما اثناء دخول البيانات", false, 500);
+            }
+
+
         } catch (\Exception $exception) {
             return self::returnResponseDataApi($exception->getMessage(), 500, false, 500);
         }
