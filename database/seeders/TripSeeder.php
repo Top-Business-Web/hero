@@ -70,7 +70,7 @@ class TripSeeder extends Seeder
                 'driver_id' => '7',
             ],
             [
-                'type' => 'reject',
+                'type' => 'new',
                 'from_address' => '123 Main Street, City',
                 'from_long' => '-123.456789',
                 'from_lat' => '12.345678',
