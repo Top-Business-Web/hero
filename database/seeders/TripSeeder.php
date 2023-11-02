@@ -31,7 +31,7 @@ class TripSeeder extends Seeder
                 'name' => 'John Doe',
                 'phone' => '555-555-5555',
                 'user_id' => '1',
-                'driver_id' => '2',
+                'driver_id' => '5',
             ],
             [
                 'type' => 'new',
@@ -49,7 +49,7 @@ class TripSeeder extends Seeder
                 'name' => 'Alice Johnson',
                 'phone' => '555-123-4567',
                 'user_id' => '3',
-                'driver_id' => '5',
+                'driver_id' => '6',
             ],
             [
                 'type' => 'new',
@@ -67,7 +67,7 @@ class TripSeeder extends Seeder
                 'name' => 'Bob Smith',
                 'phone' => '555-987-6543',
                 'user_id' => '2',
-                'driver_id' => '4',
+                'driver_id' => '7',
             ],
             [
                 'type' => 'reject',
@@ -85,7 +85,7 @@ class TripSeeder extends Seeder
                 'name' => 'Eve Brown',
                 'phone' => '555-789-1234',
                 'user_id' => '1',
-                'driver_id' => '3',
+                'driver_id' => '8',
             ],
         ];
         DB::table('trips')->insert($data);
