@@ -65,7 +65,6 @@ Route::group(['prefix'=>'admin','middleware'=>'auth:admin'],function (){
     Route::get('trips/completed/{trip}', [TripController::class, 'showCompleteTrip'])->name('show.complete');
     Route::get('trips/new', [TripController::class, 'new'])->name('trip.new');
     Route::get('trips/new/{trip}', [TripController::class, 'showNewTrip'])->name('show.new');
-    Route::get('trips/reject', [TripController::class, 'reject'])->name('trip.reject');
     Route::POST('trip/delete',[TripController::class,'delete'])->name('trip_delete');
 
     #============================ setting ==================================

@@ -12,7 +12,5 @@ Interface TripInterface {
 
     public function showNewTrip($trip);
 
-    public function reject($request);
-
     public function delete($request);
 }
