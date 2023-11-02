@@ -21,5 +21,6 @@ class DatabaseSeeder extends Seeder
         $this->call(SliderSeeder::class);
         $this->call(SettingSeeder::class);
         $this->call(TripSeeder::class);
+        $this->call(DriverDocumentSeeder::class);
     }
 }

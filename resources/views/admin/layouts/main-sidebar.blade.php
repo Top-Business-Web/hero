@@ -70,6 +70,12 @@
             </a>
         </li>
 
+        <li class="slide">
+            <a class="side-menu__item" href="{{route('driver_document.index')}}">
+                <i class="fa fa-book side-menu__icon"></i>
+                <span class="side-menu__label">وثائق السائق</span>
+            </a>
+        </li>
 
         <li class="slide">
             <a class="side-menu__item" href="{{route('settingIndex')}}">

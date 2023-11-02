@@ -10,10 +10,23 @@ class DriverDocuments extends Model
 {
     use HasFactory;
 
-    protected $guarded = [];
+    protected $fillable = [
+        'agency_number',
+        'bike_license',
+        'id_card',
+        'house_card',
+        'bike_image',
+        'status',
+        'driver_id',
+    ];
 
     public function driver(): BelongsTo
     {
         return $this->belongsTo(DriverDetails::class,'driver_id','driver_id');
+    }
+
+    public function drivers(): BelongsTo
+    {
+        return $this->belongsTo(User::class,'driver_id','id');
     }
 }

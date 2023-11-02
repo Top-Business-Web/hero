@@ -6,6 +6,7 @@ use App\Http\Controllers\Admin\AreaController;
 use App\Http\Controllers\Admin\AuthController;
 use App\Http\Controllers\Admin\CityController;
 use App\Http\Controllers\Admin\DriverController;
+use App\Http\Controllers\Admin\DriverDocumentController;
 use App\Http\Controllers\Admin\InvoiceSettingController;
 use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\Admin\SettingController;
@@ -59,6 +60,11 @@ Route::group(['prefix'=>'admin','middleware'=>'auth:admin'],function (){
     Route::resource('slider',SliderController::class);
     Route::POST('slider/delete',[SliderController::class,'delete'])->name('slider_delete');
     Route::POST('change-status-slider',[SliderController::class,'changeStatus'])->name('changeStatus');
+
+    #============================ Driver Document =====================================
+    Route::resource('driver_document',DriverDocumentController::class);
+    Route::POST('driver/delete',[DriverDocumentController::class,'delete'])->name('driver_delete');
+    Route::POST('change-status-slider',[DriverDocumentController::class,'changeStatus'])->name('changeStatus');
 
     #============================ Trip =====================================
     Route::get('trips/completed', [TripController::class, 'complete'])->name('trip.complete');
