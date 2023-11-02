@@ -20,7 +20,6 @@ class CreateDriverDocumentsTable extends Migration
             $table->longText('bike_license');
             $table->longText('id_card');
             $table->longText('house_card');
-            $table->longText('bike_card');
             $table->longText('bike_image');
             $table->boolean('status')->default(false);
 
