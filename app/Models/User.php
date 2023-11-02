@@ -36,4 +36,9 @@ class User extends Authenticatable implements JWTSubject
     {
         return $this->hasMany(Trip::class);
     }
+
+    public function driverDocument()
+    {
+        return $this->hasMany(DriverDocuments::class);
+    }
 }
