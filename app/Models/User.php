@@ -11,7 +11,16 @@ class User extends Authenticatable implements JWTSubject
 {
     use HasFactory;
 
-    protected $guarded = [];
+    protected $fillable = [
+        'name',
+        'email',
+        'phone',
+        'password',
+        'img',
+        'birth',
+        'type',
+        'status',
+    ];
 
     public function getJWTIdentifier()
     {
@@ -23,5 +32,8 @@ class User extends Authenticatable implements JWTSubject
         return [];
     }
 
-
+    public function trip()
+    {
+        return $this->hasMany(Trip::class);
+    }
 }

@@ -51,40 +51,26 @@
         </li>
 
         <li class="slide">
-            <a class="side-menu__item" href="{{route('slider.index')}}">
-                <i class="fa fa-image side-menu__icon"></i>
-                <span class="side-menu__label">صور متحركة</span>
-            </a>
-        </li>
-
-        <li class="slide">
-            <a class="side-menu__item" href="{{route('warehouse.index')}}">
-                <i class="fa fa-warehouse side-menu__icon"></i>
-                <span class="side-menu__label">المخازن</span>
-            </a>
-        </li>
-
-
-        <li class="slide">
             <a class="side-menu__item" data-toggle="slide" href="#">
                 <i class="fa fa-truck side-menu__icon"></i>
-                <span class="side-menu__label">الطلبات</span><i class="angle fa fa-angle-left"></i>
+                <span class="side-menu__label">الرحلات</span><i class="angle fa fa-angle-left"></i>
             </a>
             <ul class="slide-menu">
 
-                <li><a href="{{ route('orderNew') }}" class="slide-item">الجديدة</a></li>
-                <li><a href="{{ route('orderWaiting') }}" class="slide-item">في الانتظار</a></li>
-                <li><a href="{{ route('orderComplete') }}" class="slide-item">المكتملة</a></li>
+                <li><a href="{{ route('trip.complete') }}" class="slide-item">مكتملة</a></li>
+                <li><a href="{{ route('trip.new') }}" class="slide-item">جديدة</a></li>
+                <li><a href="{{ route('trip.reject') }}" class="slide-item">مرفوضة</a></li>
 
             </ul>
         </li>
 
         <li class="slide">
-            <a class="side-menu__item" href="{{route('invoiceSettingIndex')}}">
-                <i class="fa fa-wrench side-menu__icon"></i>
-                <span class="side-menu__label">اعدادات البوليصة</span>
+            <a class="side-menu__item" href="{{route('slider.index')}}">
+                <i class="fa fa-image side-menu__icon"></i>
+                <span class="side-menu__label">صور متحركة</span>
             </a>
         </li>
+        
 
         <li class="slide">
             <a class="side-menu__item" href="{{route('settingIndex')}}">

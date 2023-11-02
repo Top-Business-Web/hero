@@ -13,6 +13,7 @@ use App\Interfaces\CityInterface;
 use App\Interfaces\DriverInterface;
 use App\Interfaces\SettingInterface;
 use App\Interfaces\SliderInterface;
+use App\Interfaces\TripInterface;
 use App\Interfaces\UserInterface;
 use App\Repository\AdminRepository;
 use App\Repository\AreaRepository;
@@ -21,6 +22,7 @@ use App\Repository\CityRepository;
 use App\Repository\DriverRepository;
 use App\Repository\SettingRepository;
 use App\Repository\SliderRepository;
+use App\Repository\TripRepository;
 use App\Repository\UserRepository;
 use Illuminate\Support\ServiceProvider;
 
@@ -40,6 +42,7 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(AreaInterface::class,AreaRepository::class);
         $this->app->bind(UserInterface::class,UserRepository::class);
         $this->app->bind(DriverInterface::class,DriverRepository::class);
+        $this->app->bind(TripInterface::class,TripRepository::class);
         $this->app->bind(CityInterface::class,CityRepository::class);
         $this->app->bind(SliderInterface::class,SliderRepository::class);
         $this->app->bind(SettingInterface::class,SettingRepository::class);
