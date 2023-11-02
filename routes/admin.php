@@ -10,6 +10,7 @@ use App\Http\Controllers\Admin\InvoiceSettingController;
 use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\Admin\SettingController;
 use App\Http\Controllers\Admin\SliderController;
+use App\Http\Controllers\Admin\TripController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\WarehouseController;
 
@@ -59,26 +60,17 @@ Route::group(['prefix'=>'admin','middleware'=>'auth:admin'],function (){
     Route::POST('slider/delete',[SliderController::class,'delete'])->name('slider_delete');
     Route::POST('change-status-slider',[SliderController::class,'changeStatus'])->name('changeStatus');
 
-    #============================ warehouse ================================
-    Route::resource('warehouse',WarehouseController::class);
-    Route::POST('warehouse/delete',[WarehouseController::class,'delete'])->name('warehouse_delete');
-
-    #============================ warehouse ================================
-    Route::get('orderComplete',[OrderController::class,'complete'])->name('orderComplete');
-    Route::get('orderNew',[OrderController::class,'new'])->name('orderNew');
-    Route::get('orderWaiting',[OrderController::class,'waiting'])->name('orderWaiting');
-    Route::get('orderShow/{order}',[OrderController::class,'show'])->name('orderShow');
-    Route::get('invoice/{order}',[OrderController::class,'invoice'])->name('invoice');
+    #============================ Trip =====================================
+    Route::get('trips/completed', [TripController::class, 'complete'])->name('trip.complete');
+    Route::get('trips/completed/{trip}', [TripController::class, 'showCompleteTrip'])->name('show.complete');
+    Route::get('trips/new', [TripController::class, 'new'])->name('trip.new');
+    Route::get('trips/new/{trip}', [TripController::class, 'showNewTrip'])->name('show.new');
+    Route::get('trips/reject', [TripController::class, 'reject'])->name('trip.reject');
+    Route::POST('trip/delete',[TripController::class,'delete'])->name('trip_delete');
 
     #============================ setting ==================================
     Route::get('setting',[SettingController::class,'index'])->name('settingIndex');
     Route::POST('setting/update/{id}',[SettingController::class,'update'])->name('settingUpdate');
-
-    #============================ invoice setting ==================================
-    Route::get('invoice-setting',[InvoiceSettingController::class,'index'])->name('invoiceSettingIndex');
-    Route::POST('invoice-setting/update/{id}',[InvoiceSettingController::class,'update'])->name('invoiceSettingUpdate');
-
-
 
 
 });

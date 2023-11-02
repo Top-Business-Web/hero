@@ -20,5 +20,6 @@ class DatabaseSeeder extends Seeder
         $this->call(AreaSeeder::class);
         $this->call(SliderSeeder::class);
         $this->call(SettingSeeder::class);
+        $this->call(TripSeeder::class);
     }
 }
