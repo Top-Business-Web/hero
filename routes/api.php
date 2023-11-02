@@ -31,6 +31,7 @@ Route::group(['middleware' => 'jwt'],function (){
 
     Route::get('userHome',[HomeController::class,'home']);
     Route::post('logout', [UserController::class, 'logout']);
+    Route::post('editProfile', [UserController::class, 'editProfile']);
     Route::post('deleteAccount', [UserController::class, 'deleteAccount']);
     Route::get('setting', [UserController::class, 'setting']);
 
@@ -49,6 +50,8 @@ Route::group(['middleware' => 'jwt'],function (){
     Route::post('updateDriverDocument', [DriverController::class, 'updateDriverDocument']);
     Route::post('checkDocument', [DriverController::class, 'checkDocument']);
     Route::post('changeStatus', [DriverController::class, 'changeStatus']);
+    #### TRIPS ROUTES ####
+    Route::post('instantTrip', [DriverController::class, 'instantTrip']);
 });
 ######################### END DRIVER ROUTES ###################################
 

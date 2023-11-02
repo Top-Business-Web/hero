@@ -17,6 +17,7 @@ class CreateTripsTable extends Migration
             $table->id();
 
             $table->enum('type', ['complete', 'new', 'reject']);
+            $table->enum('trip_type', ['scheduled','normal','quick'])->default('normal');
             $table->text('from_address');
             $table->bigInteger('from_long');
             $table->bigInteger('from_lat');
