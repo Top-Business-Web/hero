@@ -4,13 +4,17 @@ namespace App\Repository\Api\Driver;
 
 use App\Http\Resources\DriverDocumentResource;
 use App\Http\Resources\DriverResource;
+use App\Http\Resources\TripResource;
 use App\Interfaces\Api\Driver\DriverRepositoryInterface;
 use App\Models\DriverDetails;
 use App\Models\DriverDocuments;
+use App\Models\DriverWallet;
+use App\Models\Setting;
 use App\Models\Trip;
 use App\Models\User;
 use App\Repository\ResponseApi;
 use App\Traits\PhotoTrait;
+use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -153,7 +157,6 @@ class DriverRepository extends ResponseApi implements DriverRepositoryInterface
             return self::returnResponseDataApi(['status' => $user->status], "انت الان في الخدمة", 200);
         }
     } // change status
-
     public function updateDriverDetails(Request $request): JsonResponse
     {
         try {
@@ -193,7 +196,6 @@ class DriverRepository extends ResponseApi implements DriverRepositoryInterface
             return self::returnResponseDataApi($exception->getMessage(), 500, false, 500);
         }
     } // update driver details
-
     public function updateDriverDocument(Request $request): JsonResponse
     {
         try {
@@ -272,8 +274,7 @@ class DriverRepository extends ResponseApi implements DriverRepositoryInterface
             return self::returnResponseDataApi($exception->getMessage(), 500, false, 500);
         }
     } // update Driver Document
-
-    public function quickTrip(Request $request): JsonResponse
+    public function startQuickTrip(Request $request): JsonResponse
     {
         try {
             $rules = [
@@ -291,6 +292,12 @@ class DriverRepository extends ResponseApi implements DriverRepositoryInterface
                 $firstError = $validator->errors()->first();
                 return self::returnResponseDataApi(null, $firstError, 422);
             }
+            $checkQuickTrip = Trip::query()
+                ->where('phone', '=', $request->phone)
+                ->where('ended', '=', 0)->latest()->first();
+            if ($checkQuickTrip) {
+                return self::returnResponseDataApi(null, 'هناك رحلة حالية لم تنتهي بعد علي نفس الرقم', 200, 200);
+            }
 
             $createQuickTrip = Trip::query()
                 ->create([
@@ -305,14 +312,76 @@ class DriverRepository extends ResponseApi implements DriverRepositoryInterface
                     'driver_id' => Auth::user()->id,
                     'type' => 'new',
                     'trip_type' => 'quick',
+                    'time_ride' => Carbon::now()
                 ]);
 
-            if (isset($createQuickTrip)){
-                return self::returnResponseDataApi(null, "تم بدأ الرحلة الفورية بنجاح وصول سعيد", 200, 200);
+            if (isset($createQuickTrip)) {
+                return self::returnResponseDataApi(new TripResource($createQuickTrip), "تم بدأ الرحلة الفورية بنجاح", 201, 200);
             } else {
                 return self::returnResponseDataApi(null, "يوجد خطاء ما اثناء دخول البيانات", false, 500);
             }
 
+
+        } catch (\Exception $exception) {
+            return self::returnResponseDataApi($exception->getMessage(), 500, false, 500);
+        }
+    } // start quick trip
+
+    public function endQuickTrip(Request $request): JsonResponse
+    {
+        $settigs = Setting::first(['vat', 'km']);
+        try {
+            $rules = [
+                'distance' => 'required',
+                'time' => 'required',
+                'phone' => 'required',
+            ];
+            $validator = Validator::make($request->all(), $rules);
+            if ($validator->fails()) {
+                $firstError = $validator->errors()->first();
+                return self::returnResponseDataApi(null, $firstError, 422);
+            }
+            $checkQuickTrip = Trip::query()
+                ->where('phone', '=', $request->phone)
+                ->where('driver_id', '=', Auth::user()->id)
+                ->where('ended' ,'=',0)
+                ->first();
+
+            if ($checkQuickTrip) {
+                $checkQuickTrip->time_arrive = Carbon::now();
+                $checkQuickTrip->distance = $request->distance;
+                $checkQuickTrip->time = $request->time;
+                $price = $checkQuickTrip->distance * $settigs->km; // Calculate the total price based on the distance
+                $vatTotal = $price * ($settigs->vat / 100); // Calculate 15% of the total price as VAT
+                $total = $price - $vatTotal; // Calculate the total after deducting the VAT
+                $checkQuickTrip->price = $price;
+                $checkQuickTrip->ended = true;
+
+                if ($checkQuickTrip->save()) {
+                    $wallet = DriverWallet::query()
+                        ->where('driver_id','=', Auth::user()->id)
+                        ->whereDay('day', '=', Carbon::now())
+                        ->first();
+                    if (!$wallet){
+                        $wallet = DriverWallet::query()
+                            ->create([
+                                'driver_id' => Auth::user()->id,
+                                'day' => Carbon::now(),
+                                'total' => $total,
+                                'vat_total' => $vatTotal,
+                            ]);
+                    }else {
+                        $wallet->total += $total;
+                        $wallet->vat_total += $vatTotal;
+                        $wallet->save();
+                    }
+                    return self::returnResponseDataApi(new TripResource($checkQuickTrip), "تم نهاية الرحلة الفورية بنجاح", 201, 200);
+                } else {
+                    return self::returnResponseDataApi(null, "يوجد خطاء ما اثناء دخول البيانات", false, 500);
+                }
+            } else {
+                return self::returnResponseDataApi(null, "لا يوجد رحلة حالية علي هذا الرقم", false, 500);
+            }
 
         } catch (\Exception $exception) {
             return self::returnResponseDataApi($exception->getMessage(), 500, false, 500);

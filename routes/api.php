@@ -51,7 +51,8 @@ Route::group(['middleware' => 'jwt'],function (){
     Route::post('checkDocument', [DriverController::class, 'checkDocument']);
     Route::post('changeStatus', [DriverController::class, 'changeStatus']);
     #### TRIPS ROUTES ####
-    Route::post('quickTrip', [DriverController::class, 'quickTrip']);
+    Route::post('startQuickTrip', [DriverController::class, 'startQuickTrip']);
+    Route::post('endQuickTrip', [DriverController::class, 'endQuickTrip']);
 });
 ######################### END DRIVER ROUTES ###################################
 

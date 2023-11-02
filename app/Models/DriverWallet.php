@@ -8,4 +8,11 @@ use Illuminate\Database\Eloquent\Model;
 class DriverWallet extends Model
 {
     use HasFactory;
+
+    protected $fillable = [
+        'driver_id',
+        'day',
+        'total',
+        'vat_total',
+    ];
 }
