@@ -63,27 +63,6 @@ class TripRepository implements TripInterface
         return view('admin.trips.parts.showNewTrip', compact('trip'));
     }
 
-    public function reject($request)
-    {
-        if ($request->ajax()) {
-            $trip_completed = Trip::query()->where('type', '=', 'reject')->latest()->get();
-            return DataTables::of($trip_completed)
-                ->addColumn('action', function ($trip_completed) {
-                    return '
-                            <button type="button" data-id="' . $trip_completed->id . '" class="btn btn-pill btn-info-light editBtn"><i class="fa fa-edit"></i></button>
-                            <button class="btn btn-pill btn-danger-light" data-toggle="modal" data-target="#delete_modal"
-                                    data-id="' . $trip_completed->id . '" data-title="' . $trip_completed->name . '">
-                                    <i class="fas fa-trash"></i>
-                            </button>
-                       ';
-                })
-                ->escapeColumns([])
-                ->make(true);
-        } else {
-            return view('admin.trips.reject');
-        }
-    }
-
     public function delete($request)
     {
         $trip = Trip::query()->where('id', $request->id)->first();

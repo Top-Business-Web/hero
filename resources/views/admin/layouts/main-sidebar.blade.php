@@ -59,7 +59,6 @@
 
                 <li><a href="{{ route('trip.complete') }}" class="slide-item">مكتملة</a></li>
                 <li><a href="{{ route('trip.new') }}" class="slide-item">جديدة</a></li>
-                <li><a href="{{ route('trip.reject') }}" class="slide-item">مرفوضة</a></li>
 
             </ul>
         </li>
@@ -70,7 +69,7 @@
                 <span class="side-menu__label">صور متحركة</span>
             </a>
         </li>
-        
+
 
         <li class="slide">
             <a class="side-menu__item" href="{{route('settingIndex')}}">
