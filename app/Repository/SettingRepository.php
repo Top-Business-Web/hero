@@ -25,7 +25,7 @@ class SettingRepository implements SettingInterface
         $setting = Setting::query()->findOrFail($id);
 
         if ($request->has('logo')) {
-            $inputs['logo'] = $this->saveImage($request->image, 'uploads/settings', 'photo');
+            $inputs['logo'] = $this->saveImage($request->logo, 'uploads/settings', 'photo');
         } else {
             unset($request->logo);
         }
