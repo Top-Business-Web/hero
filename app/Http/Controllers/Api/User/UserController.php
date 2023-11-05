@@ -19,61 +19,50 @@ class UserController extends Controller{
 
     } // constructor
 
-    public function getAllCities(): JsonResponse{
-
+    public function getAllCities(): JsonResponse
+    {
         return $this->userRepositoryInterface->getAllCities();
     } // getAllCities
 
-    public function getAllAreas(): JsonResponse{
-
+    public function getAllAreas(): JsonResponse
+    {
         return $this->userRepositoryInterface->getAllAreas();
     } // getAllAreas
 
-    public function register(Request $request): JsonResponse{
-
+    public function register(Request $request): JsonResponse
+    {
         return $this->userRepositoryInterface->register($request);
-
     } // register
 
-    public function login(Request $request): JsonResponse{
-
+    public function login(Request $request): JsonResponse
+    {
         return $this->userRepositoryInterface->login($request);
-
     } // login
 
     public function logout(): JsonResponse
     {
-
        return $this->userRepositoryInterface->logout();
     } // logout
     public function deleteAccount(): JsonResponse
     {
-
         return $this->userRepositoryInterface->deleteAccount();
     } // deleteAccount
 
     public function setting(): JsonResponse
     {
-
         return $this->userRepositoryInterface->setting();
     } // setting
     public function editProfile(Request $request) : JsonResponse
     {
         return $this->userRepositoryInterface->editProfile($request);
     } // editProfile
-    public function startTripWithTrack(Request $request) : JsonResponse
+    public function startTrip(Request $request) : JsonResponse
     {
-        return $this->userRepositoryInterface->startTripWithTrack($request);
-    }
+        return $this->userRepositoryInterface->startTrip($request);
+    } // startTripWithTrack
 
     public function cancelTrip(Request $request) : JsonResponse
     {
         return $this->userRepositoryInterface->cancelTrip($request);
-    }
-
-    public function endTripWithoutTrack(Request $request) : JsonResponse
-    {
-        return $this->userRepositoryInterface->endTripWithoutTrack($request);
-    }
-
+    } // cancelTrip
 }

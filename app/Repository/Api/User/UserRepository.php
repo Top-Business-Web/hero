@@ -289,16 +289,17 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
             return self::returnResponseDataApi(null, $exception->getMessage(), 500, 500);
         }
     } // edit profile
-    public function startTripWithTrack(Request $request): JsonResponse
+    public function startTrip(Request $request): JsonResponse
     {
         try {
             $rules = [
                 'from_address' => 'required',
                 'from_long' => 'required',
+                'trip_type' => 'required',
                 'from_lat' => 'required',
                 'to_address' => 'required',
-                'to_long' => 'required',
-                'to_lat' => 'required',
+                'to_long' => 'nullable',
+                'to_lat' => 'nullable',
             ];
             $validator = Validator::make($request->all(), $rules);
             if ($validator->fails()) {
@@ -322,11 +323,11 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
                     'to_lat' => $request->to_lat,
                     'user_id' => Auth::user()->id,
                     'type' => 'new',
-                    'trip_type' => 'with',
+                    'trip_type' => $request->trip_type,
                 ]);
 
             if (isset($createQuickTrip)) {
-                return self::returnResponseDataApi(new TripResource($createQuickTrip), "تم انشاء رحلة بوجهه بنجاح", 201, 200);
+                return self::returnResponseDataApi(new TripResource($createQuickTrip), "تم انشاء طلب الرحلة بنجاح", 201, 200);
             } else {
                 return self::returnResponseDataApi(null, "يوجد خطاء ما اثناء دخول البيانات", false, 500);
             }
@@ -335,7 +336,7 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
         } catch (\Exception $exception) {
             return self::returnResponseDataApi($exception->getMessage(), 500, false, 500);
         }
-    }
+    } // start trip with track
 
     public function cancelTrip(Request $request): JsonResponse
     {
@@ -354,10 +355,5 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
         }catch (\Exception $exception) {
             return self::returnResponseDataApi($exception->getMessage(), 500, false, 500);
         }
-    }
-    public function endTripWithoutTrack(Request $request): JsonResponse
-    {
-
-    }
-
+    } // cancel trip
 }
