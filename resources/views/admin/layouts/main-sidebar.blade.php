@@ -2,7 +2,7 @@
 <aside class="app-sidebar">
     <div class="side-header">
         <a class="header-brand1" href="{{route('adminHome')}}">
-            <img src="{{  asset('assets/uploads/logo.png')}}"
+            <img src="{{  asset($settings->logo)}}"
                  class="header-brand-img light-logo1" alt="logo">
         </a>
         <!-- LOGO -->
@@ -59,6 +59,7 @@
 
                 <li><a href="{{ route('trip.complete') }}" class="slide-item">مكتملة</a></li>
                 <li><a href="{{ route('trip.new') }}" class="slide-item">جديدة</a></li>
+                <li><a href="{{ route('trip.reject') }}" class="slide-item">مرفوضة</a></li>
 
             </ul>
         </li>

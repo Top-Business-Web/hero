@@ -35,6 +35,16 @@ class TripController extends Controller
         return $this->tripInterface->showNewTrip($trip);
     }
 
+    public function reject(Request $request)
+    {
+        return $this->tripInterface->reject($request);
+    }
+
+    public function showRejectTrip($trip)
+    {
+        return $this->tripInterface->showRejectTrip($trip);
+    }
+
     public function delete(Request $request)
     {
         return $this->tripInterface->delete($request);

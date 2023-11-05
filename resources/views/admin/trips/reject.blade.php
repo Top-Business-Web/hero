@@ -98,7 +98,7 @@
         // showAddModal('{{route('city.create')}}');
         // addScript();
         // Add Using Ajax
-        // showEditModal('{{route('city.edit',':id')}}');
+        showEditModal('{{route('show.reject',':id')}}');
         // editScript();
     </script>
 @endsection

@@ -1,7 +1,7 @@
 <title>
     لوحة التحكم | تسجيل الدخول
 </title>
-<link rel="shortcut icon" type="image/x-icon" href="{{ asset('assets/uploads/logo.png')}}">
+<link rel="shortcut icon" type="image/x-icon" href="{{ asset($settings->logo)}}">
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Almarai:wght@300;400;700&display=swap');
     * {
