@@ -13,8 +13,9 @@ interface UserRepositoryInterface{
     public function editProfile(Request $request): JsonResponse;
     public function getAllCities(): JsonResponse;
     public function getAllAreas(): JsonResponse;
-    public function setting(): JsonResponse;
     public function startTrip(Request $request): JsonResponse;
     public function cancelTrip(Request $request): JsonResponse;
+    public function getAllSettings(): JsonResponse;
+    public function createTripRate(Request $request): JsonResponse;
 
 }

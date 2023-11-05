@@ -2,26 +2,28 @@
 
 namespace App\Repository\Api\User;
 
-use App\Http\Resources\AreaResource;
-use App\Http\Resources\CityResource;
-use App\Http\Resources\SettingResource;
-use App\Http\Resources\TripResource;
-use App\Http\Resources\UserResource;
-use App\Interfaces\Api\User\UserRepositoryInterface;
+use Carbon\Carbon;
 use App\Models\Area;
 use App\Models\City;
-use App\Models\Setting;
-use App\Models\Slider;
 use App\Models\Trip;
 use App\Models\User;
-use App\Repository\ResponseApi;
+use App\Models\Slider;
+use App\Models\Setting;
+use App\Models\TripRates;
 use App\Traits\PhotoTrait;
-use Carbon\Carbon;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use App\Repository\ResponseApi;
+use Illuminate\Http\JsonResponse;
+use App\Http\Resources\AreaResource;
+use App\Http\Resources\CityResource;
+use App\Http\Resources\TripResource;
+use App\Http\Resources\UserResource;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use App\Http\Resources\SettingResource;
+use App\Http\Resources\TripRateResource;
 use Illuminate\Support\Facades\Validator;
+use App\Interfaces\Api\User\UserRepositoryInterface;
 
 
 class UserRepository extends ResponseApi implements UserRepositoryInterface
@@ -92,17 +94,14 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
                 $credentials = ['phone' => $request->phone, 'password' => '123456'];
                 $storeNewUser['token'] = auth()->guard('user-api')->attempt($credentials);
                 return self::returnResponseDataApi(new UserResource($storeNewUser), "تم تسجيل بيانات المستخدم بنجاح", 200);
-
             } else {
 
                 return self::returnResponseDataApi(null, "يوجد خطاء ما اثناء دخول البيانات", 500, 500);
-
             }
         } catch (\Exception $exception) {
 
             return self::returnResponseDataApi($exception->getMessage(), 500, false, 500);
         }
-
     } // register
 
     public function login(Request $request): JsonResponse
@@ -138,12 +137,10 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
             $user = Auth::guard('user-api')->user();
             $user['token'] = $token;
             return self::returnResponseDataApi(new UserResource($user), "تم تسجيل الدخول بنجاح", 200);
-
         } catch (\Exception $exception) {
 
             return self::returnResponseDataApi(null, $exception->getMessage(), 500);
         }
-
     } // login
 
     public function logout(): JsonResponse
@@ -152,7 +149,6 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
         try {
             Auth::guard('user-api')->logout();
             return self::returnResponseDataApi(null, "تم تسجيل الخروج بنجاح", 200);
-
         } catch (\Exception $exception) {
 
             return self::returnResponseDataApi(null, $exception->getMessage(), 500, 500);
@@ -167,14 +163,11 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
             if ($user->type == 'driver') {
 
                 return self::returnResponseDataApi(null, "حساب السائق غير مصرح له بالحذف", 403, 403);
-
             } else {
                 $user->delete();
                 Auth::guard('user-api')->logout();
                 return self::returnResponseDataApi(null, "تم حذف الحساب بنجاح وتم تسجيل الخروج من التطبيق", 200);
             }
-
-
         } catch (\Exception $exception) {
 
             return self::returnResponseDataApi(null, $exception->getMessage(), 500, 500);
@@ -191,13 +184,10 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
             if (!$setting) {
 
                 return self::returnResponseDataApi(null, "لا يوجد اي اعدادات بالموقع الي الان", 404, 404);
-
             } else {
 
                 return self::returnResponseDataApi(new SettingResource($setting), "تم الحصول علي بيانات الشروط والاحكام بنجاح", 200);
             }
-
-
         } catch (\Exception $exception) {
 
             return self::returnResponseDataApi(null, $exception->getMessage(), 500, 500);
@@ -209,9 +199,9 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
         $user = User::find(Auth::user()->id);
         ($user->status == 1) ? $user->status = 0 : $user->status = 1;
         $user->save();
-        if ($user->status == false){
+        if ($user->status == false) {
             return self::returnResponseDataApi(['status' => $user->status], "انت الان خارج الخدمة", 200);
-        }else {
+        } else {
             return self::returnResponseDataApi(['status' => $user->status], "انت الان في الخدمة", 200);
         }
     } // change status
@@ -219,13 +209,13 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
     public function userHome(): JsonResponse
     {
         $home['sliders'] = Slider::query()
-            ->select('image','link')
-            ->where('status','=',true)
+            ->select('image', 'link')
+            ->where('status', '=', true)
             ->get();
         $home['new_trip'] = Trip::query()
-            ->where('type','=','new')
-            ->whereDate('created_at','=',Carbon::now())
-            ->orderBy('created_at','desc')
+            ->where('type', '=', 'new')
+            ->whereDate('created_at', '=', Carbon::now())
+            ->orderBy('created_at', 'desc')
             ->get();
         $home['user'] = new UserResource(User::find(Auth::user()->id));
         return self::returnResponseDataApi($home, "تم الحصول علي بيانات الرئيسية بنجاح", 200);
@@ -236,8 +226,8 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
         try {
             $rules = [
                 'name' => 'required|string|max:50',
-                'email' => 'required|email|unique:users,email,'.$user->id,
-                'phone' => 'required|numeric|unique:users,phone,'.$user->id,
+                'email' => 'required|email|unique:users,email,' . $user->id,
+                'phone' => 'required|numeric|unique:users,phone,' . $user->id,
                 'img' => 'image',
                 'birth' => 'required'
             ];
@@ -267,8 +257,8 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
                 if (file_exists($user->img)) {
                     unlink($user->img);
                 }
-            }else {
-               $image = $user->img;
+            } else {
+                $image = $user->img;
             }
 
             $user->name = $request->name;
@@ -283,7 +273,6 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
             } else {
                 return self::returnResponseDataApi(null, "يوجد خطاء ما اثناء دخول البيانات", 500, 500);
             }
-
         } catch (\Exception $exception) {
 
             return self::returnResponseDataApi(null, $exception->getMessage(), 500, 500);
@@ -331,8 +320,6 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
             } else {
                 return self::returnResponseDataApi(null, "يوجد خطاء ما اثناء دخول البيانات", false, 500);
             }
-
-
         } catch (\Exception $exception) {
             return self::returnResponseDataApi($exception->getMessage(), 500, false, 500);
         }
@@ -342,18 +329,66 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
     {
         try {
             $trip = Trip::query()
-                ->where('user_id','=',Auth::user()->id)
-                ->where('type','=','new')
-                ->where('ended','=',0)
+                ->where('user_id', '=', Auth::user()->id)
+                ->where('type', '=', 'new')
+                ->where('ended', '=', 0)
                 ->first();
             if ($trip) {
                 $trip->delete();
-                return self::returnResponseDataApi(null,'تم الغاء الرحلة بنجاح',200);
-            }else {
+                return self::returnResponseDataApi(null, 'تم الغاء الرحلة بنجاح', 200);
+            } else {
                 return self::returnResponseDataApi(null, "لا يوجد لديك اي رحلة جديدة", 500, 500);
             }
-        }catch (\Exception $exception) {
+        } catch (\Exception $exception) {
             return self::returnResponseDataApi($exception->getMessage(), 500, false, 500);
         }
     } // cancel trip
+
+    public function getAllSettings(): JsonResponse
+    {
+        $settings = Setting::first();
+        return self::returnResponseDataApi($settings, "تم الحصول علي بيانات جميع الاعدادت بنجاح", 200);
+    }
+
+    public function createTripRate(Request $request): JsonResponse
+    {
+        try {
+            $rules = [
+                'trip_id' => 'required',
+                'to' => 'required',
+                'rate' => 'required',
+                'description' => 'required',
+            ];
+
+            $validator = Validator::make($request->all(), $rules);
+
+            if ($validator->fails()) {
+                $firstError = $validator->errors()->first();
+                return self::returnResponseDataApi(null, $firstError, 422);
+            }
+            $existingTripRate = TripRates::where('trip_id', $request->trip_id)
+                ->where('from', Auth::user()->id)
+                ->first();
+
+            if ($existingTripRate) {
+                return self::returnResponseDataApi(null, "يوجد بالفعل تقييم لنفس الرحلة.", 422);
+            }
+            $createTripRate = TripRates::query()
+                ->create([
+                    'trip_id' => $request->trip_id,
+                    'from' => Auth::user()->id,
+                    'to' => $request->to,
+                    'rate' => $request->rate,
+                    'description' => $request->description,
+                ]);
+
+            if (isset($createTripRate)) {
+                return self::returnResponseDataApi(new TripRateResource($createTripRate), "تم انشاء التقييم بنجاح", 201, 200);
+            } else {
+                return self::returnResponseDataApi(null, "يوجد خطاء ما أثناء دخول البيانات", false, 500);
+            }
+        } catch (\Exception $exception) {
+            return self::returnResponseDataApi($exception->getMessage(), 500, false, 500);
+        }
+    }
 }

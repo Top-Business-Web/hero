@@ -29,6 +29,16 @@ class UserController extends Controller{
         return $this->userRepositoryInterface->getAllAreas();
     } // getAllAreas
 
+    public function getAllSettings(): JsonResponse
+    {
+        return $this->userRepositoryInterface->getAllSettings();
+    } // getAllSettings
+
+    public function createTripRate(Request $request): JsonResponse
+    {
+        return $this->userRepositoryInterface->createTripRate($request);
+    } // create Trip Rate
+
     public function register(Request $request): JsonResponse
     {
         return $this->userRepositoryInterface->register($request);
