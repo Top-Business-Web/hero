@@ -23,6 +23,13 @@ class TripRepository implements TripInterface
                             </button>
                        ';
                 })
+                ->editColumn('trip_type', function ($trip_completed) {
+                    if ($trip_completed->trip_type == 'with') {
+                        return 'بوجهة';
+                    } else {
+                        return 'من غير بوجهة';
+                    }
+                })
                 ->escapeColumns([])
                 ->make(true);
         } else {
@@ -49,6 +56,17 @@ class TripRepository implements TripInterface
                                     <i class="fas fa-trash"></i>
                             </button>
                        ';
+                })
+                ->editColumn('trip_type', function ($trip_completed) {
+                    if ($trip_completed->trip_type == 'with') {
+                        return 'بوجهة';
+                    } elseif ($trip_completed->trip_type == 'scheduled') {
+                        return 'مجدولة';
+                    } elseif ($trip_completed->trip_type == 'quick') {
+                        return 'فورية';
+                    } else {
+                        return 'من غير بوجهة';
+                    }
                 })
                 ->escapeColumns([])
                 ->make(true);

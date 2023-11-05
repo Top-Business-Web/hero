@@ -28,6 +28,7 @@
                                 <th class="min-w-25px">#</th>
                                 <th class="min-w-50px">من</th>
                                 <th class="min-w-50px">الى</th>
+                                <th class="min-w-50px">نوع الرحلة</th>
                                 <th class="min-w-50px rounded-end">العمليات</th>
                             </tr>
                             </thead>
@@ -89,6 +90,7 @@
             {data: 'id', name: 'id'},
             {data: 'from_address', name: 'from_address'},
             {data: 'to_address', name: 'to_address'},
+            {data: 'trip_type', name: 'trip_type'},
             {data: 'action', name: 'action', orderable: false, searchable: false},
         ]
         showData('{{route('trip.complete')}}', columns);
