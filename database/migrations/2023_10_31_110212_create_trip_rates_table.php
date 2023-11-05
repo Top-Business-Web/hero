@@ -18,14 +18,14 @@ class CreateTripRatesTable extends Migration
 
 
             $table->unsignedBigInteger('trip_id');
-            $table->unsignedBigInteger('user_id')->nullable();
-            $table->unsignedBigInteger('driver_id')->nullable();
+            $table->unsignedBigInteger('from')->nullable();
+            $table->unsignedBigInteger('to')->nullable();
             $table->integer('rate');
             $table->text('description');
 
-            $table->foreign('driver_id')
+            $table->foreign('from')
                 ->on('users')->references('id')->cascadeOnDelete()->cascadeOnUpdate();
-            $table->foreign('user_id')
+            $table->foreign('to')
                 ->on('users')->references('id')->cascadeOnDelete()->cascadeOnUpdate();
             $table->foreign('trip_id')
                 ->on('trips')->references('id')->cascadeOnDelete()->cascadeOnUpdate();

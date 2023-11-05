@@ -35,9 +35,8 @@ Route::group(['middleware' => 'jwt'],function (){
     Route::post('deleteAccount', [UserController::class, 'deleteAccount']);
     Route::get('setting', [UserController::class, 'setting']);
     #### TRIP ROUTES #####
-    Route::post('startTripWithTrack', [UserController::class, 'startTripWithTrack']);
+    Route::post('startTrip', [UserController::class, 'startTrip']);
     Route::post('cancelTrip', [UserController::class, 'cancelTrip']);
-    Route::post('endTripWithoutTrack', [UserController::class, 'endTripWithoutTrack']);
 
 });
 ########################### END USER ROUTES ###################################
