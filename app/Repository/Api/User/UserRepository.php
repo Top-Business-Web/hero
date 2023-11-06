@@ -23,6 +23,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use App\Http\Resources\TripRateResource;
+use App\Models\Notification;
 use Illuminate\Support\Facades\Validator;
 
 class UserRepository extends ResponseApi implements UserRepositoryInterface
@@ -390,8 +391,6 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
             } else {
                 return self::returnResponseDataApi(null, "يوجد خطاء ما اثناء دخول البيانات", false, 500);
             }
-
-
         } catch (\Exception $exception) {
             return self::returnResponseDataApi($exception->getMessage(), 500, false, 500);
         }
@@ -417,7 +416,6 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
                         ->orderBy('created_at', 'DESC')
                         ->latest()->get();
                     $data = $trips;
-
                 } else {
                     $trips = Trip::query()
                         ->where('type', '=', 'new')
@@ -433,7 +431,6 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
                 } else {
                     return self::returnResponseDataApi($data, 'عفوا لا يوجد رحلات حاليا', 200, 200);
                 }
-
             } else {
                 return self::returnResponseDataApi(null, 'يرجي ادخال النوع', 422, 422);
             }
@@ -452,12 +449,11 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
                 return self::returnResponseDataApi($data, 'تم الحصول علي جميع بيانات الموقع المفضلة بنجاح', 200, 200);
             } else {
                 return self::returnResponseDataApi($data, 'لا يوجد مواقع مفضلة حالية', 200, 200);
-
             }
         } catch (\Exception $exception) {
             return self::returnResponseDataApi($exception->getMessage(), 500, false, 500);
         }
-    }// favouriteLocations
+    } // favouriteLocations
 
     public function createFavouriteLocations(Request $request): JsonResponse
     {
@@ -486,12 +482,10 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
             } else {
                 return self::returnResponseDataApi(null, "يوجد خطاء ما اثناء دخول البيانات", false, 500);
             }
-
-
         } catch (\Exception $exception) {
             return self::returnResponseDataApi($exception->getMessage(), 500, false, 500);
         }
-    }// favouriteLocations
+    } // favouriteLocations
 
     public function removeFavouriteLocations(Request $request): JsonResponse
     {
@@ -514,17 +508,28 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
             } else {
                 return self::returnResponseDataApi(null, "لا يوجد موقع في المفضلة بهذا المعرف", 404, 404);
             }
-
-
         } catch (\Exception $exception) {
             return self::returnResponseDataApi($exception->getMessage(), 500, false, 500);
         }
-    }// favouriteLocations
+    } // favouriteLocations
 
     public function getAllSettings(): JsonResponse
     {
         $settings = Setting::first();
         return self::returnResponseDataApi($settings, "تم الحصول علي بيانات جميع الاعدادت بنجاح", 200);
+    }
+
+    public function getAllNotification(): JsonResponse
+    {
+        $notifications = Notification::where(function ($query) {
+            $query->where('user_id', '=', auth()->user()->id)
+                ->orWhereNull('user_id');
+        })->get();
+
+        if ($notifications->isEmpty()) {
+            return self::returnResponseDataApi([], "لا يوجد إشعارات لهذا المستخدم", 200);
+        }
+        return self::returnResponseDataApi($notifications, "تم الحصول على الإشعارات بنجاح", 200);
     }
 
     public function createTripRate(Request $request): JsonResponse

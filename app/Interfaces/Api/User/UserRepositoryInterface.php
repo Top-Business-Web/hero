@@ -17,6 +17,7 @@ interface UserRepositoryInterface{
     public function createTrip(Request $request): JsonResponse;
     public function cancelTrip(Request $request): JsonResponse;
     public function createScheduleTrip(Request $request): JsonResponse;
+    public function getAllNotification(): JsonResponse;
     public function userAllTrip(Request $request): JsonResponse;
     public function favouriteLocations(): JsonResponse;
     public function createFavouriteLocations(Request $request): JsonResponse;
