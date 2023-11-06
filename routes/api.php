@@ -44,6 +44,7 @@ Route::group(['middleware' => 'jwt'],function (){
     Route::post('cancelTrip', [UserController::class, 'cancelTrip']);
     Route::post('createScheduleTrip', [UserController::class, 'createScheduleTrip']);
     Route::get('userAllTrip', [UserController::class, 'userAllTrip']);
+    Route::post('createTripRate', [UserController::class, 'createTripRate']);
 
 });
 ########################### END USER ROUTES ###################################
@@ -77,4 +78,5 @@ Route::group(['middleware' => 'jwt'],function (){
 ######################### START GENERAL ROUTES ################################
 Route::get('cities', [UserController::class, 'getAllCities']);
 Route::get('areas', [UserController::class, 'getAllAreas']);
+Route::get('settings', [UserController::class, 'getAllSettings']);
 ########################### END GENERAL ROUTES ################################
