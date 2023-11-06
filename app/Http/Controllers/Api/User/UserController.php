@@ -35,6 +35,11 @@ class UserController extends Controller
         return $this->userRepositoryInterface->getAllSettings();
     } // getAllSettings
 
+    public function getAllNotification(): JsonResponse
+    {
+        return $this->userRepositoryInterface->getAllNotification();
+    } // get All Notification
+
     public function createTripRate(Request $request): JsonResponse
     {
         return $this->userRepositoryInterface->createTripRate($request);
