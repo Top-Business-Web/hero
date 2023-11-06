@@ -14,7 +14,12 @@ interface UserRepositoryInterface{
     public function getAllCities(): JsonResponse;
     public function getAllAreas(): JsonResponse;
     public function setting(): JsonResponse;
-    public function startTrip(Request $request): JsonResponse;
+    public function createTrip(Request $request): JsonResponse;
     public function cancelTrip(Request $request): JsonResponse;
+    public function createScheduleTrip(Request $request): JsonResponse;
+    public function userAllTrip(Request $request): JsonResponse;
+    public function favouriteLocations(): JsonResponse;
+    public function createFavouriteLocations(Request $request): JsonResponse;
+    public function removeFavouriteLocations(Request $request): JsonResponse;
 
 }

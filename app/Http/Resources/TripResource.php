@@ -33,10 +33,10 @@ class TripResource extends JsonResource
             'price' => $this->price,
             'name' => $this->name,
             'phone' => $this->phone,
-            'user_id' => $this->user_id,
-            'driver_id' => $this->driver_id,
-            'created_at' => $this->created_at->format('Y-m-d'),
-            'updated_at' => $this->created_at->format('Y-m-d'),
+            'user' => new UserResource($this->user),
+            'driver' => new UserResource($this->driver),
+            'created_at' => $this->created_at->format('Y-m-d H:i:s'),
+            'updated_at' => $this->created_at->format('Y-m-d H:i:s'),
         ];
     }
 }

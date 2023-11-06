@@ -17,9 +17,9 @@ class CreateNotificationsTable extends Migration
             $table->id();
 
             $table->unsignedBigInteger('user_id')->nullable();
-            $table->text('image');
             $table->string('title');
             $table->longText('description');
+            $table->boolean('seen')->default(false);
 
             $table->foreign('user_id')
                 ->on('users')->references('id')->cascadeOnDelete()->cascadeOnUpdate();

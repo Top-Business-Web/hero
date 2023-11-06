@@ -157,6 +157,7 @@ class DriverRepository extends ResponseApi implements DriverRepositoryInterface
             return self::returnResponseDataApi(['status' => $user->status], "انت الان في الخدمة", 200);
         }
     } // change status
+
     public function updateDriverDetails(Request $request): JsonResponse
     {
         try {
@@ -196,6 +197,7 @@ class DriverRepository extends ResponseApi implements DriverRepositoryInterface
             return self::returnResponseDataApi($exception->getMessage(), 500, false, 500);
         }
     } // update driver details
+
     public function updateDriverDocument(Request $request): JsonResponse
     {
         try {
@@ -274,6 +276,7 @@ class DriverRepository extends ResponseApi implements DriverRepositoryInterface
             return self::returnResponseDataApi($exception->getMessage(), 500, false, 500);
         }
     } // update Driver Document
+
     public function startQuickTrip(Request $request): JsonResponse
     {
         try {
@@ -344,7 +347,8 @@ class DriverRepository extends ResponseApi implements DriverRepositoryInterface
             $checkQuickTrip = Trip::query()
                 ->where('phone', '=', $request->phone)
                 ->where('driver_id', '=', Auth::user()->id)
-                ->where('ended' ,'=',0)
+                ->where('ended', '=', 0)
+                ->whereIn('type', ['new', 'accept'])
                 ->first();
 
             if ($checkQuickTrip) {
@@ -356,13 +360,14 @@ class DriverRepository extends ResponseApi implements DriverRepositoryInterface
                 $total = $price - $vatTotal; // Calculate the total after deducting the VAT
                 $checkQuickTrip->price = $price;
                 $checkQuickTrip->ended = true;
+                $checkQuickTrip->type = 'complete';
 
                 if ($checkQuickTrip->save()) {
                     $wallet = DriverWallet::query()
-                        ->where('driver_id','=', Auth::user()->id)
+                        ->where('driver_id', '=', Auth::user()->id)
                         ->whereDay('day', '=', Carbon::now())
                         ->first();
-                    if (!$wallet){
+                    if (!$wallet) {
                         $wallet = DriverWallet::query()
                             ->create([
                                 'driver_id' => Auth::user()->id,
@@ -370,7 +375,7 @@ class DriverRepository extends ResponseApi implements DriverRepositoryInterface
                                 'total' => $total,
                                 'vat_total' => $vatTotal,
                             ]);
-                    }else {
+                    } else {
                         $wallet->total += $total;
                         $wallet->vat_total += $vatTotal;
                         $wallet->save();
@@ -386,5 +391,221 @@ class DriverRepository extends ResponseApi implements DriverRepositoryInterface
         } catch (\Exception $exception) {
             return self::returnResponseDataApi($exception->getMessage(), 500, false, 500);
         }
-    }
+    } // endQuickTrip
+
+    public function acceptTrip(Request $request): JsonResponse
+    {
+        try {
+            $rules = [
+                'trip_id' => 'required',
+            ];
+
+            $validator = Validator::make($request->all(), $rules);
+            if ($validator->fails()) {
+                $firstError = $validator->errors()->first();
+                return self::returnResponseDataApi(null, $firstError, 422);
+            }
+            $checkTrip = Trip::query()
+                ->where('id', '=', $request->trip_id)
+                ->where('ended', '=', 0)
+                ->where('type', '=', 'new')
+                ->where('driver_id', '=', null)
+                ->first();
+            if ($checkTrip) {
+                $checkTrip->driver_id = Auth::user()->id;
+                $checkTrip->type = 'accept';
+                if ($checkTrip->save()) {
+                    return self::returnResponseDataApi(new TripResource($checkTrip), "تم تاكيد الرحلة بنجاح", 201, 200);
+                } else {
+                    return self::returnResponseDataApi(null, "يوجد خطاء ما اثناء دخول البيانات", false, 500);
+                }
+            } else {
+                return self::returnResponseDataApi(null, "لا يوجد رحلة فارغه بهذا المعرف", false, 500);
+            }
+
+        } catch (\Exception $exception) {
+            return self::returnResponseDataApi($exception->getMessage(), 500, false, 500);
+        }
+    } // accept trip
+
+    public function cancelTrip(Request $request): JsonResponse
+    {
+        try {
+            $rules = [
+                'trip_id' => 'required',
+            ];
+
+            $validator = Validator::make($request->all(), $rules);
+            if ($validator->fails()) {
+                $firstError = $validator->errors()->first();
+                return self::returnResponseDataApi(null, $firstError, 422);
+            }
+            $checkTrip = Trip::query()
+                ->where('id', '=', $request->trip_id)
+                ->where('ended', '=', 0)
+                ->where('type', '=', 'accept')
+                ->where('driver_id', '!=', null)
+                ->first();
+            if ($checkTrip) {
+                $checkTrip->driver_id = Auth::user()->id;
+                $checkTrip->type = 'reject';
+                if ($checkTrip->save()) {
+                    return self::returnResponseDataApi(new TripResource($checkTrip), "تم الغاء الرحلة بنجاح", 201, 200);
+                } else {
+                    return self::returnResponseDataApi(null, "يوجد خطاء ما اثناء دخول البيانات", false, 500);
+                }
+            } else {
+                return self::returnResponseDataApi(null, "لا يوجد رحلة فارغه بهذا المعرف", false, 500);
+            }
+
+        } catch (\Exception $exception) {
+            return self::returnResponseDataApi($exception->getMessage(), 500, false, 500);
+        }
+    } // cancel trip
+
+    public function startTrip(Request $request): JsonResponse
+    {
+        try {
+            $rules = [
+                'trip_id' => 'required',
+            ];
+
+            $validator = Validator::make($request->all(), $rules);
+            if ($validator->fails()) {
+                $firstError = $validator->errors()->first();
+                return self::returnResponseDataApi(null, $firstError, 422);
+            }
+            $checkTrip = Trip::query()
+                ->where('id', '=', $request->trip_id)
+                ->where('ended', '=', 0)
+                ->where('type', '=', 'accept')
+                ->where('driver_id', '=', Auth::user()->id)
+                ->first();
+            if ($checkTrip) {
+                if ($checkTrip->time_ride != null) {
+                    return self::returnResponseDataApi(new TripResource($checkTrip), "تم بالفعل بدا الرحلة بنجاح", 201, 200);
+                }
+                $checkTrip->time_ride = Carbon::now();
+                if ($checkTrip->save()) {
+                    return self::returnResponseDataApi(new TripResource($checkTrip), "تم بدا الرحلة بنجاح", 201, 200);
+                } else {
+                    return self::returnResponseDataApi(null, "يوجد خطاء ما اثناء دخول البيانات", false, 500);
+                }
+            } else {
+                return self::returnResponseDataApi(null, "لا يوجد رحلة فارغه بهذا المعرف", false, 500);
+            }
+
+        } catch (\Exception $exception) {
+            return self::returnResponseDataApi($exception->getMessage(), 500, false, 500);
+        }
+    } // start trip
+
+    public function endTrip(Request $request): JsonResponse
+    {
+        $settigs = Setting::first(['vat', 'km']);
+        try {
+            $rules = [
+                'trip_id' => 'required',
+                'distance' => 'required',
+                'time' => 'required',
+            ];
+            $validator = Validator::make($request->all(), $rules);
+            if ($validator->fails()) {
+                $firstError = $validator->errors()->first();
+                return self::returnResponseDataApi(null, $firstError, 422);
+            }
+            $checkTrip = Trip::query()
+                ->where('id', '=', $request->trip_id)
+                ->where('driver_id', '=', Auth::user()->id)
+                ->where('ended', '=', 0)
+                ->where('type', 'accept')
+                ->first();
+
+            if ($checkTrip) {
+                $checkTrip->time_arrive = Carbon::now();
+                $checkTrip->distance = $request->distance;
+                $checkTrip->time = $request->time;
+                $price = $checkTrip->distance * $settigs->km; // Calculate the total price based on the distance
+                $vatTotal = $price * ($settigs->vat / 100); // Calculate 15% of the total price as VAT
+                $total = $price - $vatTotal; // Calculate the total after deducting the VAT
+                $checkTrip->price = $price;
+                $checkTrip->ended = true;
+                $checkTrip->type = 'complete';
+
+                if ($checkTrip->save()) {
+                    $wallet = DriverWallet::query()
+                        ->where('driver_id', '=', Auth::user()->id)
+                        ->whereDay('day', '=', Carbon::now())
+                        ->first();
+                    if (!$wallet) {
+                        $wallet = DriverWallet::query()
+                            ->create([
+                                'driver_id' => Auth::user()->id,
+                                'day' => Carbon::now(),
+                                'total' => $total,
+                                'vat_total' => $vatTotal,
+                            ]);
+                    } else {
+                        $wallet->total += $total;
+                        $wallet->vat_total += $vatTotal;
+                        $wallet->save();
+                    }
+                    return self::returnResponseDataApi(new TripResource($checkTrip), "تم نهاية الرحلة الفورية بنجاح", 201, 200);
+                } else {
+                    return self::returnResponseDataApi(null, "يوجد خطاء ما اثناء دخول البيانات", false, 500);
+                }
+            } else {
+                return self::returnResponseDataApi(null, "لا يوجد رحلة حالية علي هذا الرقم", false, 500);
+            }
+
+        } catch (\Exception $exception) {
+            return self::returnResponseDataApi($exception->getMessage(), 500, false, 500);
+        }
+    } // end trip
+
+    public function driverAllTrip(Request $request): JsonResponse
+    {
+        try {
+            if ($request->has('type')) {
+                if ($request->type == 'reject') {
+                    $trips = Trip::query()
+                        ->where('driver_id', '=', Auth::user()->id)
+                        ->where('type', '=', 'reject')
+                        ->where('ended', '=', 0)
+                        ->orderBy('created_at','DESC')
+                        ->latest()->get();
+                    $data = $trips;
+                } elseif ($request->type == 'complete') {
+                    $trips = Trip::query()
+                        ->where('driver_id', '=', Auth::user()->id)
+                        ->where('type', '=', 'complete')
+                        ->where('ended', '=', 1)
+                        ->orderBy('created_at','DESC')
+                        ->latest()->get();
+                    $data = $trips;
+
+                } else {
+                    $trips = Trip::query()
+                        ->where('type', '=', 'new')
+                        ->where('ended', '=', 0)
+                        ->whereDay('created_at','=',Carbon::now())
+                        ->orderBy('created_at','DESC')
+                        ->latest()->get();
+                    $data = $trips;
+                }
+
+                if (count($data) > 0){
+                    return self::returnResponseDataApi(TripResource::collection($data), 'تم الحصول علي جميع بيانات الرحلات بنجاح', 200, 200);
+                }else{
+                    return self::returnResponseDataApi($data, 'عفوا لا يوجد رحلات حاليا', 200, 200);
+                }
+
+            } else {
+                return self::returnResponseDataApi(null, 'يرجي ادخال النوع', 422, 422);
+            }
+        } catch (\Exception $exception) {
+            return self::returnResponseDataApi($exception->getMessage(), 500, false, 500);
+        }
+    } // get all trip by filter
+
 }

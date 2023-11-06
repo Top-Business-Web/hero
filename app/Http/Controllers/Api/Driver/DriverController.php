@@ -35,22 +35,14 @@ class DriverController extends Controller
     {
         return $this->driverRepository->changeStatus($request);
     } // changeStatus
+
     public function updateDriverDetails(Request $request): JsonResponse
     {
         return $this->driverRepository->updateDriverDetails($request);
     } // updateDriverDetails
+
     public function updateDriverDocument(Request $request): JsonResponse
     {
         return $this->driverRepository->updateDriverDocument($request);
     } // updateDriverDocument
-    public function startQuickTrip(Request $request): JsonResponse
-    {
-        return $this->driverRepository->startQuickTrip($request);
-    }
-
-    public function endQuickTrip(Request $request): JsonResponse
-    {
-        return $this->driverRepository->endQuickTrip($request);
-    }
-
 }

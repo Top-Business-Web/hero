@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\Driver\DriverController;
+use App\Http\Controllers\Api\Driver\TripController as DriverTripController;
 use App\Http\Controllers\Api\User\CheckPhoneController;
 use App\Http\Controllers\Api\User\HomeController;
 use App\Http\Controllers\Api\User\UserController;
@@ -29,14 +30,20 @@ Route::post('auth/login', [UserController::class, 'login']);
 ######################### START USER ROUTES ###################################
 Route::group(['middleware' => 'jwt'],function (){
 
-    Route::get('userHome',[HomeController::class,'home']);
+    Route::get('userHome',[UserController::class,'home']);
     Route::post('logout', [UserController::class, 'logout']);
     Route::post('editProfile', [UserController::class, 'editProfile']);
     Route::post('deleteAccount', [UserController::class, 'deleteAccount']);
+    Route::get('favouriteLocations', [UserController::class, 'favouriteLocations']);
+    Route::post('createFavouriteLocations', [UserController::class, 'createFavouriteLocations']);
+    Route::post('removeFavouriteLocations', [UserController::class, 'removeFavouriteLocations']);
     Route::get('setting', [UserController::class, 'setting']);
+
     #### TRIP ROUTES #####
-    Route::post('startTrip', [UserController::class, 'startTrip']);
+    Route::post('createTrip', [UserController::class, 'createTrip']);
     Route::post('cancelTrip', [UserController::class, 'cancelTrip']);
+    Route::post('createScheduleTrip', [UserController::class, 'createScheduleTrip']);
+    Route::get('userAllTrip', [UserController::class, 'userAllTrip']);
 
 });
 ########################### END USER ROUTES ###################################
@@ -54,8 +61,13 @@ Route::group(['middleware' => 'jwt'],function (){
     Route::post('checkDocument', [DriverController::class, 'checkDocument']);
     Route::post('changeStatus', [DriverController::class, 'changeStatus']);
     #### TRIPS ROUTES ####
-    Route::post('startQuickTrip', [DriverController::class, 'startQuickTrip']);
-    Route::post('endQuickTrip', [DriverController::class, 'endQuickTrip']);
+    Route::post('startQuickTrip', [DriverTripController::class, 'startQuickTrip']);
+    Route::post('endQuickTrip', [DriverTripController::class, 'endQuickTrip']);
+    Route::post('acceptTrip', [DriverTripController::class, 'acceptTrip']);
+    Route::post('cancelTrip', [DriverTripController::class, 'cancelTrip']);
+    Route::post('startTrip', [DriverTripController::class, 'startTrip']);
+    Route::post('endTrip', [DriverTripController::class, 'endTrip']);
+    Route::get('driverAllTrip',[DriverTripController::class,'driverAllTrip']);
 });
 ######################### END DRIVER ROUTES ###################################
 
