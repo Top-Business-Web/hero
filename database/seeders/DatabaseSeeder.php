@@ -22,5 +22,6 @@ class DatabaseSeeder extends Seeder
         $this->call(SettingSeeder::class);
         $this->call(TripSeeder::class);
         $this->call(DriverDocumentSeeder::class);
+        $this->call(NotificationSeeder::class);
     }
 }

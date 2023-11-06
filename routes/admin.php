@@ -8,6 +8,7 @@ use App\Http\Controllers\Admin\CityController;
 use App\Http\Controllers\Admin\DriverController;
 use App\Http\Controllers\Admin\DriverDocumentController;
 use App\Http\Controllers\Admin\InvoiceSettingController;
+use App\Http\Controllers\Admin\NotificationController;
 use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\Admin\SettingController;
 use App\Http\Controllers\Admin\SliderController;
@@ -78,6 +79,10 @@ Route::group(['prefix'=>'admin','middleware'=>'auth:admin'],function (){
     #============================ setting ==================================
     Route::get('setting',[SettingController::class,'index'])->name('settingIndex');
     Route::POST('setting/update/{id}',[SettingController::class,'update'])->name('settingUpdate');
+
+    #============================ Notification =====================================
+    Route::resource('notifications',NotificationController::class);
+    Route::POST('notifications/delete',[NotificationController::class,'delete'])->name('notification_delete');
 
 
 });

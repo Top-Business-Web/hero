@@ -79,6 +79,13 @@
         </li>
 
         <li class="slide">
+            <a class="side-menu__item" href="{{route('notifications.index')}}">
+                <i class="fa fa-bell side-menu__icon"></i>
+                <span class="side-menu__label">الاشعارات</span>
+            </a>
+        </li>
+
+        <li class="slide">
             <a class="side-menu__item" href="{{route('settingIndex')}}">
                 <i class="fa fa-wrench side-menu__icon"></i>
                 <span class="side-menu__label">الاعدادات</span>
