@@ -5,6 +5,7 @@ namespace App\Repository\Api\Driver;
 use App\Http\Resources\DriverDocumentResource;
 use App\Http\Resources\DriverResource;
 use App\Http\Resources\TripResource;
+use App\Http\Resources\WalletResource;
 use App\Interfaces\Api\Driver\DriverRepositoryInterface;
 use App\Models\DriverDetails;
 use App\Models\DriverDocuments;
@@ -15,6 +16,7 @@ use App\Models\User;
 use App\Repository\ResponseApi;
 use App\Traits\PhotoTrait;
 use Carbon\Carbon;
+use DB;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -572,7 +574,7 @@ class DriverRepository extends ResponseApi implements DriverRepositoryInterface
                         ->where('driver_id', '=', Auth::user()->id)
                         ->where('type', '=', 'reject')
                         ->where('ended', '=', 0)
-                        ->orderBy('created_at','DESC')
+                        ->orderBy('created_at', 'DESC')
                         ->latest()->get();
                     $data = $trips;
                 } elseif ($request->type == 'complete') {
@@ -580,7 +582,7 @@ class DriverRepository extends ResponseApi implements DriverRepositoryInterface
                         ->where('driver_id', '=', Auth::user()->id)
                         ->where('type', '=', 'complete')
                         ->where('ended', '=', 1)
-                        ->orderBy('created_at','DESC')
+                        ->orderBy('created_at', 'DESC')
                         ->latest()->get();
                     $data = $trips;
 
@@ -588,15 +590,15 @@ class DriverRepository extends ResponseApi implements DriverRepositoryInterface
                     $trips = Trip::query()
                         ->where('type', '=', 'new')
                         ->where('ended', '=', 0)
-                        ->whereDay('created_at','=',Carbon::now())
-                        ->orderBy('created_at','DESC')
+                        ->whereDay('created_at', '=', Carbon::now())
+                        ->orderBy('created_at', 'DESC')
                         ->latest()->get();
                     $data = $trips;
                 }
 
-                if (count($data) > 0){
+                if (count($data) > 0) {
                     return self::returnResponseDataApi(TripResource::collection($data), 'تم الحصول علي جميع بيانات الرحلات بنجاح', 200, 200);
-                }else{
+                } else {
                     return self::returnResponseDataApi($data, 'عفوا لا يوجد رحلات حاليا', 200, 200);
                 }
 
@@ -607,5 +609,139 @@ class DriverRepository extends ResponseApi implements DriverRepositoryInterface
             return self::returnResponseDataApi($exception->getMessage(), 500, false, 500);
         }
     } // get all trip by filter
+
+    public function driverWallet(): JsonResponse
+    {
+        $vat = Setting::select('vat')->first()->vat;
+        $driver = Auth::user();
+        $wallet['vat_total'] = DriverWallet::query()
+            ->where('driver_id', '=', $driver->id)
+            ->where('status', '=', false)
+            ->sum('vat_total');
+
+        $trips = Trip::query()
+            ->select(['id', 'price', 'updated_at'])
+            ->where('driver_id', '=', $driver->id)
+            ->where('type', '=', 'complete')
+            ->where('created_at', '>=', Carbon::now()->subDays(7)) // Get trips from the last 7 days
+            ->where('ended', '=', true)
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        foreach ($trips as $key => $trip) {
+            $wallet['trips'][$key]['id'] = $trip->id;
+            $wallet['trips'][$key]['vat'] = $trip->price * ($vat / 100);
+            $wallet['trips'][$key]['time_arrive'] = $trip->updated_at->format('Y-m-d H:i:s');
+        }
+
+        if (!$wallet['vat_total']) {
+            return self::returnResponseDataApi(null, 'لم يتم انشاء محفظة حتي الان قم باتمام اول رحلة لفتح المحفظة', 200);
+        }
+        return self::returnResponseDataApi($wallet, 'تم الحصول علي بيانات المحفظة بنجاح', 200);
+    } // driverWallet
+
+    public function driverProfit(Request $request): JsonResponse
+    {
+        try {
+            $setting = Setting::first(['vat', 'km']);
+            $driver = Auth::user();
+            $toDay = Carbon::now()->format('Y-m-d');
+            $lastWeek = Carbon::now()->subDays(7)->format('Y-m-d');
+            $from = Carbon::parse($request->from)->format('Y-m-d');
+            $to = Carbon::parse($request->to)->format('Y-m-d');
+
+            if ($request->type == null) {
+                return self::returnResponseDataApi(null, 'يرجي ادخال النوع', 422, 422);
+            } elseif ($request->type == 'day') {
+                $trip = Trip::query()
+                    ->where('driver_id', '=', $driver->id)
+                    ->where('type', '=', 'complete')
+                    ->where('ended', '=', true)
+                    ->whereDate('updated_at', '=', $toDay);
+
+                $wallet = DriverWallet::query()
+                    ->where('driver_id', '=', $driver->id)
+                    ->where('status', '=', false)
+                    ->whereDate('day', '=', $toDay);
+
+                $profit['trips_count'] = $trip->count();
+                $profit['total_trips_price'] = $trip->sum('price');
+                $profit['trips_distance'] = $trip->sum('distance');
+                $profit['km_price'] = $setting->km;
+                $profit['total'] = $profit['total_trips_price'];
+                $profit['vat_total'] = $wallet->sum('vat_total');
+                $profit['net_total'] = $profit['total'] - $profit['vat_total'];
+
+            } elseif ($request->type == 'week') {
+                $trip = Trip::query()
+                    ->where('driver_id', '=', $driver->id)
+                    ->where('type', '=', 'complete')
+                    ->where('ended', '=', true)
+                    ->whereDate('updated_at', '<=', $toDay)
+                    ->whereDate('updated_at', '>=', $lastWeek);
+
+                $wallet = DriverWallet::query()
+                    ->where('driver_id', '=', $driver->id)
+                    ->where('status', '=', false)
+                    ->whereDate('day', '<=', $toDay)
+                    ->whereDate('day', '>=', $lastWeek);
+
+                $profit['trips_count'] = $trip->count();
+                $profit['total_trips_price'] = $trip->sum('price');
+                $profit['trips_distance'] = $trip->sum('distance');
+                $profit['km_price'] = $setting->km;
+                $profit['total'] = $profit['total_trips_price'];
+                $profit['vat_total'] = $wallet->sum('vat_total');
+                $profit['net_total'] = $profit['total'] - $profit['vat_total'];
+
+
+                $walletDays = DriverWallet::query()
+                    ->where('driver_id', '=', $driver->id)
+                    ->where('status', '=', false)
+                    ->whereDate('day', '<=', $toDay)
+                    ->whereDate('day', '>=', $lastWeek)
+                    ->groupBy('day')
+                    ->select('day', DB::raw('SUM(total) as total_amount'))
+                    ->get();
+
+                foreach ($walletDays as $key => $walletDay) {
+                    $profit['trips'][$key]['price'] = $walletDay->total_amount;
+                    $profit['trips'][$key]['day'] = $walletDay->day;
+                }
+
+            } elseif ($request->type == 'custom') {
+                if ($request->from == null || $request->to == null) {
+                    return self::returnResponseDataApi(null, 'يرجي ادخال التاريخ من والى', 422, 422);
+                } else {
+                    $trip = Trip::query()
+                        ->where('driver_id', '=', $driver->id)
+                        ->where('type', '=', 'complete')
+                        ->where('ended', '=', true)
+                        ->whereDate('updated_at', '<=', $to)
+                        ->whereDate('updated_at', '>=', $from);
+
+                    $wallet = DriverWallet::query()
+                        ->where('driver_id', '=', $driver->id)
+                        ->where('status', '=', false)
+                        ->whereDate('day', '<=', $to)
+                        ->whereDate('day', '>=', $from);
+
+                    $profit['trips_count'] = $trip->count();
+                    $profit['total_trips_price'] = $trip->sum('price');
+                    $profit['trips_distance'] = $trip->sum('distance');
+                    $profit['km_price'] = $setting->km;
+                    $profit['total'] = $profit['total_trips_price'];
+                    $profit['vat_total'] = $wallet->sum('vat_total');
+                    $profit['net_total'] = $profit['total'] - $profit['vat_total'];
+
+                }
+
+            }
+
+            return self::returnResponseDataApi($profit, 'تم الحصول علي بيانات الارباح بنجاح', 200);
+        } catch (\Exception $exception) {
+            return self::returnResponseDataApi($exception->getMessage(), 500, false, 500);
+        }
+    }
 
 }
