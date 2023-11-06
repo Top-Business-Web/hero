@@ -2,6 +2,12 @@
 
 namespace App\Repository\Api\User;
 
+use App\Http\Resources\AreaResource;
+use App\Http\Resources\CityResource;
+use App\Http\Resources\TripResource;
+use App\Http\Resources\UserResource;
+use App\Interfaces\Api\User\UserRepositoryInterface;
+use App\Models\AddressFavorite;
 use Carbon\Carbon;
 use App\Models\Area;
 use App\Models\City;
@@ -154,6 +160,7 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
             return self::returnResponseDataApi(null, $exception->getMessage(), 500, 500);
         }
     } // logout
+
     public function deleteAccount(): JsonResponse
     {
 
@@ -212,14 +219,17 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
             ->select('image', 'link')
             ->where('status', '=', true)
             ->get();
-        $home['new_trip'] = Trip::query()
+        $home['new_trips'] = Trip::query()
             ->where('type', '=', 'new')
+            ->where('user_id', '=', Auth::user()->id)
+
             ->whereDate('created_at', '=', Carbon::now())
             ->orderBy('created_at', 'desc')
             ->get();
         $home['user'] = new UserResource(User::find(Auth::user()->id));
         return self::returnResponseDataApi($home, "تم الحصول علي بيانات الرئيسية بنجاح", 200);
     } // user home
+
     public function editProfile(Request $request): JsonResponse
     {
         $user = User::find(Auth::user()->id);
@@ -278,7 +288,8 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
             return self::returnResponseDataApi(null, $exception->getMessage(), 500, 500);
         }
     } // edit profile
-    public function startTrip(Request $request): JsonResponse
+
+    public function createTrip(Request $request): JsonResponse
     {
         try {
             $rules = [
@@ -297,6 +308,7 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
             }
             $checkQuickTrip = Trip::query()
                 ->where('user_id', '=', Auth::user()->id)
+                ->where('trip_type', '!=', 'scheduled')
                 ->where('ended', '=', 0)->latest()->first();
             if ($checkQuickTrip) {
                 return self::returnResponseDataApi(null, 'هناك رحلة حالية لم تنتهي بعد لنفس العميل', 200, 200);
@@ -323,7 +335,7 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
         } catch (\Exception $exception) {
             return self::returnResponseDataApi($exception->getMessage(), 500, false, 500);
         }
-    } // start trip with track
+    } // start trip
 
     public function cancelTrip(Request $request): JsonResponse
     {
@@ -343,6 +355,180 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
             return self::returnResponseDataApi($exception->getMessage(), 500, false, 500);
         }
     } // cancel trip
+
+    public function createScheduleTrip(Request $request): JsonResponse
+    {
+        try {
+            $rules = [
+                'from_address' => 'required',
+                'from_long' => 'required',
+                'from_lat' => 'required',
+                'to_address' => 'required',
+                'to_long' => 'required',
+                'to_lat' => 'required',
+                'date' => 'required',
+                'time' => 'required',
+            ];
+
+            $dateTimeString = $request->date . ' ' . $request->time;
+            $scheduleDate = Carbon::createFromFormat('Y-m-d H:i:s', $dateTimeString);
+
+            $validator = Validator::make($request->all(), $rules);
+            if ($validator->fails()) {
+                $firstError = $validator->errors()->first();
+                return self::returnResponseDataApi(null, $firstError, 422);
+            }
+
+            $checkTrip = Trip::query()
+                ->create([
+                    'from_address' => $request->from_address,
+                    'from_long' => $request->from_long,
+                    'from_lat' => $request->from_lat,
+                    'to_address' => $request->to_address,
+                    'to_long' => $request->to_long,
+                    'to_lat' => $request->to_lat,
+                    'user_id' => Auth::user()->id,
+                    'type' => 'new',
+                    'trip_type' => 'scheduled',
+                    'created_at' => $scheduleDate,
+                ]);
+
+            if (isset($checkTrip)) {
+                return self::returnResponseDataApi(new TripResource($checkTrip), "تم انشاء طلب الرحلة مجدولة في وقت لاحق بنجاح", 201, 200);
+            } else {
+                return self::returnResponseDataApi(null, "يوجد خطاء ما اثناء دخول البيانات", false, 500);
+            }
+
+
+        } catch (\Exception $exception) {
+            return self::returnResponseDataApi($exception->getMessage(), 500, false, 500);
+        }
+    } // start create Schedule Trip
+
+    public function userAllTrip(Request $request): JsonResponse
+    {
+        try {
+            if ($request->has('type')) {
+                if ($request->type == 'reject') {
+                    $trips = Trip::query()
+                        ->where('user_id', '=', Auth::user()->id)
+                        ->where('type', '=', 'reject')
+                        ->where('ended', '=', 0)
+                        ->orderBy('created_at', 'DESC')
+                        ->latest()->get();
+                    $data = $trips;
+                } elseif ($request->type == 'complete') {
+                    $trips = Trip::query()
+                        ->where('user_id', '=', Auth::user()->id)
+                        ->where('type', '=', 'complete')
+                        ->where('ended', '=', 1)
+                        ->orderBy('created_at', 'DESC')
+                        ->latest()->get();
+                    $data = $trips;
+
+                } else {
+                    $trips = Trip::query()
+                        ->where('type', '=', 'new')
+                        ->where('user_id', '=', Auth::user()->id)
+                        ->where('ended', '=', 0)
+                        ->orderBy('created_at', 'DESC')
+                        ->latest()->get();
+                    $data = $trips;
+                }
+
+                if (count($data) > 0) {
+                    return self::returnResponseDataApi(TripResource::collection($data), 'تم الحصول علي جميع بيانات الرحلات بنجاح', 200, 200);
+                } else {
+                    return self::returnResponseDataApi($data, 'عفوا لا يوجد رحلات حاليا', 200, 200);
+                }
+
+            } else {
+                return self::returnResponseDataApi(null, 'يرجي ادخال النوع', 422, 422);
+            }
+        } catch (\Exception $exception) {
+            return self::returnResponseDataApi($exception->getMessage(), 500, false, 500);
+        }
+    } // user all trip
+
+    public function favouriteLocations(): JsonResponse
+    {
+        try {
+            $data = AddressFavorite::query()
+                ->where('user_id', '=', Auth::user()->id)
+                ->latest()->get();
+            if (count($data) > 0) {
+                return self::returnResponseDataApi($data, 'تم الحصول علي جميع بيانات الموقع المفضلة بنجاح', 200, 200);
+            } else {
+                return self::returnResponseDataApi($data, 'لا يوجد مواقع مفضلة حالية', 200, 200);
+
+            }
+        } catch (\Exception $exception) {
+            return self::returnResponseDataApi($exception->getMessage(), 500, false, 500);
+        }
+    }// favouriteLocations
+
+ public function createFavouriteLocations(Request $request): JsonResponse
+    {
+        try {
+            $rules = [
+                'address' => 'required',
+                'lat' => 'required',
+                'long' => 'required',
+            ];
+            $validator = Validator::make($request->all(), $rules);
+            if ($validator->fails()) {
+                $firstError = $validator->errors()->first();
+                return self::returnResponseDataApi(null, $firstError, 422);
+            }
+
+            $address = AddressFavorite::query()
+                ->create([
+                    'user_id' => Auth::user()->id,
+                    'address' => $request->address,
+                    'lat' => $request->lat,
+                    'long' => $request->long,
+                ]);
+
+            if (isset($address)) {
+                return self::returnResponseDataApi($address, "تم اضافة الموقع في المفضلة بنجاح", 201, 200);
+            } else {
+                return self::returnResponseDataApi(null, "يوجد خطاء ما اثناء دخول البيانات", false, 500);
+            }
+
+
+        } catch (\Exception $exception) {
+            return self::returnResponseDataApi($exception->getMessage(), 500, false, 500);
+        }
+    }// favouriteLocations
+    public function removeFavouriteLocations(Request $request): JsonResponse
+    {
+        try {
+            $rules = [
+                'address_id' => 'required',
+            ];
+            $validator = Validator::make($request->all(), $rules);
+            if ($validator->fails()) {
+                $firstError = $validator->errors()->first();
+                return self::returnResponseDataApi(null, $firstError, 422);
+            }
+
+            $address = AddressFavorite::query()
+                ->find($request->address_id);
+
+            if ($address) {
+                $address->delete();
+                return self::returnResponseDataApi(null, "تم حذف الموقع من المفضلة بنجاح", 200, 200);
+            } else {
+                return self::returnResponseDataApi(null, "لا يوجد موقع في المفضلة بهذا المعرف", 404, 404);
+            }
+
+
+        } catch (\Exception $exception) {
+            return self::returnResponseDataApi($exception->getMessage(), 500, false, 500);
+        }
+    }// favouriteLocations
+  
+  
 
     public function getAllSettings(): JsonResponse
     {
@@ -366,6 +552,7 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
                 $firstError = $validator->errors()->first();
                 return self::returnResponseDataApi(null, $firstError, 422);
             }
+
             $existingTripRate = TripRates::where('trip_id', $request->trip_id)
                 ->where('from', Auth::user()->id)
                 ->first();

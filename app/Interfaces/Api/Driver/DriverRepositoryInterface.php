@@ -14,5 +14,9 @@ interface DriverRepositoryInterface{
     public function updateDriverDetails(Request $request): JsonResponse;
     public function updateDriverDocument(Request $request): JsonResponse;
     public function startQuickTrip(Request $request): JsonResponse;
-    public function endQuickTrip(Request $request): JsonResponse;
+    public function acceptTrip(Request $request): JsonResponse;
+    public function cancelTrip(Request $request): JsonResponse;
+    public function startTrip(Request $request): JsonResponse;
+    public function endTrip(Request $request): JsonResponse;
+    public function driverAllTrip(Request $request): JsonResponse;
 }

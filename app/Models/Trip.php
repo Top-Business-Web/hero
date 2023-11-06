@@ -28,7 +28,8 @@ class Trip extends Model
         'phone',
         'user_id',
         'driver_id',
-        'ended'
+        'ended',
+        'created_at'
     ];
 
     public function driver(): BelongsTo

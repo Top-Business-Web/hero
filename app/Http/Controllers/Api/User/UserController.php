@@ -7,7 +7,8 @@ use App\Interfaces\Api\User\UserRepositoryInterface;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
-class UserController extends Controller{
+class UserController extends Controller
+{
 
 
     public UserRepositoryInterface $userRepositoryInterface;
@@ -51,28 +52,61 @@ class UserController extends Controller{
 
     public function logout(): JsonResponse
     {
-       return $this->userRepositoryInterface->logout();
+        return $this->userRepositoryInterface->logout();
     } // logout
+
     public function deleteAccount(): JsonResponse
     {
         return $this->userRepositoryInterface->deleteAccount();
     } // deleteAccount
 
+    public function home()
+    {
+        return $this->userRepositoryInterface->userHome();
+    }
+
     public function setting(): JsonResponse
     {
         return $this->userRepositoryInterface->setting();
     } // setting
-    public function editProfile(Request $request) : JsonResponse
+
+    public function editProfile(Request $request): JsonResponse
     {
         return $this->userRepositoryInterface->editProfile($request);
     } // editProfile
-    public function startTrip(Request $request) : JsonResponse
+
+    public function createTrip(Request $request): JsonResponse
     {
-        return $this->userRepositoryInterface->startTrip($request);
+        return $this->userRepositoryInterface->createTrip($request);
     } // startTripWithTrack
 
-    public function cancelTrip(Request $request) : JsonResponse
+    public function cancelTrip(Request $request): JsonResponse
     {
         return $this->userRepositoryInterface->cancelTrip($request);
     } // cancelTrip
+
+    public function createScheduleTrip(Request $request): JsonResponse
+    {
+        return $this->userRepositoryInterface->createScheduleTrip($request);
+    } // createScheduleTrip
+
+    public function userAllTrip(Request $request): JsonResponse
+    {
+        return $this->userRepositoryInterface->userAllTrip($request);
+    } // userAllTrip
+
+    public function favouriteLocations(): JsonResponse
+    {
+        return $this->userRepositoryInterface->favouriteLocations();
+    } // favouriteLocations
+
+    public function createFavouriteLocations(Request $request): JsonResponse
+    {
+        return $this->userRepositoryInterface->createFavouriteLocations($request);
+    } //  createFavouriteLocations
+
+    public function removeFavouriteLocations(Request $request): JsonResponse
+    {
+        return $this->userRepositoryInterface->removeFavouriteLocations($request);
+    } //  removeFavouriteLocations
 }
