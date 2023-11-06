@@ -20,17 +20,10 @@ use App\Traits\PhotoTrait;
 use Illuminate\Http\Request;
 use App\Repository\ResponseApi;
 use Illuminate\Http\JsonResponse;
-use App\Http\Resources\AreaResource;
-use App\Http\Resources\CityResource;
-use App\Http\Resources\TripResource;
-use App\Http\Resources\UserResource;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use App\Http\Resources\SettingResource;
 use App\Http\Resources\TripRateResource;
 use Illuminate\Support\Facades\Validator;
-use App\Interfaces\Api\User\UserRepositoryInterface;
-
 
 class UserRepository extends ResponseApi implements UserRepositoryInterface
 {
@@ -222,7 +215,6 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
         $home['new_trips'] = Trip::query()
             ->where('type', '=', 'new')
             ->where('user_id', '=', Auth::user()->id)
-
             ->whereDate('created_at', '=', Carbon::now())
             ->orderBy('created_at', 'desc')
             ->get();
@@ -467,7 +459,7 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
         }
     }// favouriteLocations
 
- public function createFavouriteLocations(Request $request): JsonResponse
+    public function createFavouriteLocations(Request $request): JsonResponse
     {
         try {
             $rules = [
@@ -500,6 +492,7 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
             return self::returnResponseDataApi($exception->getMessage(), 500, false, 500);
         }
     }// favouriteLocations
+
     public function removeFavouriteLocations(Request $request): JsonResponse
     {
         try {
@@ -527,8 +520,6 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
             return self::returnResponseDataApi($exception->getMessage(), 500, false, 500);
         }
     }// favouriteLocations
-  
-  
 
     public function getAllSettings(): JsonResponse
     {
