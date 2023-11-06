@@ -3,7 +3,6 @@
 use App\Http\Controllers\Api\Driver\DriverController;
 use App\Http\Controllers\Api\Driver\TripController as DriverTripController;
 use App\Http\Controllers\Api\User\CheckPhoneController;
-use App\Http\Controllers\Api\User\HomeController;
 use App\Http\Controllers\Api\User\UserController;
 use Illuminate\Support\Facades\Route;
 

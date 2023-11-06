@@ -4,6 +4,7 @@ namespace App\Repository\Api\User;
 
 use App\Http\Resources\AreaResource;
 use App\Http\Resources\CityResource;
+use App\Http\Resources\SettingResource;
 use App\Http\Resources\TripResource;
 use App\Http\Resources\UserResource;
 use App\Interfaces\Api\User\UserRepositoryInterface;
@@ -174,26 +175,6 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
             return self::returnResponseDataApi(null, $exception->getMessage(), 500, 500);
         }
     } // deleteAccount
-
-    public function setting(): JsonResponse
-    {
-
-        try {
-
-            $setting = Setting::query()->first();
-
-            if (!$setting) {
-
-                return self::returnResponseDataApi(null, "لا يوجد اي اعدادات بالموقع الي الان", 404, 404);
-            } else {
-
-                return self::returnResponseDataApi(new SettingResource($setting), "تم الحصول علي بيانات الشروط والاحكام بنجاح", 200);
-            }
-        } catch (\Exception $exception) {
-
-            return self::returnResponseDataApi(null, $exception->getMessage(), 500, 500);
-        }
-    } // setting
 
     public function changeStatus(Request $request): JsonResponse
     {
@@ -516,8 +497,8 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
     public function getAllSettings(): JsonResponse
     {
         $settings = Setting::first();
-        return self::returnResponseDataApi($settings, "تم الحصول علي بيانات جميع الاعدادت بنجاح", 200);
-    }
+        return self::returnResponseDataApi(new SettingResource($settings), "تم الحصول علي بيانات جميع الاعدادت بنجاح", 200);
+    } //getAllSettings
 
     public function getAllNotification(): JsonResponse
     {
@@ -530,7 +511,7 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
             return self::returnResponseDataApi([], "لا يوجد إشعارات لهذا المستخدم", 200);
         }
         return self::returnResponseDataApi($notifications, "تم الحصول على الإشعارات بنجاح", 200);
-    }
+    } //getAllNotification
 
     public function deleteUser(): JsonResponse
     {
@@ -540,7 +521,7 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
         }
         $user->delete();
         return self::returnResponseDataApi($user, "تم حذف الحساب بنجاح", 200);
-    }
+    } //deleteUser
 
     public function createTripRate(Request $request): JsonResponse
     {
@@ -583,5 +564,5 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
         } catch (\Exception $exception) {
             return self::returnResponseDataApi($exception->getMessage(), 500, false, 500);
         }
-    }
+    } //createTripRate
 }

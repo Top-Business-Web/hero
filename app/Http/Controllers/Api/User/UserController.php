@@ -39,7 +39,7 @@ class UserController extends Controller
     {
         return $this->userRepositoryInterface->getAllNotification();
     } // get All Notification
-    
+
     public function deleteUser(): JsonResponse
     {
         return $this->userRepositoryInterface->deleteUser();
@@ -74,11 +74,6 @@ class UserController extends Controller
     {
         return $this->userRepositoryInterface->userHome();
     }
-
-    public function setting(): JsonResponse
-    {
-        return $this->userRepositoryInterface->setting();
-    } // setting
 
     public function editProfile(Request $request): JsonResponse
     {
