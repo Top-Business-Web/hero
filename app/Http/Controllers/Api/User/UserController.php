@@ -39,6 +39,11 @@ class UserController extends Controller
     {
         return $this->userRepositoryInterface->getAllNotification();
     } // get All Notification
+    
+    public function deleteUser(): JsonResponse
+    {
+        return $this->userRepositoryInterface->deleteUser();
+    } // Delete User
 
     public function createTripRate(Request $request): JsonResponse
     {

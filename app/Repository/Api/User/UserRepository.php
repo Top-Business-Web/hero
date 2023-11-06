@@ -532,6 +532,16 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
         return self::returnResponseDataApi($notifications, "تم الحصول على الإشعارات بنجاح", 200);
     }
 
+    public function deleteUser(): JsonResponse
+    {
+        $user = User::find(auth()->user()->id);
+        if (!$user) {
+            return self::returnResponseDataApi([], "لا يوجد حساب المستخدم", 200);
+        }
+        $user->delete();
+        return self::returnResponseDataApi($user, "تم حذف الحساب بنجاح", 200);
+    }
+
     public function createTripRate(Request $request): JsonResponse
     {
         try {
