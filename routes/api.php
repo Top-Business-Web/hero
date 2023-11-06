@@ -39,6 +39,8 @@ Route::group(['middleware' => 'jwt'],function (){
     Route::post('removeFavouriteLocations', [UserController::class, 'removeFavouriteLocations']);
     Route::get('setting', [UserController::class, 'setting']);
     Route::get('notifications', [UserController::class, 'getAllNotification']);
+    Route::post('deleteUser', [UserController::class, 'deleteUser']);
+    Route::post('logout', [UserController::class, 'logout']);
 
     #### TRIP ROUTES #####
     Route::post('createTrip', [UserController::class, 'createTrip']);
