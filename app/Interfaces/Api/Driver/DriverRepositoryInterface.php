@@ -19,4 +19,6 @@ interface DriverRepositoryInterface{
     public function startTrip(Request $request): JsonResponse;
     public function endTrip(Request $request): JsonResponse;
     public function driverAllTrip(Request $request): JsonResponse;
+    public function driverWallet(): JsonResponse;
+    public function driverProfit(Request $request): JsonResponse;
 }

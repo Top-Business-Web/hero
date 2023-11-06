@@ -20,6 +20,7 @@ class CreateDriverWalletsTable extends Migration
             $table->decimal('total',10);
             $table->decimal('vat_total',10);
             $table->date('day');
+            $table->boolean('status')->default(false);
 
             $table->foreign('driver_id')
                 ->on('users')->references('id')->cascadeOnDelete()->cascadeOnUpdate();

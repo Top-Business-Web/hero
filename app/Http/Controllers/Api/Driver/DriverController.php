@@ -45,4 +45,16 @@ class DriverController extends Controller
     {
         return $this->driverRepository->updateDriverDocument($request);
     } // updateDriverDocument
+
+    public function driverWallet(): JsonResponse
+    {
+        return $this->driverRepository->driverWallet();
+    } // updateDriverDocument
+
+    public function driverProfit(Request $request): JsonResponse
+    {
+        return $this->driverRepository->driverProfit($request);
+    } // updateDriverDocument
+
+
 }
