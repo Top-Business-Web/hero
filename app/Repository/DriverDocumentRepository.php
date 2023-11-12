@@ -19,7 +19,7 @@ class DriverDocumentRepository implements DriverDocumentInterface
                        ';
                 })
                 ->editColumn('driver_id', function ($driver_document) {
-                    return $driver_document->drivers->name;
+                    return $driver_document->drivers->name ?? '--';
                 })
                 ->editColumn('status', function ($driver_document) {
                     if ($driver_document->status == 1)
@@ -64,7 +64,7 @@ class DriverDocumentRepository implements DriverDocumentInterface
         return view('admin.driver_document.parts.edit', compact('driver_document'));
     }
 
-    public function changeStatus($request)
+    public function changeStatusDocument($request)
     {
         $driver_document = DriverDocuments::findOrFail($request->id);
 

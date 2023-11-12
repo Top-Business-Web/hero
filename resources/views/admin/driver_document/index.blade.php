@@ -134,7 +134,7 @@
             let id = $(this).data('id');
             $.ajax({
                 type: 'post',
-                url: '{{ route('changeStatus') }}',
+                url: '{{ route('changeStatusDocument') }}',
                 data: {
                     '_token': '{{ csrf_token() }}',
                     'id': id
@@ -144,7 +144,7 @@
                         toastr.success('تم الموافقة على البيانات بنجاح');
                         $('.dataTable').DataTable().ajax.reload();
                     } else {
-                        toastr.success('تم رف البيانات');
+                        toastr.success('تم رفض البيانات');
                         $('.dataTable').DataTable().ajax.reload();
                     }
                 }

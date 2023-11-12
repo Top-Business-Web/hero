@@ -8,6 +8,6 @@ Interface DriverDocumentInterface {
 
     public function edit($driver_document);
 
-    public function changeStatus($request);
+    public function changeStatusDocument($request);
     
 }

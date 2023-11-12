@@ -88,7 +88,7 @@ class SliderRepository implements SliderInterface
             return response()->json(['status' => 405]);
     }
 
-    public function changeStatus($request)
+    public function changeStatusSlider($request)
     {
         $slider = Slider::findOrFail($request->id);
 

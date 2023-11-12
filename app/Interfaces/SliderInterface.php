@@ -14,7 +14,7 @@ Interface SliderInterface {
 
     public function edit($slider);
 
-    public function changeStatus($request);
+    public function changeStatusSlider($request);
 
     public function update($request, $id);
 

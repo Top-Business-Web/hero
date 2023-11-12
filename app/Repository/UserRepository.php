@@ -31,11 +31,11 @@ class UserRepository implements UserInterface
                     <img alt="image" onclick="window.open(this.src)" class="avatar avatar-md rounded-circle" src="' . asset($users->img) . '">
                     ';
                 })
-                ->editColumn('status', function ($user) {
-                    if ($user->status == 1)
-                        return '<button class="btn btn-sm btn-success statusBtn" data-id="' . $user->id . '">مفعل</button>';
+                ->editColumn('status', function ($users) {
+                    if ($users->status == 1)
+                        return '<button class="btn btn-sm btn-success statusBtn" data-id="' . $users->id . '">مقبول</button>';
                     else
-                        return '<button class="btn btn-sm btn-danger statusBtn" data-id="' . $user->id . '">غير مفعل</button>';
+                        return '<button class="btn btn-sm btn-danger statusBtn" data-id="' . $users->id . '">غير مقبول</button>';
                 })
                 ->escapeColumns([])
                 ->make(true);
@@ -91,7 +91,7 @@ class UserRepository implements UserInterface
         return response(['message' => 'تم الحذف بنجاح', 'status' => 200], 200);
     }
 
-    public function changeStatus($request)
+    public function changeStatusUser($request)
     {
         $user = User::findOrFail($request->id);
 

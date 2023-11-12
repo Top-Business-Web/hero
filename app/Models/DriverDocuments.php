@@ -10,6 +10,8 @@ class DriverDocuments extends Model
 {
     use HasFactory;
 
+    protected $table = 'driver_documents';
+
     protected $fillable = [
         'agency_number',
         'bike_license',

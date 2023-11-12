@@ -44,9 +44,9 @@ class SliderController extends Controller
         return $this->sliderInterface->update($request, $id);
     }
 
-    public function changeStatus(Request $request)
+    public function changeStatusSlider(Request $request)
     {
-        return $this->sliderInterface->changeStatus($request);
+        return $this->sliderInterface->changeStatusSlider($request);
     }
 
     public function delete(Request $request)
