@@ -43,7 +43,7 @@ Route::group(['middleware' => 'jwt'],function (){
 
     #### TRIP ROUTES #####
     Route::post('createTrip', [UserController::class, 'createTrip']);
-    Route::post('cancelTrip', [UserController::class, 'cancelTrip']);
+    Route::post('cancelUserTrip', [UserController::class, 'cancelTrip']);
     Route::post('createScheduleTrip', [UserController::class, 'createScheduleTrip']);
     Route::get('userAllTrip', [UserController::class, 'userAllTrip']);
     Route::post('createTripRate', [UserController::class, 'createTripRate']);

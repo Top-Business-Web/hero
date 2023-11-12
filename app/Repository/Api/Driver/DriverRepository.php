@@ -742,6 +742,6 @@ class DriverRepository extends ResponseApi implements DriverRepositoryInterface
         } catch (\Exception $exception) {
             return self::returnResponseDataApi($exception->getMessage(), 500, false, 500);
         }
-    }
+    } // driverProfit
 
 }

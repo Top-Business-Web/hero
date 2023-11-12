@@ -5,20 +5,13 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Notification extends Model
+class PhoneToken extends Model
 {
     use HasFactory;
 
     protected $fillable = [
-        'title',
-        'description',
-        'seen',
         'user_id',
-        'type'
+        'device_type',
+        'token',
     ];
-
-    public function user()
-    {
-        return $this->belongsTo(User::class);
-    }
 }
