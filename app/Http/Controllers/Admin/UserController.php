@@ -29,8 +29,8 @@ class UserController extends Controller
         return $this->userInterface->delete($request);
     }
 
-    public function changeStatus(Request $request)
+    public function changeStatusUser(Request $request)
     {
-        return $this->userInterface->changeStatus($request);
+        return $this->userInterface->changeStatusUser($request);
     }
 }

@@ -26,8 +26,8 @@ class DriverDocumentController extends Controller
         return $this->driverDocumentInterface->edit($driver_document);
     }
 
-    public function changeStatus(Request $request)
+    public function changeStatusDocument(Request $request)
     {
-        return $this->driverDocumentInterface->changeStatus($request);
+        return $this->driverDocumentInterface->changeStatusDocument($request);
     }
 }

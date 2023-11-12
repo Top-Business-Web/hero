@@ -43,7 +43,7 @@ Route::group(['prefix'=>'admin','middleware'=>'auth:admin'],function (){
     Route::get('userPerson',[UserController::class,'indexPerson'])->name('userPerson.index');
     Route::get('userCompany',[UserController::class,'indexCompany'])->name('userCompany.index');
     Route::POST('user/delete',[UserController::class,'delete'])->name('user_delete');
-    Route::POST('changeStatus',[UserController::class,'changeStatus'])->name('changeStatus');
+    Route::POST('change-status-user',[UserController::class,'changeStatusUser'])->name('changeStatusUser');
 
     #============================ driver ===================================
     Route::resource('driver',DriverController::class);
@@ -60,12 +60,12 @@ Route::group(['prefix'=>'admin','middleware'=>'auth:admin'],function (){
     #============================ Slider =====================================
     Route::resource('slider',SliderController::class);
     Route::POST('slider/delete',[SliderController::class,'delete'])->name('slider_delete');
-    Route::POST('change-status-slider',[SliderController::class,'changeStatus'])->name('changeStatus');
+    Route::POST('change-status-slider',[SliderController::class,'changeStatusSlider'])->name('changeStatusSlider');
 
     #============================ Driver Document =====================================
     Route::resource('driver_document',DriverDocumentController::class);
     Route::POST('driver/delete',[DriverDocumentController::class,'delete'])->name('driver_delete');
-    Route::POST('change-status-slider',[DriverDocumentController::class,'changeStatus'])->name('changeStatus');
+    Route::POST('change-status-document',[DriverDocumentController::class,'changeStatusDocument'])->name('changeStatusDocument');
 
     #============================ Trip =====================================
     Route::get('trips/completed', [TripController::class, 'complete'])->name('trip.complete');

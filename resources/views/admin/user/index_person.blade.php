@@ -1,18 +1,17 @@
 @extends('admin/layouts/master')
 
 @section('title')
-    {{($setting->name_en) ?? ''}} | المستخدمين
+    {{ $setting->name_en ?? '' }} | المستخدمين
 @endsection
 @section('page_name')
     المستخدمين
 @endsection
 @section('content')
-
     <div class="row">
         <div class="col-md-12 col-lg-12">
             <div class="card">
                 <div class="card-header">
-                    <h3 class="card-title"> مستخدمين {{($setting->name_en) ?? ''}}</h3>
+                    <h3 class="card-title"> مستخدمين {{ $setting->name_en ?? '' }}</h3>
                     <div class="">
                     </div>
                 </div>
@@ -21,16 +20,16 @@
                         <!--begin::Table-->
                         <table class="table dataTable table-striped table-bordered text-nowrap w-100" id="dataTable">
                             <thead>
-                            <tr class="fw-bolder text-muted bg-light">
-                                <th class="min-w-25px">#</th>
-                                <th class="min-w-50px">الصورة</th>
-                                <th class="min-w-50px">الاسم</th>
-                                <th class="min-w-125px">الايميل</th>
-                                <th class="min-w-125px">الهاتف</th>
-                                <th class="min-w-125px">رقم الهوية</th>
-                                <th class="min-w-50px">الحالة</th>
-                                <th class="min-w-50px rounded-end">العمليات</th>
-                            </tr>
+                                <tr class="fw-bolder text-muted bg-light">
+                                    <th class="min-w-25px">#</th>
+                                    <th class="min-w-50px">الصورة</th>
+                                    <th class="min-w-50px">الاسم</th>
+                                    <th class="min-w-125px">الايميل</th>
+                                    <th class="min-w-125px">الهاتف</th>
+                                    <th class="min-w-125px">رقم الهوية</th>
+                                    <th class="min-w-50px">الحالة</th>
+                                    <th class="min-w-50px rounded-end">العمليات</th>
+                                </tr>
                             </thead>
                         </table>
                     </div>
@@ -40,7 +39,7 @@
 
         <!--Delete MODAL -->
         <div class="modal fade" id="delete_modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
-             aria-hidden="true">
+            aria-hidden="true">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -86,35 +85,61 @@
 @endsection
 @section('ajaxCalls')
     <script>
-        var columns = [
-            {data: 'id', name: 'id'},
-            {data: 'image', name: 'image'},
-            {data: 'name', name: 'name'},
-            {data: 'email', name: 'email'},
-            {data: 'phone', name: 'phone'},
-            {data: 'birth', name: 'birth'},
-            {data: 'status', name: 'status'},
-            {data: 'action', name: 'action', orderable: false, searchable: false},
+        var columns = [{
+                data: 'id',
+                name: 'id'
+            },
+            {
+                data: 'image',
+                name: 'image'
+            },
+            {
+                data: 'name',
+                name: 'name'
+            },
+            {
+                data: 'email',
+                name: 'email'
+            },
+            {
+                data: 'phone',
+                name: 'phone'
+            },
+            {
+                data: 'birth',
+                name: 'birth'
+            },
+            {
+                data: 'status',
+                name: 'status'
+            },
+            {
+                data: 'action',
+                name: 'action',
+                orderable: false,
+                searchable: false
+            },
         ]
-        showData('{{route('userPerson.index')}}', columns);
+        showData('{{ route('userPerson.index') }}', columns);
         // Delete Using Ajax
-        deleteScript('{{route('user_delete')}}');
+        deleteScript('{{ route('user_delete') }}');
 
-        $(document).on('click', '.statusBtn', function () {
+        $(document).on('click', '.statusBtn', function() {
 
             let id = $(this).data('id');
             $.ajax({
                 type: 'post',
-                url: '{{ route('changeStatus') }}',
+                url: '{{ route('changeStatusUser') }}',
                 data: {
-                    '_token' : '{{ csrf_token() }}',
+                    '_token': '{{ csrf_token() }}',
                     'id': id
-                },success : function (data){
-                    if (data == '200'){
-                        toastr.success('تم التفعيل بنجاح');
+                },
+                success: function(data) {
+                    if (data == '200') {
+                        toastr.success('تم الموافقة على البيانات بنجاح');
                         $('.dataTable').DataTable().ajax.reload();
-                    }else {
-                        toastr.success('تم الغاء التفعيل بنجاح');
+                    } else {
+                        toastr.success('تم رفض البيانات');
                         $('.dataTable').DataTable().ajax.reload();
                     }
                 }
@@ -123,5 +148,3 @@
         });
     </script>
 @endsection
-
-

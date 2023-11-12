@@ -17,7 +17,6 @@ class AuthRepository implements AuthInterface
 
     public function login($request): \Illuminate\Http\JsonResponse
     {
-
         $data = $request->validate(
             [
                 'email' => 'required|exists:admins',
