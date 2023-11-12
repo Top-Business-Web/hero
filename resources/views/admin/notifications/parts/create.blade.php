@@ -3,14 +3,17 @@
         @csrf
         <div class="form-group">
             <div class="row">
-                <div class="col-12">
+                <div class="col-6">
                     <label for="">اختر</label>
                     <select name="choose" id="choose" class="form-control">
                         <option value="all">الكل</option>
+                        <option value="all_driver">كل السائقين</option>
+                        <option value="all_user">كل المستخدمين</option>
                         <option value="user">مستخدم</option>
+                        <option value="driver">سائق</option>
                     </select>
                 </div>
-                <div class="col-12" id="user-select" style="display: none;">
+                <div class="col-6" id="user-select">
                     <label for="">المستخدمين</label>
                     <select name="user_id" id="user_id" class="form-control">
                         @foreach ($users as $user)
@@ -44,7 +47,7 @@
     });
 
     $(document).on('change', '#choose', function() {
-        if ($(this).val() === 'user') {
+        if ($(this).val() === 'user' || $(this).val() === 'driver') {
             $('#user-select').show();
         } else {
             $('#user-select').hide();

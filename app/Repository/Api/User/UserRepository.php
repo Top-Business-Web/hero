@@ -9,6 +9,8 @@ use App\Http\Resources\TripResource;
 use App\Http\Resources\UserResource;
 use App\Interfaces\Api\User\UserRepositoryInterface;
 use App\Models\AddressFavorite;
+use App\Models\PhoneToken;
+use App\Traits\FirebaseNotification;
 use Carbon\Carbon;
 use App\Models\Area;
 use App\Models\City;
@@ -29,7 +31,7 @@ use Illuminate\Support\Facades\Validator;
 
 class UserRepository extends ResponseApi implements UserRepositoryInterface
 {
-    use PhotoTrait;
+    use PhotoTrait, FirebaseNotification;
 
     public function getAllCities(): JsonResponse
     {
@@ -53,7 +55,9 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
                 'phone' => 'required|numeric|unique:users,phone',
                 'img' => 'required|image',
                 'type' => 'required|in:user,driver',
-                'birth' => 'required'
+                'birth' => 'required',
+                'device_type' => 'required',
+                'token' => 'required'
             ];
             $validator = Validator::make($request->all(), $rules, [
                 'email.unique' => 406,
@@ -94,6 +98,10 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
             if (isset($storeNewUser)) {
                 $credentials = ['phone' => $request->phone, 'password' => '123456'];
                 $storeNewUser['token'] = auth()->guard('user-api')->attempt($credentials);
+                PhoneToken::query()->updateOrCreate(['user_id' => $storeNewUser['id'], 'device_type' => request()->device_type], [
+                    'device_type' => request()->device_type,
+                    'token' => request()->token
+                ]);
                 return self::returnResponseDataApi(new UserResource($storeNewUser), "تم تسجيل بيانات المستخدم بنجاح", 200);
             } else {
 
@@ -111,6 +119,8 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
         try {
             $rules = [
                 'phone' => 'required|exists:users,phone',
+                'device_type' => 'required',
+                'token' => 'required',
             ];
             $validator = Validator::make($request->all(), $rules, [
                 'phone.exists' => 409,
@@ -137,6 +147,10 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
             }
             $user = Auth::guard('user-api')->user();
             $user['token'] = $token;
+            PhoneToken::query()->updateOrCreate(['user_id' => $user->id, 'device_type' => request()->device_type], [
+                'device_type' => request()->device_type,
+                'token' => request()->token
+            ]);
             return self::returnResponseDataApi(new UserResource($user), "تم تسجيل الدخول بنجاح", 200);
         } catch (\Exception $exception) {
 
@@ -148,7 +162,35 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
     {
 
         try {
-            Auth::guard('user-api')->logout();
+            $user = Auth::guard('user-api')->user();
+            /*
+             * params
+             * token
+             */
+
+            $rules = [
+                'token' => 'required|exists:phone_tokens,token',
+            ];
+            $validator = Validator::make(request()->all(), $rules, [
+                'phone.exists' => 409,
+            ]);
+
+            if ($validator->fails()) {
+
+                $errors = collect($validator->errors())->flatten(1)[0];
+                if (is_numeric($errors)) {
+
+                    $errors_arr = [
+                        409 => 'Failed,phone not exists',
+                    ];
+
+                    $code = collect($validator->errors())->flatten(1)[0];
+                    return self::returnResponseDataApi(null, $errors_arr[$errors] ?? 500, $code);
+                }
+                return self::returnResponseDataApi(null, $validator->errors()->first(), 422, 422);
+            }
+
+//          PhoneToken::where('user_id', $user->id)->where('token','=',request()->token)->delete();
             return self::returnResponseDataApi(null, "تم تسجيل الخروج بنجاح", 200);
         } catch (\Exception $exception) {
 
@@ -302,6 +344,7 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
                 ]);
 
             if (isset($createQuickTrip)) {
+                $this->sendFirebaseNotification(['title' => 'رحلة جديدة', 'body' => 'هناك رحلة جديدة في الانتظار'], null, 'all_driver');
                 return self::returnResponseDataApi(new TripResource($createQuickTrip), "تم انشاء طلب الرحلة بنجاح", 201, 200);
             } else {
                 return self::returnResponseDataApi(null, "يوجد خطاء ما اثناء دخول البيانات", false, 500);
@@ -502,10 +545,19 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
 
     public function getAllNotification(): JsonResponse
     {
-        $notifications = Notification::where(function ($query) {
-            $query->where('user_id', '=', auth()->user()->id)
-                ->orWhereNull('user_id');
-        })->get();
+        $user = Auth::user();
+        if ($user->type == 'user') {
+            $notifications = Notification::query()
+                ->where('user_id', '=', $user->id)
+                ->OrWhereIn('type', ['all', 'all_user'])
+                ->get();
+        } elseif ($user->type == 'driver') {
+            $notifications = Notification::query()
+                ->where('user_id', '=', $user->id)
+                ->OrWhereIn('type', ['all', 'all_driver'])
+                ->get();
+        }
+
 
         if ($notifications->isEmpty()) {
             return self::returnResponseDataApi([], "لا يوجد إشعارات لهذا المستخدم", 200);
