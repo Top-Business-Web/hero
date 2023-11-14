@@ -1,11 +1,12 @@
 <?php
 
 namespace App\Http\Controllers\Api\User;
-use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 use App\Models\ResetCodePassword;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
+
 
 class CheckPhoneController extends Controller{
 
@@ -29,11 +30,6 @@ class CheckPhoneController extends Controller{
             return self::returnResponseDataApi(null,"The phone is not exists",500);
 
         }
-
-
-
-
-
 
     }
 
