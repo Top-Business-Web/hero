@@ -30,7 +30,7 @@ Route::post('auth/login', [UserController::class, 'login']);
 Route::group(['middleware' => 'jwt'],function (){
 
     Route::get('userHome',[UserController::class,'home']);
-    Route::post('logout', [UserController::class, 'logout']);
+    Route::get('logout', [UserController::class, 'logout']);
     Route::post('editProfile', [UserController::class, 'editProfile']);
     Route::post('deleteAccount', [UserController::class, 'deleteAccount']);
     Route::get('favouriteLocations', [UserController::class, 'favouriteLocations']);
