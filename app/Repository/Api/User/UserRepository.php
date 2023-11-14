@@ -52,7 +52,7 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
             $rules = [
                 'name' => 'required|string|max:50',
                 'email' => 'required|email|unique:users,email',
-                'phone' => 'required|numeric|unique:users,phone',
+                'phone' => 'required|numeric',
                 'img' => 'required|image',
                 'type' => 'required|in:user,driver',
                 'birth' => 'required',
@@ -62,8 +62,13 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
             $validator = Validator::make($request->all(), $rules, [
                 'email.unique' => 406,
                 'phone.numeric' => 407,
-                'phone.unique' => 408,
+                'phone.exists' => 408,
             ]);
+
+            $checkUser = User::where('phone', $request->phone)->first();
+            if ($checkUser) {
+                return self::returnResponseDataApi(null, 'هذا الهاتف مستخدم بالفعل', 500);
+            }
 
 
             if ($validator->fails()) {
@@ -78,6 +83,22 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
                     return self::returnResponseDataApi(null, $errors_arr[$errors] ?? 500, $code);
                 }
                 return self::returnResponseDataApi(null, $validator->errors()->first(), 422);
+            }
+
+            $existUser = User::query()
+                ->where('phone', $request->phone)
+                ->onlyTrashed()
+                ->first();
+
+            if ($existUser) {
+                $endTime = Carbon::parse($existUser->deleted_at)->addDays(30);
+                $now = Carbon::now();
+                if ($now > $endTime) {
+                    $existUser->forceDelete();
+                } else {
+                    return self::returnResponseDataApi(null, 'هناك حساب تم حذفه علي هذا الرقم يرجي الانتظار الي ' . $endTime->format('Y-m-d') . ' لتسجيل من جديد', 500);
+
+                }
             }
 
             if ($request->hasFile('img')) {
@@ -189,7 +210,7 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
                 return self::returnResponseDataApi(null, $validator->errors()->first(), 422, 422);
             }
 
-//          PhoneToken::where('user_id', $user->id)->where('token','=',request()->token)->delete();
+            PhoneToken::query()->where('user_id', $user->id)->where('token', '=', request()->token)->delete();
             return self::returnResponseDataApi(null, "تم تسجيل الخروج بنجاح", 200);
         } catch (\Exception $exception) {
 
@@ -217,24 +238,17 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
         }
     } // deleteAccount
 
-    public function changeStatus(Request $request): JsonResponse
-    {
-        $user = User::find(Auth::user()->id);
-        ($user->status == 1) ? $user->status = 0 : $user->status = 1;
-        $user->save();
-        if ($user->status == false) {
-            return self::returnResponseDataApi(['status' => $user->status], "انت الان خارج الخدمة", 200);
-        } else {
-            return self::returnResponseDataApi(['status' => $user->status], "انت الان في الخدمة", 200);
-        }
-    } // change status
-
     public function userHome(): JsonResponse
     {
         $home['sliders'] = Slider::query()
             ->select('image', 'link')
             ->where('status', '=', true)
             ->get();
+
+        foreach ($home['sliders'] as $key => $slider) {
+            $home['sliders'][$key]['image'] = asset($slider->image);
+        }
+
         $home['new_trips'] = Trip::query()
             ->where('type', '=', 'new')
             ->where('user_id', '=', Auth::user()->id)
@@ -493,7 +507,10 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
             }
 
             $address = AddressFavorite::query()
-                ->create([
+                ->updateOrCreate([
+                    'user_id' => Auth::user()->id,
+                    'address' => $request->address,
+                ],[
                     'user_id' => Auth::user()->id,
                     'address' => $request->address,
                     'lat' => $request->lat,
@@ -591,13 +608,22 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
                 return self::returnResponseDataApi(null, $firstError, 422);
             }
 
-            $existingTripRate = TripRates::where('trip_id', $request->trip_id)
-                ->where('from', Auth::user()->id)
+            $checkTripComplete = Trip::query()->where('id', $request->trip_id)
+                ->where('type', '=', 'complete')
                 ->first();
 
-            if ($existingTripRate) {
-                return self::returnResponseDataApi(null, "يوجد بالفعل تقييم لنفس الرحلة.", 422);
+            if ($checkTripComplete) {
+                $existingTripRate = TripRates::where('trip_id', $request->trip_id)
+                    ->where('from', Auth::user()->id)
+                    ->first();
+                if ($existingTripRate) {
+                    return self::returnResponseDataApi(null, "تم تقييم الرحلة بالفعل", 500);
+                }
+            }else {
+                return self::returnResponseDataApi(null, "تاكد من معرف الرحلة او حالة الرحلة انها مكتملة",500);
             }
+
+
             $createTripRate = TripRates::query()
                 ->create([
                     'trip_id' => $request->trip_id,
