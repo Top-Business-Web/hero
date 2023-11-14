@@ -160,7 +160,6 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
 
     public function logout(): JsonResponse
     {
-
         try {
             $user = Auth::guard('user-api')->user();
             /*

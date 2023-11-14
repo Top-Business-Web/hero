@@ -1,10 +1,11 @@
 <?php
 
 namespace App\Http\Controllers\Api\User;
-use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 use App\Models\ResetCodePassword;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Validator;
 
 class CheckPhoneController extends Controller{
@@ -13,7 +14,9 @@ class CheckPhoneController extends Controller{
     {
 
         $rules = [
-            'phone' => 'required|numeric|exists:users',
+            'phone' => ['required',Rule::unique('users')->where(function($query) {
+                return $query->where('deleted_at', '!=', null);
+            })],
         ];
 
         $validator = Validator::make($request->all(), $rules, [
