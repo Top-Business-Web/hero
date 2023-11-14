@@ -13,11 +13,9 @@ class CheckPhoneController extends Controller{
 
     public function checkPhone(Request $request): JsonResponse
     {
-
-        $rules = [
-            'phone' => 'required|numeric',
-        ];
-
+        if ($request->phone == null){
+            return self::returnResponseDataApi(null, 'يرجي ادخال رقم الهاتف', 422, 422);
+        }
         $user = User::query()
             ->where('phone','=',$request->phone)->first();
 
