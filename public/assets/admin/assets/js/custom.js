@@ -36,9 +36,9 @@
 	})
 
 	// ______________ PAGE LOADING
-	// $(window).on("load", function(e) {
-	// 	$("#global-loader").fadeOut("slow");
-	// })
+	$(window).on("load", function(e) {
+		$("#global-loader").fadeOut("slow");
+	})
 
 	// ______________ BACK TO TOP BUTTON
 	$(window).on("scroll", function(e) {
