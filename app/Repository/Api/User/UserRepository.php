@@ -192,7 +192,7 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
                 'token' => 'required|exists:phone_tokens,token',
             ];
             $validator = Validator::make(request()->all(), $rules, [
-                'phone.exists' => 409,
+                'token.exists' => 409,
             ]);
 
             if ($validator->fails()) {
@@ -201,7 +201,7 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
                 if (is_numeric($errors)) {
 
                     $errors_arr = [
-                        409 => 'Failed,phone not exists',
+                        409 => 'Failed,token not exists',
                     ];
 
                     $code = collect($validator->errors())->flatten(1)[0];
@@ -210,7 +210,9 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
                 return self::returnResponseDataApi(null, $validator->errors()->first(), 422, 422);
             }
 
-            PhoneToken::query()->where('user_id', $user->id)->where('token', '=', request()->token)->delete();
+            PhoneToken::query()
+                ->where('user_id', $user->id)->where('token', '=', request()->token)
+                ->forceDelete();
             return self::returnResponseDataApi(null, "تم تسجيل الخروج بنجاح", 200);
         } catch (\Exception $exception) {
 
