@@ -376,6 +376,7 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
                 ->where('user_id', '=', Auth::user()->id)
                 ->where('type', '=', 'new')
                 ->where('ended', '=', 0)
+                ->where('id', '=', $request->trip_id)
                 ->first();
             if ($trip) {
                 $trip->delete();
