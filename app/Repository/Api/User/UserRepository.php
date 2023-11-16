@@ -342,7 +342,7 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
                 ->where('trip_type', '!=', 'scheduled')
                 ->where('ended', '=', 0)->latest()->first();
             if ($checkQuickTrip) {
-                return self::returnResponseDataApi(null, 'هناك رحلة حالية لم تنتهي بعد لنفس العميل', 200, 200);
+                return self::returnResponseDataApi(null, 'هناك رحلة حالية لم تنتهي بعد لنفس العميل', 502, 502);
             }
 
             $createQuickTrip = Trip::query()
