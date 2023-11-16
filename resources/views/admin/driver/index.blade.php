@@ -140,7 +140,7 @@
             let id = $(this).data('id');
             $.ajax({
                 type: 'post',
-                url: '{{ route('changeStatus') }}',
+                url: '{{ route('changeStatusUser') }}',
                 data: {
                     '_token': '{{ csrf_token() }}',
                     'id': id
