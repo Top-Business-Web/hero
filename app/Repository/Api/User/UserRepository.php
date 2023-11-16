@@ -382,7 +382,7 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
                 $trip->delete();
                 return self::returnResponseDataApi(null, 'تم الغاء الرحلة بنجاح', 200);
             } else {
-                return self::returnResponseDataApi(null, "لا يوجد لديك اي رحلة جديدة", 500, 500);
+                return self::returnResponseDataApi(null, "لا يوجد لديك اي رحلة جديدة بهذا المعرف", 500, 500);
             }
         } catch (\Exception $exception) {
             return self::returnResponseDataApi($exception->getMessage(), 500, false, 500);
