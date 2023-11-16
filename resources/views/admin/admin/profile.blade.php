@@ -1,5 +1,5 @@
 @extends('admin/layouts/master')
-@section('title') {{$setting->title}} | Profile @endsection
+@section('title') {{ auth()->user()->name }} | Profile @endsection
 
 @section('page_name')
     My Profile
