@@ -251,12 +251,14 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
             $home['sliders'][$key]['image'] = asset($slider->image);
         }
 
-        $home['new_trips'] = Trip::query()
+       $trips = Trip::query()
             ->where('user_id', '=', Auth::user()->id)
             ->where('type','new')
             ->whereDate('created_at', '>=', Carbon::now())
             ->orderBy('created_at', 'desc')
             ->get();
+
+        $home['new_trips'] = TripResource::collection($trips);
 
         $home['user'] = new UserResource(User::find(Auth::user()->id));
         return self::returnResponseDataApi($home, "تم الحصول علي بيانات الرئيسية بنجاح", 200);
