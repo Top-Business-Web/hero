@@ -396,9 +396,9 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
                 'from_address' => 'required',
                 'from_long' => 'required',
                 'from_lat' => 'required',
-                'to_address' => 'required',
-                'to_long' => 'required',
-                'to_lat' => 'required',
+                'to_address' => 'nullable',
+                'to_long' => 'nullable',
+                'to_lat' => 'nullable',
                 'date' => 'required',
                 'time' => 'required',
             ];
