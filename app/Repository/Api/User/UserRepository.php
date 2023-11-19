@@ -252,11 +252,12 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
         }
 
         $home['new_trips'] = Trip::query()
-            ->where('type', '=', 'new')
             ->where('user_id', '=', Auth::user()->id)
-            ->whereDate('created_at', '=', Carbon::now())
+            ->where('type','new')
+            ->whereDate('created_at', '>=', Carbon::now())
             ->orderBy('created_at', 'desc')
             ->get();
+
         $home['user'] = new UserResource(User::find(Auth::user()->id));
         return self::returnResponseDataApi($home, "تم الحصول علي بيانات الرئيسية بنجاح", 200);
     } // user home
