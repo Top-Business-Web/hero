@@ -255,7 +255,7 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
             ->where('user_id', '=', Auth::user()->id)
             ->where('type','new')
             ->whereDate('created_at', '>=', Carbon::now())
-            ->orderBy('created_at', 'desc')
+            ->orderBy('created_at', 'asc')
             ->get();
 
         $home['new_trips'] = TripResource::collection($trips);
