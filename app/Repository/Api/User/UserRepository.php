@@ -603,7 +603,7 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
             $rules = [
                 'trip_id' => 'required',
                 'rate' => 'required',
-                'description' => 'required',
+                'description' => 'nullable',
             ];
 
             $validator = Validator::make($request->all(), $rules);
