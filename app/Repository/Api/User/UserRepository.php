@@ -610,7 +610,7 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
 
             if ($validator->fails()) {
                 $firstError = $validator->errors()->first();
-                return self::returnResponseDataApi(null, $firstError, 422);
+                return self::returnResponseDataApi(null, $firstError, 422,422);
             }
 
             $checkTrip = Trip::query()
@@ -622,10 +622,10 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
                         ->where('from', Auth::user()->id)
                         ->first();
                     if ($existingTripRate) {
-                        return self::returnResponseDataApi(null, "تم تقييم الرحلة بالفعل", 500);
+                        return self::returnResponseDataApi(null, "تم تقييم الرحلة بالفعل", 500,500);
                     }
                 }else {
-                    return self::returnResponseDataApi(null, "تاكد من حالة الرحلة انها مكتملة",500);
+                    return self::returnResponseDataApi(null, "تاكد من حالة الرحلة انها مكتملة",500,500);
                 }
 
                 $createTripRate = TripRates::query()
@@ -638,13 +638,13 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
                     ]);
 
                 if (isset($createTripRate)) {
-                    return self::returnResponseDataApi(new TripRateResource($createTripRate), "تم انشاء التقييم بنجاح", 201, 200);
+                    return self::returnResponseDataApi(new TripRateResource($createTripRate), "تم انشاء التقييم بنجاح", 201);
                 } else {
                     return self::returnResponseDataApi(null, "يوجد خطاء ما أثناء دخول البيانات", false, 500);
                 }
 
             }else {
-                return self::returnResponseDataApi(null, "تاكد من معرف الرحلة ",500);
+                return self::returnResponseDataApi(null, "تاكد من معرف الرحلة ",500,500);
             }
 
         } catch (\Exception $exception) {
