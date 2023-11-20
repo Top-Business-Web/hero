@@ -602,7 +602,6 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
         try {
             $rules = [
                 'trip_id' => 'required',
-                'to' => 'required',
                 'rate' => 'required',
                 'description' => 'required',
             ];
@@ -614,36 +613,40 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
                 return self::returnResponseDataApi(null, $firstError, 422);
             }
 
-            $checkTripComplete = Trip::query()->where('id', $request->trip_id)
-                ->where('type', '=', 'complete')
-                ->first();
+            $checkTrip = Trip::query()
+                ->where('id', $request->trip_id)->first();
 
-            if ($checkTripComplete) {
-                $existingTripRate = TripRates::where('trip_id', $request->trip_id)
-                    ->where('from', Auth::user()->id)
-                    ->first();
-                if ($existingTripRate) {
-                    return self::returnResponseDataApi(null, "تم تقييم الرحلة بالفعل", 500);
+            if ($checkTrip){
+                if ($checkTrip->type == 'complete') {
+                    $existingTripRate = TripRates::where('trip_id', $request->trip_id)
+                        ->where('from', Auth::user()->id)
+                        ->first();
+                    if ($existingTripRate) {
+                        return self::returnResponseDataApi(null, "تم تقييم الرحلة بالفعل", 500);
+                    }
+                }else {
+                    return self::returnResponseDataApi(null, "تاكد من حالة الرحلة انها مكتملة",500);
                 }
+
+                $createTripRate = TripRates::query()
+                    ->create([
+                        'trip_id' => $request->trip_id,
+                        'from' => Auth::user()->id,
+                        'to' => $checkTrip->driver_id,
+                        'rate' => $request->rate,
+                        'description' => $request->description,
+                    ]);
+
+                if (isset($createTripRate)) {
+                    return self::returnResponseDataApi(new TripRateResource($createTripRate), "تم انشاء التقييم بنجاح", 201, 200);
+                } else {
+                    return self::returnResponseDataApi(null, "يوجد خطاء ما أثناء دخول البيانات", false, 500);
+                }
+
             }else {
-                return self::returnResponseDataApi(null, "تاكد من معرف الرحلة او حالة الرحلة انها مكتملة",500);
+                return self::returnResponseDataApi(null, "تاكد من معرف الرحلة ",500);
             }
 
-
-            $createTripRate = TripRates::query()
-                ->create([
-                    'trip_id' => $request->trip_id,
-                    'from' => Auth::user()->id,
-                    'to' => $request->to,
-                    'rate' => $request->rate,
-                    'description' => $request->description,
-                ]);
-
-            if (isset($createTripRate)) {
-                return self::returnResponseDataApi(new TripRateResource($createTripRate), "تم انشاء التقييم بنجاح", 201, 200);
-            } else {
-                return self::returnResponseDataApi(null, "يوجد خطاء ما أثناء دخول البيانات", false, 500);
-            }
         } catch (\Exception $exception) {
             return self::returnResponseDataApi($exception->getMessage(), 500, false, 500);
         }
