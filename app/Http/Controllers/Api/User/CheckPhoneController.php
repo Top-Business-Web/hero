@@ -17,20 +17,36 @@ class CheckPhoneController extends Controller{
             return self::returnResponseDataApi(null, 'يرجي ادخال رقم الهاتف', 422, 422);
         }
         $user = User::query()
-            ->where('phone','=',$request->phone)->first();
+            ->where('phone','=',$request->phone)
+            ->first();
 
         if ($user){
-            ResetCodePassword::query()->where('phone', $request->phone)
+             $data = ["status" => $user->status];
+            if($user->status  == 1){
+                ResetCodePassword::query()->where('phone', $request->phone)
                 ->delete();
 
-            ResetCodePassword::create(['phone' => $request->phone]);
-            return self::returnResponseDataApi(null,"The phone is exists",200);
+                ResetCodePassword::create(['phone' => $request->phone]);
+                $data = ["status" => $user->status];
+                return self::returnResponseDataApi($data,"الهاتف موجود من قبل",200);
+            }else{
+                return self::returnResponseDataApi($data,"الهاتف موجود من قبل ولكن الحساب غير مفعل",500,200);
+            }
+
         }else {
-            return self::returnResponseDataApi(null,"The phone is not exists",500);
+            $user = User::query()
+            ->where('phone','=',$request->phone)
+            ->onlyTrashed()
+            ->first();
+            if($user){
+                return self::returnResponseDataApi(null,"يوجد حساب محذوف بهذا الرقم يرجي التواصل مع الدعم",500,200);
+            }else {
+                return self::returnResponseDataApi(null,"الهاتف ليس موجود من قبل",500,200);
+            }
 
         }
+
 
     }
 
 }
-
