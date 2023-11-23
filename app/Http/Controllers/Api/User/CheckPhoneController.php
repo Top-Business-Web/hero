@@ -28,9 +28,19 @@ class CheckPhoneController extends Controller{
 
                 ResetCodePassword::create(['phone' => $request->phone]);
                 $data = ["status" => $user->status];
-                return self::returnResponseDataApi($data,"الهاتف موجود من قبل",200);
+                // return self::returnResponseDataApi(null,"الهاتف موجود من قبل",200);
+                return response()->json([
+                    "status" => $user->status,
+                    "message" => "الهاتف موجود من قبل",
+                    "code" => 500,
+                ],200);
             }else{
-                return self::returnResponseDataApi($data,"الهاتف موجود من قبل ولكن الحساب غير مفعل",500,200);
+                // return self::returnResponseDataApi($data,"الهاتف موجود من قبل ولكن الحساب غير مفعل",500,200);
+                return response()->json([
+                    "status" => $user->status,
+                    "message" => "الهاتف موجود من قبل ولكن الحساب غير مفعل",
+                    "code" => 500,
+                ],200);
             }
 
         }else {
