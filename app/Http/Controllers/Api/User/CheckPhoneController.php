@@ -56,7 +56,6 @@ class CheckPhoneController extends Controller{
 
         }
 
-
     }
 
 }
