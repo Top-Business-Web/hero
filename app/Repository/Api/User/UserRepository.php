@@ -137,45 +137,47 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
     {
 
         try {
-            $rules = [
+            // Validation Rules
+            $validator = Validator::make($request->all(), [
                 'phone' => 'required|exists:users,phone',
                 'device_type' => 'required',
                 'token' => 'required',
-            ];
-            $validator = Validator::make($request->all(), $rules, [
-                'phone.exists' => 409,
+            ], [
+                'phone.exists' => 'Failed, phone not exists',
             ]);
 
+            // Check Validation Result
             if ($validator->fails()) {
+                $errors = $validator->errors()->first();
+                $statusCode = is_numeric($errors) ? $errors : 422;
 
-                $errors = collect($validator->errors())->flatten(1)[0];
-                if (is_numeric($errors)) {
-
-                    $errors_arr = [
-                        409 => 'Failed,phone not exists',
-                    ];
-
-                    $code = collect($validator->errors())->flatten(1)[0];
-                    return self::returnResponseDataApi(null, $errors_arr[$errors] ?? 500, $code);
-                }
-                return self::returnResponseDataApi(null, $validator->errors()->first(), 422, 422);
+                return self::returnResponseDataApi(null, $errors, $statusCode, $statusCode);
             }
+
+            // Authenticate User
             $credentials = ['phone' => $request->phone, 'password' => '123456'];
             $token = Auth::guard('user-api')->attempt($credentials);
+
+            // Check Authentication Result
             if (!$token) {
                 return self::returnResponseDataApi(null, "يانات الدخول غير صحيحه برجاء المحاوله مره اخري", 403, 403);
             }
+
+            // Get User and Attach Token
             $user = Auth::guard('user-api')->user();
             $user['token'] = $token;
-            PhoneToken::query()->updateOrCreate(['user_id' => $user->id, 'device_type' => request()->device_type], [
-                'device_type' => request()->device_type,
-                'token' => request()->token
-            ]);
+
+            // Update or Create PhoneToken
+            PhoneToken::query()->updateOrCreate(
+                ['user_id' => $user->id, 'device_type' => $request->device_type],
+                ['device_type' => $request->device_type, 'token' => $request->token]
+            );
+
             return self::returnResponseDataApi(new UserResource($user), "تم تسجيل الدخول بنجاح", 200);
         } catch (\Exception $exception) {
-
             return self::returnResponseDataApi(null, $exception->getMessage(), 500);
         }
+
     } // login
 
     public function logout(): JsonResponse
