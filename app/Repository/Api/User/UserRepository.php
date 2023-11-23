@@ -51,9 +51,9 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
 
             $rules = [
                 'name' => 'required|string|max:50',
-                'email' => 'required|email|unique:users,email',
+                'email' => 'nullable|email|unique:users,email',
                 'phone' => 'required|numeric',
-                'img' => 'required|image',
+                'img' => 'nullable|image',
                 'type' => 'required|in:user,driver',
                 'birth' => 'required',
                 'device_type' => 'required',
@@ -125,7 +125,6 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
                 ]);
                 return self::returnResponseDataApi(new UserResource($storeNewUser), "تم تسجيل بيانات المستخدم بنجاح", 200);
             } else {
-
                 return self::returnResponseDataApi(null, "يوجد خطاء ما اثناء دخول البيانات", 500, 500);
             }
         } catch (\Exception $exception) {
