@@ -231,7 +231,7 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
 
                 return self::returnResponseDataApi(null, "حساب السائق غير مصرح له بالحذف", 403, 403);
             } else {
-                $user->delete();
+                $user->so();
                 Auth::guard('user-api')->logout();
                 return self::returnResponseDataApi(null, "تم حذف الحساب بنجاح وتم تسجيل الخروج من التطبيق", 200);
             }
