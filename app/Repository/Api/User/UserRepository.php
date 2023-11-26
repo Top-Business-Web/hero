@@ -313,7 +313,9 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
             $user->birth = $request->birth;
             $user->save();
 
+
             if ($user->save()) {
+                $user['token'] = $request->bearerToken();
                 return self::returnResponseDataApi(new UserResource($user), "تم تحديث بيانات المستخدم بنجاح", 200);
             } else {
                 return self::returnResponseDataApi(null, "يوجد خطاء ما اثناء دخول البيانات", 500, 500);
