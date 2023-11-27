@@ -9,6 +9,7 @@ interface UserRepositoryInterface{
     public function register(Request $request): JsonResponse;
     public function login(Request $request);
     public function logout(): JsonResponse;
+    public function userHome(): JsonResponse;
     public function deleteAccount(): JsonResponse;
     public function editProfile(Request $request): JsonResponse;
     public function getAllCities(): JsonResponse;

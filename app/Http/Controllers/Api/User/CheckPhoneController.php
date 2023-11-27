@@ -1,50 +1,59 @@
 <?php
 
 namespace App\Http\Controllers\Api\User;
+use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use App\Models\ResetCodePassword;
+use App\Models\User;
 use Illuminate\Http\JsonResponse;
-use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Validator;
+
 
 class CheckPhoneController extends Controller{
 
     public function checkPhone(Request $request): JsonResponse
     {
-
-        $rules = [
-            'phone' => ['required',Rule::unique('users')->where(function($query) {
-                return $query->where('deleted_at', '!=', null);
-            })],
-        ];
-
-        $validator = Validator::make($request->all(), $rules, [
-            'phone.exists' => 406,
-        ]);
-
-        if ($validator->fails()) {
-            $errors = collect($validator->errors())->flatten(1)[0];
-
-            if (is_numeric($errors)) {
-                $errors_arr = [
-                    406 => 'Failed,Phone not exists',
-
-                ];
-
-                $code = collect($validator->errors())->flatten(1)[0];
-                return self::returnResponseDataApi( null,$errors_arr[$errors] ?? 500, $code,200);
-            }
-            return self::returnResponseDataApi(null,$validator->errors()->first(),422);
+        if ($request->phone == null){
+            return self::returnResponseDataApi(null, 'يرجي ادخال رقم الهاتف', 422, 422);
         }
-        ResetCodePassword::query()->where('phone', $request->phone)
-            ->delete();
+        $user = User::query()
+            ->where('phone','=',$request->phone)
+            ->first();
 
-        ResetCodePassword::create(['phone' => $request->phone]);
+        if ($user){
+             $data = ["status" => $user->status];
+            if($user->status  == 1){
+                ResetCodePassword::query()->where('phone', $request->phone)
+                ->delete();
 
-        return self::returnResponseDataApi(null,"The phone is exists",200);
+                ResetCodePassword::create(['phone' => $request->phone]);
+                $data = ["status" => $user->status];
+                return response()->json([
+                    "status" => $user->status,
+                    "message" => "الهاتف موجود من قبل",
+                    "code" => 500,
+                ],200);
+            }else{
+                return response()->json([
+                    "status" => $user->status,
+                    "message" => "الهاتف موجود من قبل ولكن الحساب غير مفعل",
+                    "code" => 500,
+                ],200);
+            }
+
+        }else {
+            $user = User::query()
+            ->where('phone','=',$request->phone)
+            ->onlyTrashed()
+            ->first();
+            if($user){
+                return self::returnResponseDataApi(null,"يوجد حساب محذوف بهذا الرقم يرجي التواصل مع الدعم",500,200);
+            }else {
+                return self::returnResponseDataApi(null,"الهاتف ليس موجود من قبل",406,200);
+            }
+
+        }
 
     }
 
 }
-
