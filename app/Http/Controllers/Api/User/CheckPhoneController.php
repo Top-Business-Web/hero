@@ -49,7 +49,8 @@ class CheckPhoneController extends Controller{
             if($user){
                 return self::returnResponseDataApi(null,"يوجد حساب محذوف بهذا الرقم يرجي التواصل مع الدعم",500,200);
             }else {
-                return self::returnResponseDataApi(null,"الهاتف ليس موجود من قبل",500,200);
+                return self::returnResponseDataApi(null,"الهاتف ليس موجود من قبل",406,200);
+
             }
 
         }
