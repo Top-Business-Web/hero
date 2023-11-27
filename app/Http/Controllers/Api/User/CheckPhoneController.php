@@ -31,7 +31,7 @@ class CheckPhoneController extends Controller{
                 return response()->json([
                     "status" => $user->status,
                     "message" => "الهاتف موجود من قبل",
-                    "code" => 500,
+                    "code" => 200,
                 ],200);
             }else{
                 return response()->json([
