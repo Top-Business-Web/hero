@@ -625,10 +625,10 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
                         ->where('from', Auth::user()->id)
                         ->first();
                     if ($existingTripRate) {
-                        return self::returnResponseDataApi(null, "تم تقييم الرحلة بالفعل", 500,500);
+                        return self::returnResponseDataApi(null, "تم تقييم الرحلة بالفعل", 500,200);
                     }
                 }else {
-                    return self::returnResponseDataApi(null, "تاكد من حالة الرحلة انها مكتملة",500,500);
+                    return self::returnResponseDataApi(null, "تاكد من حالة الرحلة انها مكتملة",500,200);
                 }
 
                 $createTripRate = TripRates::query()
