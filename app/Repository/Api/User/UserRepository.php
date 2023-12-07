@@ -80,9 +80,9 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
                         408 => 'Failed,Phone already exists',
                     ];
                     $code = collect($validator->errors())->flatten(1)[0];
-                    return self::returnResponseDataApi(null, $errors_arr[$errors] ?? 422, $code);
+                    return self::returnResponseDataApi(null, $errors_arr[$errors] ?? '',422);
                 }
-                return self::returnResponseDataApi(null, $validator->errors()->first(), 422);
+                return self::returnResponseDataApi(null, $validator->errors()->first(), 422,422);
             }
 
             $existUser = User::query()
@@ -160,7 +160,7 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
 
             // Check Authentication Result
             if (!$token) {
-                return self::returnResponseDataApi(null, "يانات الدخول غير صحيحه برجاء المحاوله مره اخري", 403, 403);
+                return self::returnResponseDataApi(null, "يانات الدخول غير صحيحه برجاء المحاوله مره اخري", 422, 422);
             }
 
             // Get User and Attach Token
