@@ -67,7 +67,7 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
 
             $checkUser = User::where('phone', $request->phone)->first();
             if ($checkUser) {
-                return self::returnResponseDataApi(null, 'هذا الهاتف مستخدم بالفعل', 201,201);
+                return self::returnResponseDataApi(null, 'هذا الهاتف مستخدم بالفعل', 201, 201);
             }
 
 
@@ -80,9 +80,9 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
                         408 => 'Failed,Phone already exists',
                     ];
                     $code = collect($validator->errors())->flatten(1)[0];
-                    return self::returnResponseDataApi(null, $errors_arr[$errors] ?? '',422);
+                    return self::returnResponseDataApi(null, $errors_arr[$errors] ?? '', 422);
                 }
-                return self::returnResponseDataApi(null, $validator->errors()->first(), 422,422);
+                return self::returnResponseDataApi(null, $validator->errors()->first(), 422, 422);
             }
 
             $existUser = User::query()
@@ -96,7 +96,7 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
                 if ($now > $endTime) {
                     $existUser->forceDelete();
                 } else {
-                    return self::returnResponseDataApi(null, 'هناك حساب تم حذفه علي هذا الرقم يرجي الانتظار الي ' . $endTime->format('Y-m-d') . ' لتسجيل من جديد', 422,422);
+                    return self::returnResponseDataApi(null, 'هناك حساب تم حذفه علي هذا الرقم يرجي الانتظار الي ' . $endTime->format('Y-m-d') . ' لتسجيل من جديد', 422, 422);
 
                 }
             }
@@ -123,7 +123,7 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
                     'device_type' => request()->device_type,
                     'token' => request()->token
                 ]);
-                return self::returnResponseDataApi(new UserResource($storeNewUser), "تم تسجيل بيانات المستخدم بنجاح", 200,200);
+                return self::returnResponseDataApi(new UserResource($storeNewUser), "تم تسجيل بيانات المستخدم بنجاح", 200, 200);
             } else {
                 return self::returnResponseDataApi(null, "يوجد خطاء ما اثناء دخول البيانات", 500, 500);
             }
@@ -138,43 +138,47 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
         try {
             // Validation Rules
             $validator = Validator::make($request->all(), [
-                'phone' => 'required|exists:users,phone',
+                'phone' => 'required',
                 'device_type' => 'required',
                 'token' => 'required',
-            ], [
-                'phone.exists' => 'Failed, phone not exists',
             ]);
+            $checkPhone = User::where('phone', '=', $request->phone)->first();
+            if (!$checkPhone) {
+                return self::returnResponseDataApi(null, 'الهاتف غير موجود', 422, 422);
+            } else {
+                // Check Validation Result
+                if ($validator->fails()) {
+                    $errors = $validator->errors()->first();
+                    $statusCode = is_numeric($errors) ? $errors : 422;
 
-            // Check Validation Result
-            if ($validator->fails()) {
-                $errors = $validator->errors()->first();
-                $statusCode = is_numeric($errors) ? $errors : 422;
+                    return self::returnResponseDataApi(null, $errors, $statusCode, $statusCode);
+                }
 
-                return self::returnResponseDataApi(null, $errors, $statusCode, $statusCode);
-            }
-
-            // Authenticate User
-            $credentials = ['phone' => $request->phone, 'password' => '123456'];
-            $token = Auth::guard('user-api')->attempt($credentials);
+                // Authenticate User
+                $credentials = ['phone' => $request->phone, 'password' => '123456'];
+                $token = Auth::guard('user-api')->attempt($credentials);
 
 //            // Check Authentication Result
 //            if (!$token) {
 //                return self::returnResponseDataApi(null, "يانات الدخول غير صحيحه برجاء المحاوله مره اخري", 422, 422);
 //            }
 
-            // Get User and Attach Token
-            $user = Auth::guard('user-api')->user();
-            $user['token'] = $token;
+                // Get User and Attach Token
+                $user = Auth::guard('user-api')->user();
+                $user['token'] = $token;
 
-            // Update or Create PhoneToken
-            PhoneToken::query()->updateOrCreate(
-                ['user_id' => $user->id, 'device_type' => $request->device_type],
-                ['device_type' => $request->device_type, 'token' => $request->token]
-            );
+                // Update or Create PhoneToken
+                PhoneToken::query()->updateOrCreate(
+                    ['user_id' => $user->id, 'device_type' => $request->device_type],
+                    ['device_type' => $request->device_type, 'token' => $request->token]
+                );
 
-            return self::returnResponseDataApi(new UserResource($user), "تم تسجيل الدخول بنجاح", 200);
+                return self::returnResponseDataApi(new UserResource($user), "تم تسجيل الدخول بنجاح", 200,200);
+            }
+
+
         } catch (\Exception $exception) {
-            return self::returnResponseDataApi(null, $exception->getMessage(), 500);
+            return self::returnResponseDataApi(null, $exception->getMessage(), 500,500);
         }
 
     } // login
@@ -251,9 +255,9 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
             $home['sliders'][$key]['image'] = asset($slider->image);
         }
 
-       $trips = Trip::query()
+        $trips = Trip::query()
             ->where('user_id', '=', Auth::user()->id)
-            ->where('type','new')
+            ->where('type', 'new')
             ->whereDate('created_at', '>=', Carbon::now())
             ->orderBy('created_at', 'asc')
             ->get();
@@ -518,7 +522,7 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
                 ->updateOrCreate([
                     'user_id' => Auth::user()->id,
                     'address' => $request->address,
-                ],[
+                ], [
                     'user_id' => Auth::user()->id,
                     'address' => $request->address,
                     'lat' => $request->lat,
@@ -612,22 +616,22 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
 
             if ($validator->fails()) {
                 $firstError = $validator->errors()->first();
-                return self::returnResponseDataApi(null, $firstError, 422,422);
+                return self::returnResponseDataApi(null, $firstError, 422, 422);
             }
 
             $checkTrip = Trip::query()
                 ->where('id', $request->trip_id)->first();
 
-            if ($checkTrip){
+            if ($checkTrip) {
                 if ($checkTrip->type == 'complete') {
                     $existingTripRate = TripRates::where('trip_id', $request->trip_id)
                         ->where('from', Auth::user()->id)
                         ->first();
                     if ($existingTripRate) {
-                        return self::returnResponseDataApi(null, "تم تقييم الرحلة بالفعل", 500,200);
+                        return self::returnResponseDataApi(null, "تم تقييم الرحلة بالفعل", 500, 200);
                     }
-                }else {
-                    return self::returnResponseDataApi(null, "تاكد من حالة الرحلة انها مكتملة",500,200);
+                } else {
+                    return self::returnResponseDataApi(null, "تاكد من حالة الرحلة انها مكتملة", 500, 200);
                 }
 
                 $createTripRate = TripRates::query()
@@ -645,8 +649,8 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
                     return self::returnResponseDataApi(null, "يوجد خطاء ما أثناء دخول البيانات", false, 500);
                 }
 
-            }else {
-                return self::returnResponseDataApi(null, "تاكد من معرف الرحلة ",500,500);
+            } else {
+                return self::returnResponseDataApi(null, "تاكد من معرف الرحلة ", 500, 500);
             }
 
         } catch (\Exception $exception) {
