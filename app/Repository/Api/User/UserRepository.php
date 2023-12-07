@@ -143,7 +143,9 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
                 'device_type' => 'required',
                 'token' => 'required',
             ]);
-            $checkPhone = User::where('phone', '=', $request->phone)->first();
+            $checkPhone = User::where('phone', '=', $request->phone)
+                ->withTrashed()
+                ->first();
             if (!$checkPhone) {
                 return self::returnResponseDataApi(null, 'الهاتف غير موجود', 422, 422);
             } else {
