@@ -67,7 +67,7 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
 
             $checkUser = User::where('phone', $request->phone)->first();
             if ($checkUser) {
-                return self::returnResponseDataApi(null, 'هذا الهاتف مستخدم بالفعل', 500);
+                return self::returnResponseDataApi(null, 'هذا الهاتف مستخدم بالفعل', 201,201);
             }
 
 
