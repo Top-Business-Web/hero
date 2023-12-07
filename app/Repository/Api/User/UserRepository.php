@@ -135,7 +135,6 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
 
     public function login(Request $request): JsonResponse
     {
-
         try {
             // Validation Rules
             $validator = Validator::make($request->all(), [
@@ -158,10 +157,10 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
             $credentials = ['phone' => $request->phone, 'password' => '123456'];
             $token = Auth::guard('user-api')->attempt($credentials);
 
-            // Check Authentication Result
-            if (!$token) {
-                return self::returnResponseDataApi(null, "يانات الدخول غير صحيحه برجاء المحاوله مره اخري", 422, 422);
-            }
+//            // Check Authentication Result
+//            if (!$token) {
+//                return self::returnResponseDataApi(null, "يانات الدخول غير صحيحه برجاء المحاوله مره اخري", 422, 422);
+//            }
 
             // Get User and Attach Token
             $user = Auth::guard('user-api')->user();

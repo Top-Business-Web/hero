@@ -37,8 +37,8 @@ class CheckPhoneController extends Controller{
                 return response()->json([
                     "status" => $user->status,
                     "message" => "الهاتف موجود من قبل ولكن الحساب غير مفعل",
-                    "code" => 500,
-                ],200);
+                    "code" => 422,
+                ],422);
             }
 
         }else {
