@@ -80,7 +80,7 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
                         408 => 'Failed,Phone already exists',
                     ];
                     $code = collect($validator->errors())->flatten(1)[0];
-                    return self::returnResponseDataApi(null, $errors_arr[$errors] ?? 500, $code);
+                    return self::returnResponseDataApi(null, $errors_arr[$errors] ?? 422, $code);
                 }
                 return self::returnResponseDataApi(null, $validator->errors()->first(), 422);
             }
@@ -96,7 +96,7 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
                 if ($now > $endTime) {
                     $existUser->forceDelete();
                 } else {
-                    return self::returnResponseDataApi(null, 'هناك حساب تم حذفه علي هذا الرقم يرجي الانتظار الي ' . $endTime->format('Y-m-d') . ' لتسجيل من جديد', 500);
+                    return self::returnResponseDataApi(null, 'هناك حساب تم حذفه علي هذا الرقم يرجي الانتظار الي ' . $endTime->format('Y-m-d') . ' لتسجيل من جديد', 422,422);
 
                 }
             }
