@@ -123,7 +123,7 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
                     'device_type' => request()->device_type,
                     'token' => request()->token
                 ]);
-                return self::returnResponseDataApi(new UserResource($storeNewUser), "تم تسجيل بيانات المستخدم بنجاح", 200);
+                return self::returnResponseDataApi(new UserResource($storeNewUser), "تم تسجيل بيانات المستخدم بنجاح", 200,200);
             } else {
                 return self::returnResponseDataApi(null, "يوجد خطاء ما اثناء دخول البيانات", 500, 500);
             }
