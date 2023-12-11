@@ -52,7 +52,7 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
 
             $rules = [
                 'name' => 'required|string|max:50',
-                'email' => 'nullable|email|exists:users,email',
+                'email' => 'nullable|email',
                 'phone' => 'required|numeric',
                 'img' => 'nullable|image',
                 'type' => 'required|in:user,driver',
@@ -61,14 +61,18 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
                 'token' => 'required'
             ];
             $validator = Validator::make($request->all(), $rules, [
-                'email.unique' => 406,
                 'phone.numeric' => 407,
                 'phone.exists' => 408,
             ]);
 
-            $checkUser = User::where('phone', $request->phone)->first();
-            if ($checkUser) {
+
+            $checkUserPhone = User::where('phone', $request->phone)->first();
+            if ($checkUserPhone) {
                 return self::returnResponseDataApi(null, 'هذا الهاتف مستخدم بالفعل', 201, 201);
+            }
+            $checkUserEmail = User::where('email', $request->email)->first();
+            if ($checkUserEmail) {
+                return self::returnResponseDataApi(null, 'هذاالبريد الالكتروني مستخدم بالفعل', 201, 201);
             }
 
 
