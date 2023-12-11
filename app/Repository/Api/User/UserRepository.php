@@ -52,7 +52,7 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
 
             $rules = [
                 'name' => 'required|string|max:50',
-                'email' => 'nullable|email|unique:users,email',
+                'email' => 'nullable|email|exists:users,email',
                 'phone' => 'required|numeric',
                 'img' => 'nullable|image',
                 'type' => 'required|in:user,driver',
