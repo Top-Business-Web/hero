@@ -16,6 +16,4 @@ class ResponseApi{
         ],$status = $code);
 
     }
-
-
 }
