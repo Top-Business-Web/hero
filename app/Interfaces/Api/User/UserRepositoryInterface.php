@@ -25,5 +25,5 @@ interface UserRepositoryInterface{
     public function createFavouriteLocations(Request $request): JsonResponse;
     public function removeFavouriteLocations(Request $request): JsonResponse;
     public function createTripRate(Request $request): JsonResponse;
-// this app made by Abdallah Mahmoud
+    //Made By https://github.com/eldapour (eldapour)
 }
