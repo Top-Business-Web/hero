@@ -140,11 +140,26 @@ class DriverRepository extends ResponseApi implements DriverRepositoryInterface
 
     public function checkDocument(Request $request): JsonResponse
     {
-        $DriverDocuments = DriverDocuments::query()->where('driver_id', '=', Auth::user()->id)->first();
-        if ($DriverDocuments->status == false) {
-            return self::returnResponseDataApi(['status' => $DriverDocuments->status], "في انتظار قبول المستندات الخاصة بك حاول في وقت لاحق", 200);
-        } else {
-            return self::returnResponseDataApi(['status' => $DriverDocuments->status], "تم قبول مستنداتك بنجاح يمكنك البدا في العمل", 200);
+        try{
+            $user = User::find(Auth::user()->id);
+            $checkDetails = DriverDetails::query()->where('driver_id', $user->id)->first();
+            $DriverDocuments = DriverDocuments::query()->where('driver_id', Auth::user()->id)->first();
+            $data = [];
+
+            if ($checkDetails){
+                $data['driver_details'] = 1;
+            }else {
+                $data['driver_details'] = 0;
+            }
+
+            if ($DriverDocuments){
+                $data['driver_documents'] = 1;
+            }else {
+                $data['driver_documents'] = 0;
+            }
+            return self::returnResponseDataApi($data, "تم الحصول علي البيانات بنجاح", 200);
+        } catch (\Exception $e) {
+            return self::returnResponseDataApi($e->getMessage(),'هناك خطا ما حاول في وقت لاحق',500);
         }
     } // check Document
 
