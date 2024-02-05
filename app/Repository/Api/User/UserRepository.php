@@ -193,8 +193,7 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
 
     } // login
 
-    public
-    function logout(): JsonResponse
+    public function logout(): JsonResponse
     {
         try {
             $user = Auth::guard('user-api')->user();
@@ -235,8 +234,7 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
         }
     } // logout
 
-    public
-    function deleteAccount(): JsonResponse
+    public function deleteAccount(): JsonResponse
     {
 
         try {
@@ -256,8 +254,7 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
         }
     } // deleteAccount
 
-    public
-    function userHome(): JsonResponse
+    public function userHome(): JsonResponse
     {
         $home['sliders'] = Slider::query()
             ->select('image', 'link')
@@ -281,8 +278,7 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
         return self::returnResponseDataApi($home, "تم الحصول علي بيانات الرئيسية بنجاح", 200);
     } // user home
 
-    public
-    function editProfile(Request $request): JsonResponse
+    public function editProfile(Request $request): JsonResponse
     {
         $user = User::find(Auth::user()->id);
         try {
@@ -343,8 +339,7 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
         }
     } // edit profile
 
-    public
-    function createTrip(Request $request): JsonResponse
+    public function createTrip(Request $request): JsonResponse
     {
         try {
             $rules = [
@@ -393,8 +388,7 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
         }
     } // start trip
 
-    public
-    function cancelTrip(Request $request): JsonResponse
+    public function cancelTrip(Request $request): JsonResponse
     {
         try {
             $trip = Trip::query()
@@ -414,8 +408,7 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
         }
     } // cancel trip
 
-    public
-    function createScheduleTrip(Request $request): JsonResponse
+    public function createScheduleTrip(Request $request): JsonResponse
     {
         try {
             $rules = [
@@ -462,8 +455,7 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
         }
     } // start create Schedule Trip
 
-    public
-    function userAllTrip(Request $request): JsonResponse
+    public function userAllTrip(Request $request): JsonResponse
     {
         try {
             if ($request->has('type')) {
@@ -506,8 +498,7 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
         }
     } // user all trip
 
-    public
-    function favouriteLocations(): JsonResponse
+    public function favouriteLocations(): JsonResponse
     {
         try {
             $data = AddressFavorite::query()
@@ -523,8 +514,7 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
         }
     } // favouriteLocations
 
-    public
-    function createFavouriteLocations(Request $request): JsonResponse
+    public function createFavouriteLocations(Request $request): JsonResponse
     {
         try {
             $rules = [
@@ -559,8 +549,7 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
         }
     } // favouriteLocations
 
-    public
-    function removeFavouriteLocations(Request $request): JsonResponse
+    public function removeFavouriteLocations(Request $request): JsonResponse
     {
         try {
             $rules = [
@@ -586,15 +575,13 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
         }
     } // favouriteLocations
 
-    public
-    function getAllSettings(): JsonResponse
+    public function getAllSettings(): JsonResponse
     {
         $settings = Setting::first();
         return self::returnResponseDataApi(new SettingResource($settings), "تم الحصول علي بيانات جميع الاعدادت بنجاح", 200);
     } //getAllSettings
 
-    public
-    function getAllNotification(): JsonResponse
+    public function getAllNotification(): JsonResponse
     {
         $user = Auth::user();
         if ($user->type == 'user') {
@@ -616,8 +603,7 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
         return self::returnResponseDataApi($notifications, "تم الحصول على الإشعارات بنجاح", 200);
     } //getAllNotification
 
-    public
-    function deleteUser(): JsonResponse
+    public function deleteUser(): JsonResponse
     {
         $user = User::find(auth()->user()->id);
         if (!$user) {
@@ -627,8 +613,7 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
         return self::returnResponseDataApi($user, "تم حذف الحساب بنجاح", 200);
     } //deleteUser
 
-    public
-    function createTripRate(Request $request): JsonResponse
+    public function createTripRate(Request $request): JsonResponse
     {
         try {
             $rules = [
