@@ -765,11 +765,11 @@ class DriverRepository extends ResponseApi implements DriverRepositoryInterface
                 'city_id' => $driver_details->area->city_id,
                 'driver_details' => $driver_details,
                 'driver_documents' => [
-                    'agency_number' => 'http://127.0.0.1:8000/'.$driver_documents->agency_number,
-                    'bike_license' => 'http://127.0.0.1:8000/'.$driver_documents->bike_license,
-                    'id_card' => 'http://127.0.0.1:8000/'.$driver_documents->id_card,
-                    'house_card' => 'http://127.0.0.1:8000/'.$driver_documents->house_card,
-                    'bike_image' => 'http://127.0.0.1:8000/'.$driver_documents->bike_image,
+                    'agency_number' => 'https://hero.topbusiness.io/api/'.$driver_documents->agency_number,
+                    'bike_license' => 'https://hero.topbusiness.io/api/'.$driver_documents->bike_license,
+                    'id_card' => 'https://hero.topbusiness.io/api/'.$driver_documents->id_card,
+                    'house_card' => 'https://hero.topbusiness.io/api/'.$driver_documents->house_card,
+                    'bike_image' => 'https://hero.topbusiness.io/api/'.$driver_documents->bike_image,
                 ],
             ];
 
