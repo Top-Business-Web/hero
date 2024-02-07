@@ -757,13 +757,20 @@ class DriverRepository extends ResponseApi implements DriverRepositoryInterface
             $driver_id = auth()->user()->id;
 
             $driver_status = User::where('id', $driver_id)->pluck('status')->first();
-            $driver_documents = DriverDocuments::where('driver_id', $driver_id)->get();
+            $driver_documents = DriverDocuments::where('driver_id', $driver_id)->first();
             $driver_details = DriverDetails::where('driver_id', $driver_id)->first();
 
             $datails = [
                 'driver_status' => $driver_status,
+                'city_id' => $driver_details->area->city_id,
                 'driver_details' => $driver_details,
-                'driver_documents' => $driver_documents,
+                'driver_documents' => [
+                    'agency_number' => 'http://127.0.0.1:8000/'.$driver_documents->agency_number,
+                    'bike_license' => 'http://127.0.0.1:8000/'.$driver_documents->bike_license,
+                    'id_card' => 'http://127.0.0.1:8000/'.$driver_documents->id_card,
+                    'house_card' => 'http://127.0.0.1:8000/'.$driver_documents->house_card,
+                    'bike_image' => 'http://127.0.0.1:8000/'.$driver_documents->bike_image,
+                ],
             ];
 
             return self::returnResponseDataApi($datails, 'تم الحصول على بيانات السائق بنجاح', 200);
