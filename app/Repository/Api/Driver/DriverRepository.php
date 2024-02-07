@@ -60,14 +60,11 @@ class DriverRepository extends ResponseApi implements DriverRepositoryInterface
             } else {
 
                 return self::returnResponseDataApi(null, "يوجد خطاء ما اثناء دخول البيانات", 500, 500);
-
             }
         } catch (\Exception $exception) {
 
             return self::returnResponseDataApi($exception->getMessage(), 500, false, 500);
         }
-
-
     } // registerDriver
 
     public function registerDriverDoc(Request $request): JsonResponse
@@ -130,7 +127,6 @@ class DriverRepository extends ResponseApi implements DriverRepositoryInterface
             } else {
 
                 return self::returnResponseDataApi(null, "يوجد خطاء ما اثناء دخول البيانات", 500, 500);
-
             }
         } catch (\Exception $exception) {
 
@@ -340,8 +336,6 @@ class DriverRepository extends ResponseApi implements DriverRepositoryInterface
             } else {
                 return self::returnResponseDataApi(null, "يوجد خطاء ما اثناء دخول البيانات", false, 500);
             }
-
-
         } catch (\Exception $exception) {
             return self::returnResponseDataApi($exception->getMessage(), 500, false, 500);
         }
@@ -404,7 +398,6 @@ class DriverRepository extends ResponseApi implements DriverRepositoryInterface
             } else {
                 return self::returnResponseDataApi(null, "لا يوجد رحلة حالية علي هذا الرقم", false, 500);
             }
-
         } catch (\Exception $exception) {
             return self::returnResponseDataApi($exception->getMessage(), 500, false, 500);
         }
@@ -439,7 +432,6 @@ class DriverRepository extends ResponseApi implements DriverRepositoryInterface
             } else {
                 return self::returnResponseDataApi(null, "لا يوجد رحلة فارغه بهذا المعرف", false, 500);
             }
-
         } catch (\Exception $exception) {
             return self::returnResponseDataApi($exception->getMessage(), 500, false, 500);
         }
@@ -474,7 +466,6 @@ class DriverRepository extends ResponseApi implements DriverRepositoryInterface
             } else {
                 return self::returnResponseDataApi(null, "لا يوجد رحلة فارغه بهذا المعرف", false, 500);
             }
-
         } catch (\Exception $exception) {
             return self::returnResponseDataApi($exception->getMessage(), 500, false, 500);
         }
@@ -511,7 +502,6 @@ class DriverRepository extends ResponseApi implements DriverRepositoryInterface
             } else {
                 return self::returnResponseDataApi(null, "لا يوجد رحلة فارغه بهذا المعرف", false, 500);
             }
-
         } catch (\Exception $exception) {
             return self::returnResponseDataApi($exception->getMessage(), 500, false, 500);
         }
@@ -574,7 +564,6 @@ class DriverRepository extends ResponseApi implements DriverRepositoryInterface
             } else {
                 return self::returnResponseDataApi(null, "لا يوجد رحلة حالية علي هذا الرقم", false, 500);
             }
-
         } catch (\Exception $exception) {
             return self::returnResponseDataApi($exception->getMessage(), 500, false, 500);
         }
@@ -600,7 +589,6 @@ class DriverRepository extends ResponseApi implements DriverRepositoryInterface
                         ->orderBy('created_at', 'DESC')
                         ->latest()->get();
                     $data = $trips;
-
                 } else {
                     $trips = Trip::query()
                         ->where('type', '=', 'new')
@@ -616,7 +604,6 @@ class DriverRepository extends ResponseApi implements DriverRepositoryInterface
                 } else {
                     return self::returnResponseDataApi($data, 'عفوا لا يوجد رحلات حاليا', 200, 200);
                 }
-
             } else {
                 return self::returnResponseDataApi(null, 'يرجي ادخال النوع', 422, 422);
             }
@@ -686,7 +673,6 @@ class DriverRepository extends ResponseApi implements DriverRepositoryInterface
                 $profit['total'] = $profit['total_trips_price'];
                 $profit['vat_total'] = $wallet->sum('vat_total');
                 $profit['net_total'] = $profit['total'] - $profit['vat_total'];
-
             } elseif ($request->type == 'week') {
                 $trip = Trip::query()
                     ->where('driver_id', '=', $driver->id)
@@ -723,7 +709,6 @@ class DriverRepository extends ResponseApi implements DriverRepositoryInterface
                     $profit['trips'][$key]['price'] = $walletDay->total_amount;
                     $profit['trips'][$key]['day'] = $walletDay->day;
                 }
-
             } elseif ($request->type == 'custom') {
                 if ($request->from == null || $request->to == null) {
                     return self::returnResponseDataApi(null, 'يرجي ادخال التاريخ من والى', 422, 422);
@@ -748,9 +733,7 @@ class DriverRepository extends ResponseApi implements DriverRepositoryInterface
                     $profit['total'] = $profit['total_trips_price'];
                     $profit['vat_total'] = $wallet->sum('vat_total');
                     $profit['net_total'] = $profit['total'] - $profit['vat_total'];
-
                 }
-
             }
 
             return self::returnResponseDataApi($profit, 'تم الحصول علي بيانات الارباح بنجاح', 200);
@@ -759,4 +742,24 @@ class DriverRepository extends ResponseApi implements DriverRepositoryInterface
         }
     } // driverProfit
 
+    public function getInfoDriver()
+    {
+        try {
+            $driver_id = auth()->user()->id;
+
+            $driver_status = User::where('id', $driver_id)->pluck('status')->first();
+            $driver_documents = DriverDocuments::where('driver_id', $driver_id)->get();
+            $driver_details = DriverDetails::where('driver_id', $driver_id)->first(); 
+
+            $datails = [
+                'driver_status' => $driver_status,
+                'driver_details' => $driver_details,
+                'driver_documents' => $driver_documents,
+            ];
+
+            return self::returnResponseDataApi($datails, 'تم الحصول على بيانات السائق بنجاح', 200);
+        } catch (\Exception $exception) {
+            return self::returnResponseDataApi($exception->getMessage(), 500, false, 500);
+        }
+    }
 }
