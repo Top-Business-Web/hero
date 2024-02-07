@@ -20,6 +20,7 @@ interface DriverRepositoryInterface{
     public function endTrip(Request $request): JsonResponse;
     public function driverAllTrip(Request $request): JsonResponse;
     public function driverWallet(): JsonResponse;
+    public function getInfoDriver();
     public function driverProfit(Request $request): JsonResponse;
     //Made By https://github.com/eldapour (eldapour)
 }

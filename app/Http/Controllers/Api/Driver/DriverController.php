@@ -56,5 +56,10 @@ class DriverController extends Controller
         return $this->driverRepository->driverProfit($request);
     } // updateDriverDocument
 
+    public function getInfoDriver(): JsonResponse
+    {
+        return $this->driverRepository->getInfoDriver();
+    } // getInfoDriver
+
 
 }
