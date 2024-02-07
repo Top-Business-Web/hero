@@ -68,11 +68,11 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
 
             $checkUserPhone = User::where('phone', $request->phone)->first();
             if ($checkUserPhone) {
-                return self::returnResponseDataApi(null, 'هذا الهاتف مستخدم بالفعل', 201, 201);
+                return self::returnResponseDataApi(null, 'هذا الهاتف مستخدم بالفعل', 201);
             }
             $checkUserEmail = User::where('email', $request->email)->first();
             if ($checkUserEmail) {
-                return self::returnResponseDataApi(null, 'هذاالبريد الالكتروني مستخدم بالفعل', 201, 201);
+                return self::returnResponseDataApi(null, 'هذاالبريد الالكتروني مستخدم بالفعل', 201);
             }
 
 
@@ -87,7 +87,7 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
                     $code = collect($validator->errors())->flatten(1)[0];
                     return self::returnResponseDataApi(null, $errors_arr[$errors] ?? '', 422);
                 }
-                return self::returnResponseDataApi(null, $validator->errors()->first(), 422, 422);
+                return self::returnResponseDataApi(null, $validator->errors()->first(), 422);
             }
 
             $existUser = User::query()
@@ -128,13 +128,13 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
                     'device_type' => request()->device_type,
                     'token' => request()->token
                 ]);
-                return self::returnResponseDataApi(new UserResource($storeNewUser), "تم تسجيل بيانات المستخدم بنجاح", 200, 200);
+                return self::returnResponseDataApi(new UserResource($storeNewUser), "تم تسجيل بيانات المستخدم بنجاح", 200);
             } else {
-                return self::returnResponseDataApi(null, "يوجد خطاء ما اثناء دخول البيانات", 500, 500);
+                return self::returnResponseDataApi(null, "يوجد خطاء ما اثناء دخول البيانات", 500);
             }
         } catch (\Exception $exception) {
 
-            return self::returnResponseDataApi($exception->getMessage(), 500, false, 500);
+            return self::returnResponseDataApi($exception->getMessage(), 500,500);
         }
     } // register
 

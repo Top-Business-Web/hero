@@ -63,7 +63,7 @@ class DriverRepository extends ResponseApi implements DriverRepositoryInterface
             }
         } catch (\Exception $exception) {
 
-            return self::returnResponseDataApi($exception->getMessage(), 500, false, 500);
+            return self::returnResponseDataApi($exception->getMessage(), 500, 500);
         }
     } // registerDriver
 
@@ -136,26 +136,26 @@ class DriverRepository extends ResponseApi implements DriverRepositoryInterface
 
     public function checkDocument(Request $request): JsonResponse
     {
-        try{
+        try {
             $user = User::find(Auth::user()->id);
             $checkDetails = DriverDetails::query()->where('driver_id', $user->id)->first();
             $DriverDocuments = DriverDocuments::query()->where('driver_id', Auth::user()->id)->first();
             $data = [];
 
-            if ($checkDetails){
+            if ($checkDetails) {
                 $data['driver_details'] = 1;
-            }else {
+            } else {
                 $data['driver_details'] = 0;
             }
 
-            if ($DriverDocuments){
+            if ($DriverDocuments) {
                 $data['driver_documents'] = 1;
-            }else {
+            } else {
                 $data['driver_documents'] = 0;
             }
             return self::returnResponseDataApi($data, "تم الحصول علي البيانات بنجاح", 200);
         } catch (\Exception $e) {
-            return self::returnResponseDataApi($e->getMessage(),'هناك خطا ما حاول في وقت لاحق',500);
+            return self::returnResponseDataApi($e->getMessage(), 'هناك خطا ما حاول في وقت لاحق', 500);
         }
     } // check Document
 
@@ -694,7 +694,8 @@ class DriverRepository extends ResponseApi implements DriverRepositoryInterface
                 $profit['total'] = $profit['total_trips_price'];
                 $profit['vat_total'] = $wallet->sum('vat_total');
                 $profit['net_total'] = $profit['total'] - $profit['vat_total'];
-
+                $profit['from'] = $toDay;
+                $profit['to'] = $lastWeek;
 
                 $walletDays = DriverWallet::query()
                     ->where('driver_id', '=', $driver->id)
@@ -708,10 +709,18 @@ class DriverRepository extends ResponseApi implements DriverRepositoryInterface
                 foreach ($walletDays as $key => $walletDay) {
                     $profit['trips'][$key]['price'] = $walletDay->total_amount;
                     $profit['trips'][$key]['day'] = $walletDay->day;
+                    // Check if $walletDay->day is a string, if so, convert it to a DateTime object
+                    if (is_string($walletDay->day)) {
+                        $profit['trips'][$key]['day_name'] = date('l', strtotime($walletDay->day));
+                    } else {
+                        // Assuming $walletDay->day is already a DateTime object
+                        $profit['trips'][$key]['day_name'] = $walletDay->day->format('l');
+                    }
                 }
+
             } elseif ($request->type == 'custom') {
                 if ($request->from == null || $request->to == null) {
-                    return self::returnResponseDataApi(null, 'يرجي ادخال التاريخ من والى', 422, 422);
+                    return self::returnResponseDataApi(null, 'يرجي ادخال التاريخ من والى', 422);
                 } else {
                     $trip = Trip::query()
                         ->where('driver_id', '=', $driver->id)
@@ -738,7 +747,7 @@ class DriverRepository extends ResponseApi implements DriverRepositoryInterface
 
             return self::returnResponseDataApi($profit, 'تم الحصول علي بيانات الارباح بنجاح', 200);
         } catch (\Exception $exception) {
-            return self::returnResponseDataApi($exception->getMessage(), 500, false, 500);
+            return self::returnResponseDataApi($exception->getMessage(), 500, 500);
         }
     } // driverProfit
 
@@ -749,7 +758,7 @@ class DriverRepository extends ResponseApi implements DriverRepositoryInterface
 
             $driver_status = User::where('id', $driver_id)->pluck('status')->first();
             $driver_documents = DriverDocuments::where('driver_id', $driver_id)->get();
-            $driver_details = DriverDetails::where('driver_id', $driver_id)->first(); 
+            $driver_details = DriverDetails::where('driver_id', $driver_id)->first();
 
             $datails = [
                 'driver_status' => $driver_status,
