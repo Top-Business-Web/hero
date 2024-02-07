@@ -775,7 +775,7 @@ class DriverRepository extends ResponseApi implements DriverRepositoryInterface
 
             return self::returnResponseDataApi($datails, 'تم الحصول على بيانات السائق بنجاح', 200);
         } catch (\Exception $exception) {
-            return self::returnResponseDataApi($exception->getMessage(), 500, false, 500);
+            return self::returnResponseDataApi($exception->getMessage(), 500, 500);
         }
     }
 }
