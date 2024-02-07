@@ -19,11 +19,11 @@ class CreateNotificationsTable extends Migration
             $table->unsignedBigInteger('user_id')->nullable();
             $table->string('title');
             $table->longText('description');
-            $table->enum('type',['user','driver','all_driver','all_user','all']);
+            $table->enum('type', ['user', 'driver', 'all_driver', 'all_user', 'all']);
 
             $table->foreign('user_id')
                 ->on('users')->references('id')->cascadeOnDelete()->cascadeOnUpdate();
-
+            $table->boolean('seen')->default(false);
             $table->timestamps();
             $table->softDeletes();
         });
