@@ -2,25 +2,26 @@
 
 namespace App\Repository\Api\Driver;
 
-use App\Http\Resources\DriverDocumentResource;
-use App\Http\Resources\DriverResource;
-use App\Http\Resources\TripResource;
-use App\Http\Resources\WalletResource;
-use App\Interfaces\Api\Driver\DriverRepositoryInterface;
-use App\Models\DriverDetails;
-use App\Models\DriverDocuments;
-use App\Models\DriverWallet;
-use App\Models\Setting;
+use DB;
+use Carbon\Carbon;
 use App\Models\Trip;
 use App\Models\User;
-use App\Repository\ResponseApi;
+use App\Models\Setting;
+use Carbon\CarbonPeriod;
 use App\Traits\PhotoTrait;
-use Carbon\Carbon;
-use DB;
-use Illuminate\Http\JsonResponse;
+use App\Models\DriverWallet;
 use Illuminate\Http\Request;
+use App\Models\DriverDetails;
+use App\Models\DriverDocuments;
+use App\Repository\ResponseApi;
+use Illuminate\Http\JsonResponse;
+use App\Http\Resources\TripResource;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Resources\DriverResource;
+use App\Http\Resources\WalletResource;
 use Illuminate\Support\Facades\Validator;
+use App\Http\Resources\DriverDocumentResource;
+use App\Interfaces\Api\Driver\DriverRepositoryInterface;
 
 class DriverRepository extends ResponseApi implements DriverRepositoryInterface
 {
@@ -153,6 +154,10 @@ class DriverRepository extends ResponseApi implements DriverRepositoryInterface
             } else {
                 $data['driver_documents'] = 0;
             }
+            $data['status'] = $DriverDocuments->status;
+
+            // dd($DriverDocuments->status);
+
             return self::returnResponseDataApi($data, "تم الحصول علي البيانات بنجاح", 200);
         } catch (\Exception $e) {
             return self::returnResponseDataApi($e->getMessage(), 'هناك خطا ما حاول في وقت لاحق', 500);
@@ -219,11 +224,11 @@ class DriverRepository extends ResponseApi implements DriverRepositoryInterface
                 ->firstOrFail();
 
             $rules = [
-                'agency_number' => 'required|image',
-                'bike_license' => 'required|image',
-                'id_card' => 'required|image',
-                'house_card' => 'required|image',
-                'bike_image' => 'required|image',
+                'agency_number' => 'sometimes|image',
+                'bike_license' => 'sometimes|image',
+                'id_card' => 'sometimes|image',
+                'house_card' => 'sometimes|image',
+                'bike_image' => 'sometimes|image',
             ];
 
             $msg = [
@@ -286,7 +291,7 @@ class DriverRepository extends ResponseApi implements DriverRepositoryInterface
                 return self::returnResponseDataApi(null, "يوجد خطاء ما اثناء دخول البيانات", 500, 500);
             }
         } catch (\Exception $exception) {
-            return self::returnResponseDataApi($exception->getMessage(), 500, false, 500);
+            return self::returnResponseDataApi($exception->getMessage(), 500, 500);
         }
     } // update Driver Document
 
@@ -697,6 +702,8 @@ class DriverRepository extends ResponseApi implements DriverRepositoryInterface
                 $profit['from'] = $toDay;
                 $profit['to'] = $lastWeek;
 
+
+                // Retrieve wallet days as before
                 $walletDays = DriverWallet::query()
                     ->where('driver_id', '=', $driver->id)
                     ->where('status', '=', false)
@@ -706,18 +713,57 @@ class DriverRepository extends ResponseApi implements DriverRepositoryInterface
                     ->select('day', DB::raw('SUM(total) as total_amount'))
                     ->get();
 
-                foreach ($walletDays as $key => $walletDay) {
-                    $profit['trips'][$key]['price'] = $walletDay->total_amount;
-                    $profit['trips'][$key]['day'] = $walletDay->day;
-                    // Check if $walletDay->day is a string, if so, convert it to a DateTime object
-                    if (is_string($walletDay->day)) {
-                        $profit['trips'][$key]['day_name'] = date('l', strtotime($walletDay->day));
-                    } else {
-                        // Assuming $walletDay->day is already a DateTime object
-                        $profit['trips'][$key]['day_name'] = $walletDay->day->format('l');
-                    }
+                // Create a collection to store all dates
+                $dates = collect();
+
+                // If there are wallet days
+                if ($walletDays->isNotEmpty()) {
+                    // Get all dates with recorded wallet days
+                    $walletDates = $walletDays->pluck('day');
+
+                    // Add the recorded wallet days to the collection
+                    $dates = $dates->merge($walletDates);
                 }
 
+                // Create Carbon instances for the date range from lastWeek to today
+                $currentDay = Carbon::parse($lastWeek);
+                $toDayCarbon = Carbon::parse($toDay);
+
+                // Add all days between lastWeek and today to the collection
+                while ($currentDay->lte($toDayCarbon)) {
+                    $dates->push($currentDay->toDateString());
+                    $currentDay->addDay();
+                }
+
+                // Filter the dates to include only unique values
+                $dates = $dates->unique();
+
+                // Create a new array to store the unique dates
+                $uniqueDates = [];
+
+                // Populate the $uniqueDates array with the appropriate data
+                foreach ($dates as $date) {
+                    $walletDay = $walletDays->where('day', $date)->first();
+                    $uniqueDates[$date] = [
+                        'price' => $walletDay ? $walletDay->total_amount : 0,
+                        'day' => $date,
+                        'day_name' => Carbon::parse($date)->format('l')
+                    ];
+                }
+
+                // Check if the 'trips' key exists in $profit array
+                if (!array_key_exists('trips', $profit)) {
+                    // Initialize 'trips' key as an empty array if it doesn't exist
+                    $profit['trips'] = [];
+                }
+
+                // Merge the $uniqueDates array with the existing $profit['trips'] array
+                $profit['trips'] = array_merge($uniqueDates, $profit['trips']);
+
+                // Sort the trips by day
+                usort($profit['trips'], function ($a, $b) {
+                    return strtotime($a['day']) - strtotime($b['day']);
+                });
             } elseif ($request->type == 'custom') {
                 if ($request->from == null || $request->to == null) {
                     return self::returnResponseDataApi(null, 'يرجي ادخال التاريخ من والى', 422);
@@ -765,11 +811,11 @@ class DriverRepository extends ResponseApi implements DriverRepositoryInterface
                 'city_id' => $driver_details->area->city_id,
                 'driver_details' => $driver_details,
                 'driver_documents' => [
-                    'agency_number' => 'https://hero.topbusiness.io/'.$driver_documents->agency_number,
-                    'bike_license' => 'https://hero.topbusiness.io/'.$driver_documents->bike_license,
-                    'id_card' => 'https://hero.topbusiness.io/'.$driver_documents->id_card,
-                    'house_card' => 'https://hero.topbusiness.io/'.$driver_documents->house_card,
-                    'bike_image' => 'https://hero.topbusiness.io/'.$driver_documents->bike_image,
+                    'agency_number' => 'https://hero.topbusiness.io/' . $driver_documents->agency_number,
+                    'bike_license' => 'https://hero.topbusiness.io/' . $driver_documents->bike_license,
+                    'id_card' => 'https://hero.topbusiness.io/' . $driver_documents->id_card,
+                    'house_card' => 'https://hero.topbusiness.io/' . $driver_documents->house_card,
+                    'bike_image' => 'https://hero.topbusiness.io/' . $driver_documents->bike_image,
                 ],
             ];
 
