@@ -23,8 +23,8 @@ class DriverResource extends JsonResource
             'bike_color' => $this->bike_color,
             'area' =>  new AreaResource($this->area),
             'driver' => new UserResource($this->driver),
-            'created_at' => $this->created_at->format('Y-m-d'),
-            'updated_at' => $this->created_at->format('Y-m-d'),
+            // 'created_at' => $this->created_at->format('Y-m-d'),
+            // 'updated_at' => $this->created_at->format('Y-m-d'),
         ];
     }
 }
