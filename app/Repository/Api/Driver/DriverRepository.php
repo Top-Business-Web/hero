@@ -277,11 +277,11 @@ class DriverRepository extends ResponseApi implements DriverRepositoryInterface
             }
 
             $updateDriverDoc->update([
-                'agency_number' => $agency_number,
-                'bike_license' => $bike_license,
-                'id_card' => $id_card,
-                'house_card' => $house_card,
-                'bike_image' => $bike_image,
+                'agency_number' => $agency_number ?? $updateDriverDoc->agency_number,
+                'bike_license' => $bike_license ?? $updateDriverDoc->bike_license,
+                'id_card' => $id_card ?? $updateDriverDoc->id_card,
+                'house_card' => $house_card ?? $updateDriverDoc->house_card,
+                'bike_image' => $bike_image ?? $updateDriverDoc->bike_image,
                 'status' => false,
             ]);
 

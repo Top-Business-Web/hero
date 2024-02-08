@@ -26,8 +26,8 @@ class DriverDocumentResource extends JsonResource
             'bike_image' => asset($this->bike_image),
             'status' => $this->status,
             'driver_details' => new DriverResource($this->driver),
-            'created_at' => $this->created_at->format('Y-m-d'),
-            'updated_at' => $this->created_at->format('Y-m-d'),
+            // 'created_at' => $this->created_at->format('Y-m-d'),
+            // 'updated_at' => $this->created_at->format('Y-m-d'),
         ];
     }
 }
