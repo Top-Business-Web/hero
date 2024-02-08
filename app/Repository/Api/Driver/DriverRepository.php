@@ -730,7 +730,7 @@ class DriverRepository extends ResponseApi implements DriverRepositoryInterface
                 $toDayCarbon = Carbon::parse($toDay);
 
                 // Add all days between lastWeek and today to the collection
-                while ($currentDay->lte($toDayCarbon)) {
+                while ($currentDay->lt($toDayCarbon)) {
                     $dates->push($currentDay->toDateString());
                     $currentDay->addDay();
                 }
