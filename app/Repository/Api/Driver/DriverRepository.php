@@ -807,6 +807,7 @@ class DriverRepository extends ResponseApi implements DriverRepositoryInterface
             $driver_details = DriverDetails::where('driver_id', $driver_id)->first();
 
             $datails = [
+                'driver_id' => $driver_id,
                 'driver_status' => $driver_status,
                 'city_id' => $driver_details->area->city_id,
                 'driver_details' => $driver_details,
