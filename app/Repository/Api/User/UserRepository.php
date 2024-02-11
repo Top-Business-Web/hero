@@ -642,7 +642,7 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
                         return self::returnResponseDataApi(null, "تم تقييم الرحلة بالفعل", 500, 200);
                     }
                 } else {
-                    return self::returnResponseDataApi(null, "تاكد من حالة الرحلة انها مكتملة", 500, 200);
+                    return self::returnResponseDataApi(null, "تاكد من حالة الرحلة انها مكتملة", 200, 200);
                 }
 
                 $createTripRate = TripRates::query()
@@ -661,7 +661,7 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
                 }
 
             } else {
-                return self::returnResponseDataApi(null, "تاكد من معرف الرحلة ", 500, 500);
+                return self::returnResponseDataApi(null, "تاكد من معرف الرحلة ", 500, 200);
             }
 
         } catch (\Exception $exception) {
