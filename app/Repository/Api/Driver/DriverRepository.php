@@ -460,9 +460,10 @@ class DriverRepository extends ResponseApi implements DriverRepositoryInterface
                 ->where('type', '=', 'accept')
                 ->where('driver_id', '!=', null)
                 ->first();
+
             if ($checkTrip) {
-                $checkTrip->driver_id = Auth::user()->id;
-                $checkTrip->type = 'reject';
+                $checkTrip->driver_id = null;
+                $checkTrip->type = 'new';
                 if ($checkTrip->save()) {
                     return self::returnResponseDataApi(new TripResource($checkTrip), "تم الغاء الرحلة بنجاح", 201, 200);
                 } else {
