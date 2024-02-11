@@ -26,6 +26,8 @@ Route::post('auth/login', [UserController::class, 'login']);
 
 
 
+
+
 ######################### START USER ROUTES ###################################
 Route::group(['middleware' => 'jwt'],function (){
 
