@@ -435,7 +435,7 @@ class DriverRepository extends ResponseApi implements DriverRepositoryInterface
                     return self::returnResponseDataApi(null, "يوجد خطاء ما اثناء دخول البيانات", 500);
                 }
             } else {
-                return self::returnResponseDataApi(null, "لا يوجد رحلة فارغه بهذا المعرف", 500);
+                return self::returnResponseDataApi(null, "لا يوجد رحلة فارغه بهذا المعرف", 200);
             }
         } catch (\Exception $exception) {
             return self::returnResponseDataApi($exception->getMessage(), 500, 500);
@@ -470,7 +470,7 @@ class DriverRepository extends ResponseApi implements DriverRepositoryInterface
                     return self::returnResponseDataApi(null, "يوجد خطاء ما اثناء دخول البيانات", 500);
                 }
             } else {
-                return self::returnResponseDataApi(null, "لا يوجد رحلة فارغه بهذا المعرف", 500);
+                return self::returnResponseDataApi(null, "لا يوجد رحلة فارغه بهذا المعرف", 200);
             }
         } catch (\Exception $exception) {
             return self::returnResponseDataApi($exception->getMessage(), 500, 500);
@@ -506,7 +506,7 @@ class DriverRepository extends ResponseApi implements DriverRepositoryInterface
                     return self::returnResponseDataApi(null, "يوجد خطاء ما اثناء دخول البيانات", 500);
                 }
             } else {
-                return self::returnResponseDataApi(null, "لا يوجد رحلة فارغه بهذا المعرف", 500);
+                return self::returnResponseDataApi(null, "لا يوجد رحلة فارغه بهذا المعرف", 200);
             }
         } catch (\Exception $exception) {
             return self::returnResponseDataApi($exception->getMessage(), 500, 500);
@@ -563,7 +563,7 @@ class DriverRepository extends ResponseApi implements DriverRepositoryInterface
                         $wallet->vat_total += $vatTotal;
                         $wallet->save();
                     }
-                    return self::returnResponseDataApi(new TripResource($checkTrip), "تم نهاية الرحلة الفورية بنجاح", 201, 200);
+                    return self::returnResponseDataApi(new TripResource($checkTrip), "تم نهاية الرحلة بنجاح", 201, 200);
                 } else {
                     return self::returnResponseDataApi(null, "يوجد خطاء ما اثناء دخول البيانات", 500);
                 }
