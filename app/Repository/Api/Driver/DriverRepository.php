@@ -435,7 +435,7 @@ class DriverRepository extends ResponseApi implements DriverRepositoryInterface
                     return self::returnResponseDataApi(null, "يوجد خطاء ما اثناء دخول البيانات", 500);
                 }
             } else {
-                return self::returnResponseDataApi(null, "لا يوجد رحلة فارغه بهذا المعرف", 200);
+                return self::returnResponseDataApi(null, "تم حجز هذه الرحلة من قبل سائق اخر", 200);
             }
         } catch (\Exception $exception) {
             return self::returnResponseDataApi($exception->getMessage(), 500, 500);
