@@ -131,7 +131,7 @@ class DriverRepository extends ResponseApi implements DriverRepositoryInterface
             }
         } catch (\Exception $exception) {
 
-            return self::returnResponseDataApi($exception->getMessage(), 500, false, 500);
+            return self::returnResponseDataApi($exception->getMessage(), 500, 500);
         }
     } // registerDriverDoc
 
@@ -212,7 +212,7 @@ class DriverRepository extends ResponseApi implements DriverRepositoryInterface
             }
         } catch (\Exception $exception) {
 
-            return self::returnResponseDataApi($exception->getMessage(), 500, false, 500);
+            return self::returnResponseDataApi($exception->getMessage(), 500, 500);
         }
     } // update driver details
 
@@ -342,7 +342,7 @@ class DriverRepository extends ResponseApi implements DriverRepositoryInterface
                 return self::returnResponseDataApi(null, "يوجد خطاء ما اثناء دخول البيانات", 500);
             }
         } catch (\Exception $exception) {
-            return self::returnResponseDataApi($exception->getMessage(), 500, false, 500);
+            return self::returnResponseDataApi($exception->getMessage(), 500, 500);
         }
     } // start quick trip
 
@@ -401,10 +401,10 @@ class DriverRepository extends ResponseApi implements DriverRepositoryInterface
                     return self::returnResponseDataApi(null, "يوجد خطاء ما اثناء دخول البيانات", 500);
                 }
             } else {
-                return self::returnResponseDataApi(null, "لا يوجد رحلة حالية علي هذا الرقم", false, 500);
+                return self::returnResponseDataApi(null, "لا يوجد رحلة حالية علي هذا الرقم", 500);
             }
         } catch (\Exception $exception) {
-            return self::returnResponseDataApi($exception->getMessage(), 500, false, 500);
+            return self::returnResponseDataApi($exception->getMessage(), 500, 500);
         }
     } // endQuickTrip
 
@@ -435,10 +435,10 @@ class DriverRepository extends ResponseApi implements DriverRepositoryInterface
                     return self::returnResponseDataApi(null, "يوجد خطاء ما اثناء دخول البيانات", 500);
                 }
             } else {
-                return self::returnResponseDataApi(null, "لا يوجد رحلة فارغه بهذا المعرف", false, 500);
+                return self::returnResponseDataApi(null, "لا يوجد رحلة فارغه بهذا المعرف", 500);
             }
         } catch (\Exception $exception) {
-            return self::returnResponseDataApi($exception->getMessage(), 500, false, 500);
+            return self::returnResponseDataApi($exception->getMessage(), 500, 500);
         }
     } // accept trip
 
@@ -469,10 +469,10 @@ class DriverRepository extends ResponseApi implements DriverRepositoryInterface
                     return self::returnResponseDataApi(null, "يوجد خطاء ما اثناء دخول البيانات", 500);
                 }
             } else {
-                return self::returnResponseDataApi(null, "لا يوجد رحلة فارغه بهذا المعرف", false, 500);
+                return self::returnResponseDataApi(null, "لا يوجد رحلة فارغه بهذا المعرف", 500);
             }
         } catch (\Exception $exception) {
-            return self::returnResponseDataApi($exception->getMessage(), 500, false, 500);
+            return self::returnResponseDataApi($exception->getMessage(), 500, 500);
         }
     } // cancel trip
 
@@ -505,10 +505,10 @@ class DriverRepository extends ResponseApi implements DriverRepositoryInterface
                     return self::returnResponseDataApi(null, "يوجد خطاء ما اثناء دخول البيانات", 500);
                 }
             } else {
-                return self::returnResponseDataApi(null, "لا يوجد رحلة فارغه بهذا المعرف", false, 500);
+                return self::returnResponseDataApi(null, "لا يوجد رحلة فارغه بهذا المعرف", 500);
             }
         } catch (\Exception $exception) {
-            return self::returnResponseDataApi($exception->getMessage(), 500, false, 500);
+            return self::returnResponseDataApi($exception->getMessage(), 500, 500);
         }
     } // start trip
 
@@ -567,10 +567,10 @@ class DriverRepository extends ResponseApi implements DriverRepositoryInterface
                     return self::returnResponseDataApi(null, "يوجد خطاء ما اثناء دخول البيانات", 500);
                 }
             } else {
-                return self::returnResponseDataApi(null, "لا يوجد رحلة حالية علي هذا الرقم", false, 500);
+                return self::returnResponseDataApi(null, "لا يوجد رحلة حالية علي هذا الرقم", 500);
             }
         } catch (\Exception $exception) {
-            return self::returnResponseDataApi($exception->getMessage(), 500, false, 500);
+            return self::returnResponseDataApi($exception->getMessage(), 500, 500);
         }
     } // end trip
 
@@ -613,7 +613,7 @@ class DriverRepository extends ResponseApi implements DriverRepositoryInterface
                 return self::returnResponseDataApi(null, 'يرجي ادخال النوع', 422, 422);
             }
         } catch (\Exception $exception) {
-            return self::returnResponseDataApi($exception->getMessage(), 500, false, 500);
+            return self::returnResponseDataApi($exception->getMessage(), 500, 500);
         }
     } // get all trip by filter
 

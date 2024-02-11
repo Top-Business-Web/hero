@@ -384,7 +384,7 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
                 return self::returnResponseDataApi(null, "يوجد خطاء ما اثناء دخول البيانات", 500);
             }
         } catch (\Exception $exception) {
-            return self::returnResponseDataApi($exception->getMessage(), 500, false, 500);
+            return self::returnResponseDataApi($exception->getMessage(), 500, 500);
         }
     } // start trip
 
@@ -404,7 +404,7 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
                 return self::returnResponseDataApi(null, "لا يوجد لديك اي رحلة جديدة بهذا المعرف", 500, 500);
             }
         } catch (\Exception $exception) {
-            return self::returnResponseDataApi($exception->getMessage(), 500, false, 500);
+            return self::returnResponseDataApi($exception->getMessage(), 500, 500);
         }
     } // cancel trip
 
@@ -451,7 +451,7 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
                 return self::returnResponseDataApi(null, "يوجد خطاء ما اثناء دخول البيانات", 500);
             }
         } catch (\Exception $exception) {
-            return self::returnResponseDataApi($exception->getMessage(), 500, false, 500);
+            return self::returnResponseDataApi($exception->getMessage(), 500, 500);
         }
     } // start create Schedule Trip
 
@@ -494,7 +494,7 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
                 return self::returnResponseDataApi(null, 'يرجي ادخال النوع', 422, 422);
             }
         } catch (\Exception $exception) {
-            return self::returnResponseDataApi($exception->getMessage(), 500, false, 500);
+            return self::returnResponseDataApi($exception->getMessage(), 500, 500);
         }
     } // user all trip
 
@@ -510,7 +510,7 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
                 return self::returnResponseDataApi($data, 'لا يوجد مواقع مفضلة حالية', 200, 200);
             }
         } catch (\Exception $exception) {
-            return self::returnResponseDataApi($exception->getMessage(), 500, false, 500);
+            return self::returnResponseDataApi($exception->getMessage(), 500, 500);
         }
     } // favouriteLocations
 
@@ -545,7 +545,7 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
                 return self::returnResponseDataApi(null, "يوجد خطاء ما اثناء دخول البيانات", 500);
             }
         } catch (\Exception $exception) {
-            return self::returnResponseDataApi($exception->getMessage(), 500, false, 500);
+            return self::returnResponseDataApi($exception->getMessage(), 500, 500);
         }
     } // favouriteLocations
 
@@ -571,7 +571,7 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
                 return self::returnResponseDataApi(null, "لا يوجد موقع في المفضلة بهذا المعرف", 404, 404);
             }
         } catch (\Exception $exception) {
-            return self::returnResponseDataApi($exception->getMessage(), 500, false, 500);
+            return self::returnResponseDataApi($exception->getMessage(), 500, 500);
         }
     } // favouriteLocations
 
@@ -656,7 +656,7 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
                 if (isset($createTripRate)) {
                     return self::returnResponseDataApi(new TripRateResource($createTripRate), "تم انشاء التقييم بنجاح", 201);
                 } else {
-                    return self::returnResponseDataApi(null, "يوجد خطاء ما أثناء دخول البيانات", false, 500);
+                    return self::returnResponseDataApi(null, "يوجد خطاء ما أثناء دخول البيانات", 500);
                 }
 
             } else {
@@ -664,7 +664,7 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
             }
 
         } catch (\Exception $exception) {
-            return self::returnResponseDataApi($exception->getMessage(), 500, false, 500);
+            return self::returnResponseDataApi($exception->getMessage(), 500, 500);
         }
     } //createTripRate
 }
