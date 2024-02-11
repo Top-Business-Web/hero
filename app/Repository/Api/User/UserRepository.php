@@ -359,6 +359,7 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
             $checkQuickTrip = Trip::query()
                 ->where('user_id', '=', Auth::user()->id)
                 ->where('trip_type', '!=', 'scheduled')
+                ->where('type','!=','reject')
                 ->where('ended', '=', 0)->latest()->first();
             if ($checkQuickTrip) {
                 return self::returnResponseDataApi(null, 'هناك رحلة حالية لم تنتهي بعد لنفس العميل', 502, 200);
