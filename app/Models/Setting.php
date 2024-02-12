@@ -13,6 +13,7 @@ class Setting extends Model
         'logo',
         'trip_insurance',
         'rewards',
+        'phone',
         'about',
         'support',
         'safety_roles',
