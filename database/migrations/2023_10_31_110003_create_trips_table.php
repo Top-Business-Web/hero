@@ -16,7 +16,7 @@ class CreateTripsTable extends Migration
         Schema::create('trips', function (Blueprint $table) {
             $table->id();
 
-            $table->enum('type', ['complete', 'new','accept','reject']);
+            $table->enum('type', ['complete', 'new', 'progress', 'accept','reject']);
             $table->enum('trip_type', ['scheduled','with','without','quick']);
             $table->text('from_address');
             $table->text('from_long');

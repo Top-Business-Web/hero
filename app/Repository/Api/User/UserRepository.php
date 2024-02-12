@@ -102,7 +102,6 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
                     $existUser->forceDelete();
                 } else {
                     return self::returnResponseDataApi(null, 'هناك حساب تم حذفه علي هذا الرقم يرجي الانتظار الي ' . $endTime->format('Y-m-d') . ' لتسجيل من جديد', 422, 422);
-
                 }
             }
 
@@ -134,7 +133,7 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
             }
         } catch (\Exception $exception) {
 
-            return self::returnResponseDataApi($exception->getMessage(), 500,500);
+            return self::returnResponseDataApi($exception->getMessage(), 500, 500);
         }
     } // register
 
@@ -185,12 +184,9 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
 
                 return self::returnResponseDataApi(new UserResource($user), "تم تسجيل الدخول بنجاح", 200, 200);
             }
-
-
         } catch (\Exception $exception) {
             return self::returnResponseDataApi(null, $exception->getMessage(), 500, 500);
         }
-
     } // login
 
     public function logout(): JsonResponse
@@ -359,7 +355,7 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
             $checkQuickTrip = Trip::query()
                 ->where('user_id', '=', Auth::user()->id)
                 ->where('trip_type', '!=', 'scheduled')
-                ->where('type','!=','reject')
+                ->where('type', '!=', 'reject')
                 ->where('ended', '=', 0)->latest()->first();
             if ($checkQuickTrip) {
                 return self::returnResponseDataApi(null, 'هناك رحلة حالية لم تنتهي بعد لنفس العميل', 502, 200);
@@ -587,15 +583,23 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
         $user = Auth::user();
         if ($user->type == 'user') {
             $notifications = Notification::query()
+            ->with('trip')
                 ->where('user_id', '=', $user->id)
-                ->OrWhereIn('type', ['all', 'all_user'])
+                ->orWhereIn('type', ['all', 'all_user'])
                 ->get();
+            $tripIds = $notifications->pluck('trip_id')->toArray();
+            $firstTripId = count($tripIds) > 0 ? $tripIds[1] : null;
         } elseif ($user->type == 'driver') {
             $notifications = Notification::query()
+                ->with('trip')
                 ->where('user_id', '=', $user->id)
                 ->OrWhereIn('type', ['all', 'all_driver'])
                 ->get();
         }
+        // $data = [
+        //     'notifications' => $notifications,
+        //     'trip' => $trip,
+        // ];
 
 
         if ($notifications->isEmpty()) {
@@ -659,11 +663,9 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
                 } else {
                     return self::returnResponseDataApi(null, "يوجد خطاء ما أثناء دخول البيانات", 500);
                 }
-
             } else {
                 return self::returnResponseDataApi(null, "تاكد من معرف الرحلة ", 500, 200);
             }
-
         } catch (\Exception $exception) {
             return self::returnResponseDataApi($exception->getMessage(), 500, 500);
         }
