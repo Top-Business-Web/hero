@@ -13,7 +13,7 @@ trait FirebaseNotification
     private string $serverKey = 'AAAAYR8Sg9c:APA91bG2iz-PO2r1Pt7D-Z6BCBlKsfslMYDx7bTkoiXYC9Fvd8hCs-7rV82Qec5gpJyoR6AZQUsuDXJJiuLFXmqFhXrDijyJQR7TGU-ZzE---BcLvvp46AMvVJikSFjdaP0XIYM33klH';
 
 
-    public function sendFirebaseNotification($data, $user_id = null, $type = 'user', $create = true)
+    public function sendFirebaseNotification($data, $user_id = null, $type = 'user', $create = true, $trip_id = null)
     {
 
         $url = 'https://fcm.googleapis.com/fcm/send';
@@ -44,6 +44,7 @@ trait FirebaseNotification
                     'title' => $data['title'],
                     'description' => $data['body'],
                     'user_id' => $user_id ?? null,
+                    'trip_id' => $trip_id ?? null,
                     'type' => $type
                 ]);
         }

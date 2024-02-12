@@ -10,12 +10,14 @@ use App\Models\Setting;
 use Carbon\CarbonPeriod;
 use App\Traits\PhotoTrait;
 use App\Models\DriverWallet;
+use App\Models\Notification;
 use Illuminate\Http\Request;
 use App\Models\DriverDetails;
 use App\Models\DriverDocuments;
 use App\Repository\ResponseApi;
 use Illuminate\Http\JsonResponse;
 use App\Http\Resources\TripResource;
+use App\Traits\FirebaseNotification;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Resources\DriverResource;
 use App\Http\Resources\WalletResource;
@@ -26,6 +28,7 @@ use App\Interfaces\Api\Driver\DriverRepositoryInterface;
 class DriverRepository extends ResponseApi implements DriverRepositoryInterface
 {
     use PhotoTrait;
+    use FirebaseNotification;
 
     public function registerDriver(Request $request): JsonResponse
     {
@@ -295,6 +298,7 @@ class DriverRepository extends ResponseApi implements DriverRepositoryInterface
         }
     } // update Driver Document
 
+
     public function startQuickTrip(Request $request): JsonResponse
     {
         try {
@@ -313,38 +317,41 @@ class DriverRepository extends ResponseApi implements DriverRepositoryInterface
                 $firstError = $validator->errors()->first();
                 return self::returnResponseDataApi(null, $firstError, 422);
             }
+
             $checkQuickTrip = Trip::query()
-                ->where('phone', '=', $request->phone)
-                ->where('ended', '=', 0)->latest()->first();
+                ->where('phone', $request->phone)
+                ->where('ended', 0)
+                ->latest()
+                ->first();
+
             if ($checkQuickTrip) {
-                return self::returnResponseDataApi(null, 'هناك رحلة حالية لم تنتهي بعد علي نفس الرقم', 200, 200);
+                return self::returnResponseDataApi(null, 'هناك رحلة حالية لم تنتهي بعد على نفس الرقم', 200, 200);
             }
 
-            $createQuickTrip = Trip::query()
-                ->create([
-                    'from_address' => $request->from_address,
-                    'from_long' => $request->from_long,
-                    'from_lat' => $request->from_lat,
-                    'to_address' => $request->to_address,
-                    'to_long' => $request->to_long,
-                    'to_lat' => $request->to_lat,
-                    'name' => $request->name,
-                    'phone' => $request->phone,
-                    'driver_id' => Auth::user()->id,
-                    'type' => 'new',
-                    'trip_type' => 'quick',
-                    'time_ride' => Carbon::now()
-                ]);
+            $createQuickTrip = Trip::query()->create([
+                'from_address' => $request->from_address,
+                'from_long' => $request->from_long,
+                'from_lat' => $request->from_lat,
+                'to_address' => $request->to_address,
+                'to_long' => $request->to_long,
+                'to_lat' => $request->to_lat,
+                'name' => $request->name,
+                'phone' => $request->phone,
+                'driver_id' => Auth::id(),
+                'type' => 'progress',
+                'trip_type' => 'quick',
+                'time_ride' => Carbon::now()
+            ]);
 
-            if (isset($createQuickTrip)) {
+            if ($createQuickTrip) {
                 return self::returnResponseDataApi(new TripResource($createQuickTrip), "تم بدأ الرحلة الفورية بنجاح", 201, 200);
             } else {
-                return self::returnResponseDataApi(null, "يوجد خطاء ما اثناء دخول البيانات", 500);
+                return self::returnResponseDataApi(null, "يوجد خطأ ما أثناء دخول البيانات", 500);
             }
         } catch (\Exception $exception) {
             return self::returnResponseDataApi($exception->getMessage(), 500, 500);
         }
-    } // start quick trip
+    }
 
     public function endQuickTrip(Request $request): JsonResponse
     {
@@ -429,7 +436,15 @@ class DriverRepository extends ResponseApi implements DriverRepositoryInterface
             if ($checkTrip) {
                 $checkTrip->driver_id = Auth::user()->id;
                 $checkTrip->type = 'accept';
+
                 if ($checkTrip->save()) {
+                    Notification::create([
+                        'user_id' => $checkTrip->user_id,
+                        'trip_id' => $request->trip_id,
+                        'title' => $checkTrip->from_address,
+                        'description' => $checkTrip->to_address,
+                        'type' => 'user',
+                    ]);
                     return self::returnResponseDataApi(new TripResource($checkTrip), "تم تاكيد الرحلة بنجاح", 201, 200);
                 } else {
                     return self::returnResponseDataApi(null, "يوجد خطاء ما اثناء دخول البيانات", 500);
