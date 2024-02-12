@@ -28,6 +28,7 @@ class SettingRequest extends FormRequest
             'trip_insurance' => 'required',
             'rewards' => 'nullable',
             'about' => 'required',
+            'phone' => 'required|min:11',
             'support' => 'required',
             'safety_roles' => 'required',
             'polices' => 'required',
@@ -45,6 +46,8 @@ class SettingRequest extends FormRequest
             'conditions_ar.required' => 'الشروط والاحكام باللغة العربية مطلوب',
             'conditions_en.required' => 'الشروط والاحكام باللغة الانجليزية مطلوب',
             'shipment_price.required' => 'سعر الشحنه مطلوب',
+            'phone.required' => 'رقم الهاتف مطلوب',
+            'phone.min' => 'رقم الهاتف على الاقل 11 رقم',
         ];
     }
 }

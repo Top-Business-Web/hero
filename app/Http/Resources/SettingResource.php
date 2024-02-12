@@ -19,6 +19,7 @@ class SettingResource extends JsonResource
             'rewards' => $this->rewards,
             'about' => $this->about,
             'support' => $this->support,
+            'phone' => $this->phone,
             'safety_roles' => $this->safety_roles,
             'polices' => $this->polices,
             'km' => $this->km,

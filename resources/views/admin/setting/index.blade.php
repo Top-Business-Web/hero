@@ -41,14 +41,19 @@
                                 </div>
                             </div>
                             <div class="row">
-                                <div class="col-md-6">
+                                <div class="col-md-4">
                                     <label for="name_ar" class="form-control-label">سعر الكيلومتر</label>
                                     <input type="number" class="form-control" value="{{ $settings->km }}" name="km" id="km"
                                         required>
                                 </div>
-                                <div class="col-md-6">
+                                <div class="col-md-4">
                                     <label for="name_en" class="form-control-label">ضريبة القيمة المضافة</label>
                                     <input type="number" class="form-control" value="{{ $settings->vat }}" name="vat" id="vat"
+                                        required>
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="name_en" class="form-control-label">هاتف</label>
+                                    <input type="number" class="form-control" value="{{ $settings->phone }}" name="phone" id="phone"
                                         required>
                                 </div>
                             </div>
