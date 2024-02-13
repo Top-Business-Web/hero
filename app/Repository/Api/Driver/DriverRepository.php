@@ -405,10 +405,10 @@ class DriverRepository extends ResponseApi implements DriverRepositoryInterface
                     }
                     return self::returnResponseDataApi(new TripResource($checkQuickTrip), "تم نهاية الرحلة الفورية بنجاح", 201, 200);
                 } else {
-                    return self::returnResponseDataApi(null, "يوجد خطاء ما اثناء دخول البيانات", 500);
+                    return self::returnResponseDataApi(null, "يوجد خطاء ما اثناء دخول البيانات", 200);
                 }
             } else {
-                return self::returnResponseDataApi(null, "لا يوجد رحلة حالية علي هذا الرقم", 500);
+                return self::returnResponseDataApi(null, "لا يوجد رحلة حالية علي هذا الرقم", 200);
             }
         } catch (\Exception $exception) {
             return self::returnResponseDataApi($exception->getMessage(), 500, 500);
