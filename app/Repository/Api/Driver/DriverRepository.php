@@ -371,7 +371,7 @@ class DriverRepository extends ResponseApi implements DriverRepositoryInterface
                 ->where('phone', '=', $request->phone)
                 ->where('driver_id', '=', Auth::user()->id)
                 ->where('ended', '=', 0)
-                ->whereIn('type', ['new', 'accept'])
+                ->whereIn('type', ['new', 'accept', 'progress'])
                 ->first();
 
             if ($checkQuickTrip) {
