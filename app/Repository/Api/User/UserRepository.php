@@ -255,7 +255,6 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
         $user_id = auth()->user()->id;
 
         $trips = Trip::where('user_id', $user_id)
-            ->whereIn('type', ['accept', 'progress'])
             ->whereDate('created_at', '>=', Carbon::now())
             ->orderBy('created_at', 'asc')
             ->get();
