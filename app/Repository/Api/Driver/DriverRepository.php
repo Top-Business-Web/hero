@@ -858,8 +858,13 @@ class DriverRepository extends ResponseApi implements DriverRepositoryInterface
     {
         try {
             $id = auth()->user()->id;
-            $tripStatus = Trip::where('user_id', $id)->with('user')->with('driver')
-                ->orWhere('driver_id', $id)
+            $tripStatus = Trip::where(function ($query) use ($id) {
+                $query->where('user_id', $id)
+                    ->orWhere('driver_id', $id);
+            })
+                ->where('type_trip', '!=', 'scheduled')
+                ->with('user')
+                ->with('driver')
                 ->latest()
                 ->first();
 
