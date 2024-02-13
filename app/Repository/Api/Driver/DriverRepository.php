@@ -827,7 +827,7 @@ class DriverRepository extends ResponseApi implements DriverRepositoryInterface
             $driver_id = auth()->user()->id;
 
             $trips = Trip::where('driver_id', $driver_id)
-                ->whereIn('type', ['accepted', 'progress'])
+                ->whereIn('type', ['accept', 'progress'])
                 ->get();
             $driver_status = User::where('id', $driver_id)->pluck('status')->first();
             $driver_documents = DriverDocuments::where('driver_id', $driver_id)->first();
