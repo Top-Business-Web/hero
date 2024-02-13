@@ -543,7 +543,6 @@ class DriverRepository extends ResponseApi implements DriverRepositoryInterface
             $rules = [
                 'trip_id' => 'required',
                 'distance' => 'required',
-                'time' => 'required',
             ];
             $validator = Validator::make($request->all(), $rules);
             if ($validator->fails()) {
@@ -554,13 +553,14 @@ class DriverRepository extends ResponseApi implements DriverRepositoryInterface
                 ->where('id', '=', $request->trip_id)
                 ->where('driver_id', '=', Auth::user()->id)
                 ->where('ended', '=', 0)
-                ->where('type', 'accept')
+                ->where('type', 'progress')
                 ->first();
 
+            $endTime = $checkTrip->updated_at->diffInMinutes(Carbon::now());
             if ($checkTrip) {
                 $checkTrip->time_arrive = Carbon::now();
                 $checkTrip->distance = $request->distance;
-                $checkTrip->time = $request->time;
+                $checkTrip->time = $endTime;
                 $price = $checkTrip->distance * $settigs->km; // Calculate the total price based on the distance
                 $vatTotal = $price * ($settigs->vat / 100); // Calculate 15% of the total price as VAT
                 $total = $price - $vatTotal; // Calculate the total after deducting the VAT
@@ -588,10 +588,10 @@ class DriverRepository extends ResponseApi implements DriverRepositoryInterface
                     }
                     return self::returnResponseDataApi(new TripResource($checkTrip), "تم نهاية الرحلة بنجاح", 201, 200);
                 } else {
-                    return self::returnResponseDataApi(null, "يوجد خطاء ما اثناء دخول البيانات", 500);
+                    return self::returnResponseDataApi(null, "يوجد خطاء ما اثناء دخول البيانات", 200);
                 }
             } else {
-                return self::returnResponseDataApi(null, "لا يوجد رحلة حالية علي هذا الرقم", 500);
+                return self::returnResponseDataApi(null, "لا يوجد رحلة حالية علي هذا الرقم", 200);
             }
         } catch (\Exception $exception) {
             return self::returnResponseDataApi($exception->getMessage(), 500, 500);
