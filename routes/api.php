@@ -76,6 +76,7 @@ Route::group(['middleware' => 'jwt'],function (){
     Route::post('startTrip', [DriverTripController::class, 'startTrip']);
     Route::post('endTrip', [DriverTripController::class, 'endTrip']);
     Route::get('driverAllTrip',[DriverTripController::class,'driverAllTrip']);
+    Route::get('getTripStatus', [DriverTripController::class,'getTripStatus']);
 });
 ######################### END DRIVER ROUTES ###################################
 

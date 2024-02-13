@@ -252,6 +252,13 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
 
     public function userHome(): JsonResponse
     {
+        $user_id = auth()->user()->id;
+
+        $trips = Trip::where('user_id', $user_id)
+            ->whereIn('type', ['accept', 'progress'])
+            ->whereDate('created_at', '>=', Carbon::now())
+            ->orderBy('created_at', 'asc')
+            ->get();
         $home['sliders'] = Slider::query()
             ->select('image', 'link')
             ->where('status', '=', true)
@@ -260,13 +267,6 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
         foreach ($home['sliders'] as $key => $slider) {
             $home['sliders'][$key]['image'] = asset($slider->image);
         }
-
-        $trips = Trip::query()
-            ->where('user_id', '=', Auth::user()->id)
-            ->where('type', 'new')
-            ->whereDate('created_at', '>=', Carbon::now())
-            ->orderBy('created_at', 'asc')
-            ->get();
 
         $home['new_trips'] = TripResource::collection($trips);
 
@@ -583,7 +583,7 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
         $user = Auth::user();
         if ($user->type == 'user') {
             $notifications = Notification::query()
-            ->with('trip')
+                ->with('trip')
                 ->where('user_id', '=', $user->id)
                 ->orWhereIn('type', ['all', 'all_user'])
                 ->get();
