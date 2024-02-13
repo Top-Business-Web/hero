@@ -862,6 +862,7 @@ class DriverRepository extends ResponseApi implements DriverRepositoryInterface
                 ->select('id', 'type')
                 ->where('user_id', $id)
                 ->orWhere('driver_id', $id)
+                ->latest()
                 ->first();
 
             return self::returnResponseDataApi($tripStatus, 'تم الحصول على بيانات حالة الرحلة بنجاح', 200);
