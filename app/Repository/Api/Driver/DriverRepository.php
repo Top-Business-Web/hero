@@ -862,7 +862,7 @@ class DriverRepository extends ResponseApi implements DriverRepositoryInterface
                 $query->where('user_id', $id)
                     ->orWhere('driver_id', $id);
             })
-                ->where('type_trip', '!=', 'scheduled')
+                ->where('trip_type', '!=', 'scheduled')
                 ->with('user')
                 ->with('driver')
                 ->latest()
