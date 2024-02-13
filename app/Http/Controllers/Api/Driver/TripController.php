@@ -50,4 +50,9 @@ class TripController extends Controller
         return $this->driverRepository->driverAllTrip($request);
     } // all trip
 
+    public function getTripStatus(): JsonResponse
+    {
+        return $this->driverRepository->getTripStatus();
+    } // getTripStatus
+
 }
