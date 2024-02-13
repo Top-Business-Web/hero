@@ -504,29 +504,37 @@ class DriverRepository extends ResponseApi implements DriverRepositoryInterface
                 $firstError = $validator->errors()->first();
                 return self::returnResponseDataApi(null, $firstError, 422);
             }
+
             $checkTrip = Trip::query()
-                ->where('id', '=', $request->trip_id)
-                ->where('ended', '=', 0)
-                ->where('type', '=', 'accept')
-                ->where('driver_id', '=', Auth::user()->id)
+                ->where('id', $request->trip_id)
+                ->where('ended', 0)
+                ->where('type', 'accept')
+                ->where('driver_id', Auth::user()->id)
                 ->first();
+
             if ($checkTrip) {
-                if ($checkTrip->time_ride != null) {
-                    return self::returnResponseDataApi(new TripResource($checkTrip), "تم بالفعل بدا الرحلة بنجاح", 201, 200);
+                // Check if the trip has already started
+                if ($checkTrip->time_ride !== null) {
+                    $checkTrip->type = 'progress';
+                    $checkTrip->save();
+                    return self::returnResponseDataApi(new TripResource($checkTrip), "تم بالفعل بدء الرحلة بنجاح", 201, 200);
                 }
+
+                // If the trip hasn't started yet, set the start time and save
                 $checkTrip->time_ride = Carbon::now();
                 if ($checkTrip->save()) {
-                    return self::returnResponseDataApi(new TripResource($checkTrip), "تم بدا الرحلة بنجاح", 201, 200);
+                    return self::returnResponseDataApi(new TripResource($checkTrip), "تم بدء الرحلة بنجاح", 201, 200);
                 } else {
-                    return self::returnResponseDataApi(null, "يوجد خطاء ما اثناء دخول البيانات", 500);
+                    return self::returnResponseDataApi(null, "حدث خطأ أثناء تحديث البيانات", 500);
                 }
             } else {
-                return self::returnResponseDataApi(null, "لا يوجد رحلة فارغه بهذا المعرف", 200);
+                return self::returnResponseDataApi(null, "لا توجد رحلة فارغة بهذا المعرف", 200);
             }
         } catch (\Exception $exception) {
             return self::returnResponseDataApi($exception->getMessage(), 500, 500);
         }
-    } // start trip
+    }
+
 
     public function endTrip(Request $request): JsonResponse
     {
@@ -818,12 +826,16 @@ class DriverRepository extends ResponseApi implements DriverRepositoryInterface
         try {
             $driver_id = auth()->user()->id;
 
+            $trips = Trip::where('driver_id', $driver_id)
+                ->whereIn('type', ['accepted', 'progress'])
+                ->get();
             $driver_status = User::where('id', $driver_id)->pluck('status')->first();
             $driver_documents = DriverDocuments::where('driver_id', $driver_id)->first();
             $driver_details = DriverDetails::where('driver_id', $driver_id)->first();
 
             $datails = [
                 'driver_id' => $driver_id,
+                'trip' => $trips,
                 'driver_status' => $driver_status,
                 'city_id' => $driver_details->area->city_id,
                 'driver_details' => $driver_details,
