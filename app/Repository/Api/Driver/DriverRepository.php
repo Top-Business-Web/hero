@@ -512,11 +512,10 @@ class DriverRepository extends ResponseApi implements DriverRepositoryInterface
                 ->where('driver_id', Auth::user()->id)
                 ->first();
 
+            $checkTrip->type = 'progress';
+            $checkTrip->save();
             if ($checkTrip) {
-                // Check if the trip has already started
                 if ($checkTrip->time_ride !== null) {
-                    $checkTrip->type = 'progress';
-                    $checkTrip->save();
                     return self::returnResponseDataApi(new TripResource($checkTrip), "تم بالفعل بدء الرحلة بنجاح", 201, 200);
                 }
 
@@ -849,6 +848,22 @@ class DriverRepository extends ResponseApi implements DriverRepositoryInterface
             ];
 
             return self::returnResponseDataApi($datails, 'تم الحصول على بيانات السائق بنجاح', 200);
+        } catch (\Exception $exception) {
+            return self::returnResponseDataApi($exception->getMessage(), 500, 500);
+        }
+    }
+
+    public function getTripStatus() : JsonResponse
+    {
+        try {
+            $id = auth()->user()->id;
+            $tripStatus = Trip::query()
+                ->select('id', 'type')
+                ->where('user_id', $id)
+                ->orWhere('driver_id', $id)
+                ->first();
+
+            return self::returnResponseDataApi($tripStatus, 'تم الحصول على بيانات حالة الرحلة بنجاح', 200);
         } catch (\Exception $exception) {
             return self::returnResponseDataApi($exception->getMessage(), 500, 500);
         }
