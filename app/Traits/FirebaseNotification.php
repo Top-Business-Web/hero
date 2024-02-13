@@ -10,7 +10,7 @@ trait FirebaseNotification
 {
 
     //firebase server key
-    private string $serverKey = 'AAAAYR8Sg9c:APA91bG2iz-PO2r1Pt7D-Z6BCBlKsfslMYDx7bTkoiXYC9Fvd8hCs-7rV82Qec5gpJyoR6AZQUsuDXJJiuLFXmqFhXrDijyJQR7TGU-ZzE---BcLvvp46AMvVJikSFjdaP0XIYM33klH';
+    private string $serverKey = 'fL26RYoMQOCMRfsJZFup3q:APA91bFdDOkBJELWU06H83iLxj-QJBgdvtmKD6ZzzjuGav2is5g18Wb8YbYEwSBec78cKAYRv2d0lutpeoqzz9fdkW-8GmD5X9I0RA0aeHtOmTtPkeC3J_wEVig7bcMbD75Ed1Mv6ft_';
 
 
     public function sendFirebaseNotification($data, $user_id = null, $type = 'user', $create = true, $trip_id = null)
