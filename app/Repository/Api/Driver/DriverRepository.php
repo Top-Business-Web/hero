@@ -359,7 +359,6 @@ class DriverRepository extends ResponseApi implements DriverRepositoryInterface
         try {
             $rules = [
                 'distance' => 'required',
-                'time' => 'required',
                 'phone' => 'required',
             ];
             $validator = Validator::make($request->all(), $rules);
@@ -374,10 +373,12 @@ class DriverRepository extends ResponseApi implements DriverRepositoryInterface
                 ->whereIn('type', ['new', 'accept', 'progress'])
                 ->first();
 
+            $endTime = $checkQuickTrip->updated_at->diffInMinutes(Carbon::now());
+
             if ($checkQuickTrip) {
                 $checkQuickTrip->time_arrive = Carbon::now();
                 $checkQuickTrip->distance = $request->distance;
-                $checkQuickTrip->time = $request->time;
+                $checkQuickTrip->time = $endTime;
                 $price = $checkQuickTrip->distance * $settigs->km; // Calculate the total price based on the distance
                 $vatTotal = $price * ($settigs->vat / 100); // Calculate 15% of the total price as VAT
                 $total = $price - $vatTotal; // Calculate the total after deducting the VAT
@@ -853,7 +854,7 @@ class DriverRepository extends ResponseApi implements DriverRepositoryInterface
         }
     }
 
-    public function getTripStatus() : JsonResponse
+    public function getTripStatus(): JsonResponse
     {
         try {
             $id = auth()->user()->id;
