@@ -28,6 +28,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use App\Http\Resources\TripRateResource;
 use App\Models\Notification;
+use App\Models\UserLocation;
 use Illuminate\Support\Facades\Validator;
 
 class UserRepository extends ResponseApi implements UserRepositoryInterface
@@ -371,6 +372,13 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
                     'user_id' => Auth::user()->id,
                     'type' => 'new',
                     'trip_type' => $request->trip_type,
+                ]);
+
+                UserLocation::create([
+                    'user_id' => auth()->user()->id,
+                    'trip_id' => $createQuickTrip->id,
+                    'long' => $request->from_long,
+                    'lat' => $request->from_lat,
                 ]);
 
             if (isset($createQuickTrip)) {
