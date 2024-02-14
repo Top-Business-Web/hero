@@ -11,6 +11,7 @@ use Carbon\CarbonPeriod;
 use App\Traits\PhotoTrait;
 use App\Models\DriverWallet;
 use App\Models\Notification;
+use App\Models\UserLocation;
 use Illuminate\Http\Request;
 use App\Models\DriverDetails;
 use App\Models\DriverDocuments;
@@ -421,6 +422,8 @@ class DriverRepository extends ResponseApi implements DriverRepositoryInterface
         try {
             $rules = [
                 'trip_id' => 'required',
+                'long' => 'required',
+                'lat' => 'required'
             ];
 
             $validator = Validator::make($request->all(), $rules);
@@ -439,6 +442,14 @@ class DriverRepository extends ResponseApi implements DriverRepositoryInterface
                 $checkTrip->type = 'accept';
 
                 if ($checkTrip->save()) {
+
+                    UserLocation::create([
+                        'user_id' => auth()->user()->id,
+                        'trip_id' => $request->trip_id,
+                        'long' => $request->long,
+                        'lat' => $request->lat,
+                    ]);
+
                     Notification::create([
                         'user_id' => $checkTrip->user_id,
                         'trip_id' => $request->trip_id,
@@ -498,6 +509,8 @@ class DriverRepository extends ResponseApi implements DriverRepositoryInterface
         try {
             $rules = [
                 'trip_id' => 'required',
+                'long' => 'required',
+                'lat' => 'required',
             ];
 
             $validator = Validator::make($request->all(), $rules);
@@ -506,33 +519,92 @@ class DriverRepository extends ResponseApi implements DriverRepositoryInterface
                 return self::returnResponseDataApi(null, $firstError, 422);
             }
 
-            $checkTrip = Trip::query()
-                ->where('id', $request->trip_id)
+            // Retrieve the trip details
+            $checkTrip = Trip::where('id', $request->trip_id)
                 ->where('ended', 0)
                 ->where('type', 'accept')
-                ->where('driver_id', Auth::user()->id)
+                ->where('driver_id', Auth::id())
                 ->first();
 
-            $checkTrip->type = 'progress';
-            $checkTrip->save();
-            if ($checkTrip) {
-                if ($checkTrip->time_ride !== null) {
-                    return self::returnResponseDataApi(new TripResource($checkTrip), "تم بالفعل بدء الرحلة بنجاح", 201, 200);
-                }
+            // Check if the trip exists
+            if (!$checkTrip) {
+                return self::returnResponseDataApi(null, "لا توجد رحلة فارغة بهذا المعرف", 200);
+            }
 
-                // If the trip hasn't started yet, set the start time and save
-                $checkTrip->time_ride = Carbon::now();
-                if ($checkTrip->save()) {
+            // Retrieve user's location
+            $userLocation = UserLocation::where('user_id', $checkTrip->user_id)
+                ->where('trip_id', $request->trip_id)
+                ->first();
+
+            // Retrieve driver's location
+            $driverLocation = UserLocation::where('user_id', Auth::id())
+                ->where('trip_id', $request->trip_id)
+                ->first();
+
+            if ($driverLocation) {
+                // Update driver's location
+                $driverLocation->lat = $request->lat;
+                $driverLocation->long = $request->long;
+                $driverLocation->save();
+            }
+
+            // Check if both user and driver locations exist
+            if ($userLocation && $driverLocation) {
+                // Calculate distance between two points using Haversine formula
+                $distance = $this->calculateDistance(
+                    $userLocation->lat,
+                    $userLocation->long,
+                    $driverLocation->lat,
+                    $driverLocation->long
+                );
+
+                // Define the maximum allowed distance for starting the trip (e.g., 1 km)
+                $maxDistance = 1000; // in kilometers
+
+                // Compare the distance with the maximum allowed distance
+                if ($distance <= $maxDistance) {
+                    // Update trip status to 'progress'
+                    $checkTrip->type = 'progress';
+                    // Set trip start time if not already set
+                    if (!$checkTrip->time_ride) {
+                        $checkTrip->time_ride = now();
+                    }
+                    $checkTrip->save();
+
                     return self::returnResponseDataApi(new TripResource($checkTrip), "تم بدء الرحلة بنجاح", 201, 200);
                 } else {
-                    return self::returnResponseDataApi(null, "حدث خطأ أثناء تحديث البيانات", 500);
+                    return self::returnResponseDataApi(null, "أنت لست في مكان البداية المناسب", 200);
                 }
             } else {
-                return self::returnResponseDataApi(null, "لا توجد رحلة فارغة بهذا المعرف", 200);
+                return self::returnResponseDataApi(null, "لا يمكن بدء الرحلة حاليًا. الرجاء التأكد من وجود مواقع صحيحة للمستخدم والسائق", 200);
             }
         } catch (\Exception $exception) {
             return self::returnResponseDataApi($exception->getMessage(), 500, 500);
         }
+    }
+
+
+    // Function to calculate distance between two points using Haversine formula
+    private function calculateDistance($lat1, $lon1, $lat2, $lon2)
+    {
+        $earthRadius = 6371; // Radius of the earth in kilometers
+
+        // Convert latitude and longitude from degrees to radians
+        $latFrom = deg2rad($lat1);
+        $lonFrom = deg2rad($lon1);
+        $latTo = deg2rad($lat2);
+        $lonTo = deg2rad($lon2);
+
+        // Calculate the change in coordinates
+        $latDelta = $latTo - $latFrom;
+        $lonDelta = $lonTo - $lonFrom;
+
+        // Apply Haversine formula
+        $angle = 2 * asin(sqrt(pow(sin($latDelta / 2), 2) +
+            cos($latFrom) * cos($latTo) * pow(sin($lonDelta / 2), 2)));
+
+        // Calculate the distance
+        return $angle * $earthRadius;
     }
 
 
