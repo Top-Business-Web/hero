@@ -374,12 +374,12 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
                     'trip_type' => $request->trip_type,
                 ]);
 
-                UserLocation::create([
-                    'user_id' => auth()->user()->id,
-                    'trip_id' => $createQuickTrip->id,
-                    'long' => $request->from_long,
-                    'lat' => $request->from_lat,
-                ]);
+            UserLocation::create([
+                'user_id' => auth()->user()->id,
+                'trip_id' => $createQuickTrip->id,
+                'long' => $request->from_long,
+                'lat' => $request->from_lat,
+            ]);
 
             if (isset($createQuickTrip)) {
                 $this->sendFirebaseNotification(['title' => 'رحلة جديدة', 'body' => 'هناك رحلة جديدة في الانتظار'], null, 'all_driver');
@@ -396,21 +396,27 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
     {
         try {
             $trip = Trip::query()
-                ->where('user_id', '=', Auth::user()->id)
-                ->where('type', '=', 'new')
-                ->where('ended', '=', 0)
-                ->where('id', '=', $request->trip_id)
+                ->where('user_id', Auth::user()->id)
+                ->whereIn('type', ['new', 'accept']) // Use whereIn instead of where when checking against multiple values
+                ->where('ended', 0) // No need for '=', 0 is enough
+                ->where('id', $request->trip_id) // No need for '=', just use the value
                 ->first();
-            if ($trip) {
+
+            if (!$trip) {
+                return self::returnResponseDataApi(null, "لا يوجد لديك أي رحلة جديدة بهذا المعرف", 500, 200);
+            }
+
+            if ($trip->type == 'new') {
                 $trip->delete();
-                return self::returnResponseDataApi(null, 'تم الغاء الرحلة بنجاح', 200);
-            } else {
-                return self::returnResponseDataApi(null, "لا يوجد لديك اي رحلة جديدة بهذا المعرف", 500, 500);
+                return self::returnResponseDataApi($trip, 'تم إلغاء الرحلة بنجاح', 200);
+            } elseif ($trip->type == 'accept') { // Corrected 'accepte' to 'accept'
+                return self::returnResponseDataApi(null, "تم قبول هذه الرحلة من قبل السائق", 500, 200);
             }
         } catch (\Exception $exception) {
             return self::returnResponseDataApi($exception->getMessage(), 500, 500);
         }
-    } // cancel trip
+    }
+
 
     public function createScheduleTrip(Request $request): JsonResponse
     {

@@ -431,43 +431,50 @@ class DriverRepository extends ResponseApi implements DriverRepositoryInterface
                 $firstError = $validator->errors()->first();
                 return self::returnResponseDataApi(null, $firstError, 422);
             }
+
             $checkTrip = Trip::query()
                 ->where('id', '=', $request->trip_id)
                 ->where('ended', '=', 0)
-                ->where('type', '=', 'new')
-                ->where('driver_id', '=', null)
+                ->whereIn('type', ['new', 'reject']) // Using whereIn for multiple values
+                ->whereNull('driver_id') // Check for null value
                 ->first();
+
             if ($checkTrip) {
-                $checkTrip->driver_id = Auth::user()->id;
-                $checkTrip->type = 'accept';
+                if ($checkTrip->type == 'new') { 
+                    $checkTrip->driver_id = Auth::user()->id;
+                    $checkTrip->type = 'accept';
 
-                if ($checkTrip->save()) {
+                    if ($checkTrip->save()) {
+                        UserLocation::create([
+                            'user_id' => auth()->user()->id,
+                            'trip_id' => $request->trip_id,
+                            'long' => $request->long,
+                            'lat' => $request->lat,
+                        ]);
 
-                    UserLocation::create([
-                        'user_id' => auth()->user()->id,
-                        'trip_id' => $request->trip_id,
-                        'long' => $request->long,
-                        'lat' => $request->lat,
-                    ]);
+                        Notification::create([
+                            'user_id' => $checkTrip->user_id,
+                            'trip_id' => $request->trip_id,
+                            'title' => $checkTrip->from_address,
+                            'description' => $checkTrip->to_address,
+                            'type' => 'user',
+                        ]);
 
-                    Notification::create([
-                        'user_id' => $checkTrip->user_id,
-                        'trip_id' => $request->trip_id,
-                        'title' => $checkTrip->from_address,
-                        'description' => $checkTrip->to_address,
-                        'type' => 'user',
-                    ]);
-                    return self::returnResponseDataApi(new TripResource($checkTrip), "تم تاكيد الرحلة بنجاح", 201, 200);
-                } else {
-                    return self::returnResponseDataApi(null, "يوجد خطاء ما اثناء دخول البيانات", 500);
+                        return self::returnResponseDataApi(new TripResource($checkTrip), "تم تأكيد الرحلة بنجاح", 201, 200);
+                    } else {
+                        return self::returnResponseDataApi(null, "يوجد خطأ ما أثناء دخول البيانات", 500);
+                    }
+                } elseif ($checkTrip->type == 'reject') { 
+                    return self::returnResponseDataApi(null, "تم إلغاء هذه الرحلة من قبل المستخدم", 200);
                 }
             } else {
-                return self::returnResponseDataApi(null, "تم حجز هذه الرحلة من قبل سائق اخر", 200);
+                return self::returnResponseDataApi(null, "الرحلة غير متاحة أو تم قبولها بالفعل", 404);
             }
         } catch (\Exception $exception) {
             return self::returnResponseDataApi($exception->getMessage(), 500, 500);
         }
-    } // accept trip
+    }
+
 
     public function cancelTrip(Request $request): JsonResponse
     {
