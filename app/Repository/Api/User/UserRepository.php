@@ -257,6 +257,7 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
 
         $trips = Trip::where('user_id', $user_id)
             ->whereDate('created_at', '>=', Carbon::now())
+            ->where('type', 'new')
             ->orderBy('created_at', 'asc')
             ->get();
         $home['sliders'] = Slider::query()
