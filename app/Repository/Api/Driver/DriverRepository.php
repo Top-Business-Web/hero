@@ -455,8 +455,8 @@ class DriverRepository extends ResponseApi implements DriverRepositoryInterface
                         Notification::create([
                             'user_id' => $checkTrip->user_id,
                             'trip_id' => $request->trip_id,
-                            'title' => $checkTrip->from_address,
-                            'description' => $checkTrip->to_address,
+                            'title' => 'تأكيد الرحلة',
+                            'description' => 'تم قبول الرحلة من السائق',
                             'type' => 'user',
                         ]);
 
@@ -498,6 +498,14 @@ class DriverRepository extends ResponseApi implements DriverRepositoryInterface
             if ($checkTrip) {
                 $checkTrip->driver_id = null;
                 $checkTrip->type = 'new';
+
+                Notification::create([
+                    'user_id' => $checkTrip->user_id,
+                    'trip_id' => $request->trip_id,
+                    'title' => 'الغاء الرحلة',
+                    'description' => 'تم الغاء حجز الرحلة من السائق',
+                    'type' => 'user',
+                ]);
                 if ($checkTrip->save()) {
                     return self::returnResponseDataApi(new TripResource($checkTrip), "تم الغاء الرحلة بنجاح", 201, 200);
                 } else {
@@ -660,6 +668,15 @@ class DriverRepository extends ResponseApi implements DriverRepositoryInterface
                                 'total' => $total,
                                 'vat_total' => $vatTotal,
                             ]);
+
+                            Notification::create([
+                                'user_id' => $checkTrip->user_id,
+                                'trip_id' => $request->trip_id,
+                                'title' => 'انتهاء الرحلة',
+                                'description' => 'تم الانتهاء من الرحلة',
+                                'type' => 'user',
+                            ]);
+
                     } else {
                         $wallet->total += $total;
                         $wallet->vat_total += $vatTotal;
