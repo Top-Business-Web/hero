@@ -594,32 +594,32 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
     public function getAllNotification(): JsonResponse
     {
         $user = Auth::user();
+
         if ($user->type == 'user') {
             $notifications = Notification::query()
                 ->with('trip')
                 ->where('user_id', '=', $user->id)
                 ->orWhereIn('type', ['all', 'all_user'])
+                ->orderBy('created_at', 'desc') // Order notifications from newest to oldest
                 ->get();
+            // Retrieve all matching notifications, not just the first one
             $tripIds = $notifications->pluck('trip_id')->toArray();
-            $firstTripId = count($tripIds) > 0 ? $tripIds[1] : null;
         } elseif ($user->type == 'driver') {
             $notifications = Notification::query()
                 ->with('trip')
                 ->where('user_id', '=', $user->id)
-                ->OrWhereIn('type', ['all', 'all_driver'])
+                ->orWhereIn('type', ['all', 'all_driver'])
+                ->orderBy('created_at', 'desc') 
                 ->get();
         }
-        // $data = [
-        //     'notifications' => $notifications,
-        //     'trip' => $trip,
-        // ];
-
 
         if ($notifications->isEmpty()) {
             return self::returnResponseDataApi([], "لا يوجد إشعارات لهذا المستخدم", 200);
         }
+
         return self::returnResponseDataApi($notifications, "تم الحصول على الإشعارات بنجاح", 200);
-    } //getAllNotification
+    }
+
 
     public function deleteUser(): JsonResponse
     {
