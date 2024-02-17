@@ -26,6 +26,7 @@ class TripResource extends JsonResource
             'to_address' => $this->to_address,
             'to_long' => $this->to_long,
             'to_lat' => $this->to_lat,
+            'start_time' => $this->start_time,
             'time_ride' => $this->time_ride,
             'time_arrive' => $this->time_arrive,
             'distance' => $this->distance,
