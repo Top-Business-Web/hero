@@ -38,7 +38,7 @@ class Trip extends Model
 
     public function getStartTimeAttribute()
     {
-        return $this->created_at->format('H:i:s');
+        return $this->created_at;
     }
 
     public function driver(): BelongsTo
