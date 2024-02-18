@@ -28,6 +28,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use App\Http\Resources\TripRateResource;
 use App\Models\Notification;
+use App\Models\UserLocation;
 use Illuminate\Support\Facades\Validator;
 
 class UserRepository extends ResponseApi implements UserRepositoryInterface
@@ -102,7 +103,6 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
                     $existUser->forceDelete();
                 } else {
                     return self::returnResponseDataApi(null, 'هناك حساب تم حذفه علي هذا الرقم يرجي الانتظار الي ' . $endTime->format('Y-m-d') . ' لتسجيل من جديد', 422, 422);
-
                 }
             }
 
@@ -134,7 +134,7 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
             }
         } catch (\Exception $exception) {
 
-            return self::returnResponseDataApi($exception->getMessage(), 500,500);
+            return self::returnResponseDataApi($exception->getMessage(), 500, 500);
         }
     } // register
 
@@ -185,12 +185,9 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
 
                 return self::returnResponseDataApi(new UserResource($user), "تم تسجيل الدخول بنجاح", 200, 200);
             }
-
-
         } catch (\Exception $exception) {
             return self::returnResponseDataApi(null, $exception->getMessage(), 500, 500);
         }
-
     } // login
 
     public function logout(): JsonResponse
@@ -256,6 +253,13 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
 
     public function userHome(): JsonResponse
     {
+        $user_id = auth()->user()->id;
+
+        $trips = Trip::where('user_id', $user_id)
+            ->whereDate('created_at', '>=', Carbon::now())
+            ->where('type', 'new')
+            ->orderBy('created_at', 'asc')
+            ->get();
         $home['sliders'] = Slider::query()
             ->select('image', 'link')
             ->where('status', '=', true)
@@ -264,13 +268,6 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
         foreach ($home['sliders'] as $key => $slider) {
             $home['sliders'][$key]['image'] = asset($slider->image);
         }
-
-        $trips = Trip::query()
-            ->where('user_id', '=', Auth::user()->id)
-            ->where('type', 'new')
-            ->whereDate('created_at', '>=', Carbon::now())
-            ->orderBy('created_at', 'asc')
-            ->get();
 
         $home['new_trips'] = TripResource::collection($trips);
 
@@ -359,10 +356,10 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
             $checkQuickTrip = Trip::query()
                 ->where('user_id', '=', Auth::user()->id)
                 ->where('trip_type', '!=', 'scheduled')
-                ->where('type','!=','reject')
+                ->where('type', '!=', 'reject')
                 ->where('ended', '=', 0)->latest()->first();
             if ($checkQuickTrip) {
-                return self::returnResponseDataApi(null, 'هناك رحلة حالية لم تنتهي بعد لنفس العميل', 502, 200);
+                return self::returnResponseDataApi(null, 'هناك رحلة حالية لم تنتهي بعد لنفس العميل', 200, 200);
             }
 
             $createQuickTrip = Trip::query()
@@ -377,6 +374,13 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
                     'type' => 'new',
                     'trip_type' => $request->trip_type,
                 ]);
+
+            UserLocation::create([
+                'user_id' => auth()->user()->id,
+                'trip_id' => $createQuickTrip->id,
+                'long' => $request->from_long,
+                'lat' => $request->from_lat,
+            ]);
 
             if (isset($createQuickTrip)) {
                 $this->sendFirebaseNotification(['title' => 'رحلة جديدة', 'body' => 'هناك رحلة جديدة في الانتظار'], null, 'all_driver');
@@ -393,21 +397,27 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
     {
         try {
             $trip = Trip::query()
-                ->where('user_id', '=', Auth::user()->id)
-                ->where('type', '=', 'new')
-                ->where('ended', '=', 0)
-                ->where('id', '=', $request->trip_id)
+                ->where('user_id', Auth::user()->id)
+                ->whereIn('type', ['new', 'accept']) // Use whereIn instead of where when checking against multiple values
+                ->where('ended', 0) // No need for '=', 0 is enough
+                ->where('id', $request->trip_id) // No need for '=', just use the value
                 ->first();
-            if ($trip) {
+
+            if (!$trip) {
+                return self::returnResponseDataApi(null, "لا يوجد لديك أي رحلة جديدة بهذا المعرف", 500, 200);
+            }
+
+            if ($trip->type == 'new') {
                 $trip->delete();
-                return self::returnResponseDataApi(null, 'تم الغاء الرحلة بنجاح', 200);
-            } else {
-                return self::returnResponseDataApi(null, "لا يوجد لديك اي رحلة جديدة بهذا المعرف", 500, 500);
+                return self::returnResponseDataApi($trip, 'تم إلغاء الرحلة بنجاح', 200);
+            } elseif ($trip->type == 'accept') { // Corrected 'accepte' to 'accept'
+                return self::returnResponseDataApi(null, "تم قبول هذه الرحلة من قبل السائق", 500, 200);
             }
         } catch (\Exception $exception) {
             return self::returnResponseDataApi($exception->getMessage(), 500, 500);
         }
-    } // cancel trip
+    }
+
 
     public function createScheduleTrip(Request $request): JsonResponse
     {
@@ -585,24 +595,32 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
     public function getAllNotification(): JsonResponse
     {
         $user = Auth::user();
+
         if ($user->type == 'user') {
             $notifications = Notification::query()
+                ->with('trip')
                 ->where('user_id', '=', $user->id)
-                ->OrWhereIn('type', ['all', 'all_user'])
+                ->orWhereIn('type', ['all', 'all_user'])
+                ->orderBy('created_at', 'desc') // Order notifications from newest to oldest
                 ->get();
+            // Retrieve all matching notifications, not just the first one
+            $tripIds = $notifications->pluck('trip_id')->toArray();
         } elseif ($user->type == 'driver') {
             $notifications = Notification::query()
+                ->with('trip')
                 ->where('user_id', '=', $user->id)
-                ->OrWhereIn('type', ['all', 'all_driver'])
+                ->orWhereIn('type', ['all', 'all_driver'])
+                ->orderBy('created_at', 'desc') 
                 ->get();
         }
-
 
         if ($notifications->isEmpty()) {
             return self::returnResponseDataApi([], "لا يوجد إشعارات لهذا المستخدم", 200);
         }
+
         return self::returnResponseDataApi($notifications, "تم الحصول على الإشعارات بنجاح", 200);
-    } //getAllNotification
+    }
+
 
     public function deleteUser(): JsonResponse
     {
@@ -642,7 +660,7 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
                         return self::returnResponseDataApi(null, "تم تقييم الرحلة بالفعل", 500, 200);
                     }
                 } else {
-                    return self::returnResponseDataApi(null, "تاكد من حالة الرحلة انها مكتملة", 500, 200);
+                    return self::returnResponseDataApi(null, "تاكد من حالة الرحلة انها مكتملة", 200, 200);
                 }
 
                 $createTripRate = TripRates::query()
@@ -659,11 +677,9 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
                 } else {
                     return self::returnResponseDataApi(null, "يوجد خطاء ما أثناء دخول البيانات", 500);
                 }
-
             } else {
-                return self::returnResponseDataApi(null, "تاكد من معرف الرحلة ", 500, 500);
+                return self::returnResponseDataApi(null, "تاكد من معرف الرحلة ", 500, 200);
             }
-
         } catch (\Exception $exception) {
             return self::returnResponseDataApi($exception->getMessage(), 500, 500);
         }

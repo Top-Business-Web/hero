@@ -15,12 +15,13 @@ class CreateNotificationsTable extends Migration
     {
         Schema::create('notifications', function (Blueprint $table) {
             $table->id();
-
             $table->unsignedBigInteger('user_id')->nullable();
             $table->string('title');
+            $table->foreignId('trip_id')
+                ->constrained('trips')
+                ->cascadeOnDelete();
             $table->longText('description');
             $table->enum('type', ['user', 'driver', 'all_driver', 'all_user', 'all']);
-
             $table->foreign('user_id')
                 ->on('users')->references('id')->cascadeOnDelete()->cascadeOnUpdate();
             $table->boolean('seen')->default(false);

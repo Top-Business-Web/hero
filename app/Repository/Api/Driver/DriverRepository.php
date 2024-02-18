@@ -11,12 +11,15 @@ use App\Models\Setting;
 use Carbon\CarbonPeriod;
 use App\Traits\PhotoTrait;
 use App\Models\DriverWallet;
+use App\Models\Notification;
+use App\Models\UserLocation;
 use Illuminate\Http\Request;
 use App\Models\DriverDetails;
 use App\Models\DriverDocuments;
 use App\Repository\ResponseApi;
 use Illuminate\Http\JsonResponse;
 use App\Http\Resources\TripResource;
+use App\Traits\FirebaseNotification;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Resources\DriverResource;
 use App\Http\Resources\WalletResource;
@@ -296,6 +299,7 @@ class DriverRepository extends ResponseApi implements DriverRepositoryInterface
         }
     } // update Driver Document
 
+
     public function startQuickTrip(Request $request): JsonResponse
     {
         try {
@@ -314,38 +318,41 @@ class DriverRepository extends ResponseApi implements DriverRepositoryInterface
                 $firstError = $validator->errors()->first();
                 return self::returnResponseDataApi(null, $firstError, 422);
             }
+
             $checkQuickTrip = Trip::query()
-                ->where('phone', '=', $request->phone)
-                ->where('ended', '=', 0)->latest()->first();
+                ->where('phone', $request->phone)
+                ->where('ended', 0)
+                ->latest()
+                ->first();
+
             if ($checkQuickTrip) {
-                return self::returnResponseDataApi(null, 'هناك رحلة حالية لم تنتهي بعد علي نفس الرقم', 200, 200);
+                return self::returnResponseDataApi(null, 'هناك رحلة حالية لم تنتهي بعد على نفس الرقم', 200, 200);
             }
 
-            $createQuickTrip = Trip::query()
-                ->create([
-                    'from_address' => $request->from_address,
-                    'from_long' => $request->from_long,
-                    'from_lat' => $request->from_lat,
-                    'to_address' => $request->to_address,
-                    'to_long' => $request->to_long,
-                    'to_lat' => $request->to_lat,
-                    'name' => $request->name,
-                    'phone' => $request->phone,
-                    'driver_id' => Auth::user()->id,
-                    'type' => 'new',
-                    'trip_type' => 'quick',
-                    'time_ride' => Carbon::now()
-                ]);
+            $createQuickTrip = Trip::query()->create([
+                'from_address' => $request->from_address,
+                'from_long' => $request->from_long,
+                'from_lat' => $request->from_lat,
+                'to_address' => $request->to_address,
+                'to_long' => $request->to_long,
+                'to_lat' => $request->to_lat,
+                'name' => $request->name,
+                'phone' => $request->phone,
+                'driver_id' => Auth::id(),
+                'type' => 'progress',
+                'trip_type' => 'quick',
+                'time_ride' => Carbon::now()
+            ]);
 
-            if (isset($createQuickTrip)) {
+            if ($createQuickTrip) {
                 return self::returnResponseDataApi(new TripResource($createQuickTrip), "تم بدأ الرحلة الفورية بنجاح", 201, 200);
             } else {
-                return self::returnResponseDataApi(null, "يوجد خطاء ما اثناء دخول البيانات", 500);
+                return self::returnResponseDataApi(null, "يوجد خطأ ما أثناء دخول البيانات", 500);
             }
         } catch (\Exception $exception) {
             return self::returnResponseDataApi($exception->getMessage(), 500, 500);
         }
-    } // start quick trip
+    }
 
     public function endQuickTrip(Request $request): JsonResponse
     {
@@ -353,7 +360,6 @@ class DriverRepository extends ResponseApi implements DriverRepositoryInterface
         try {
             $rules = [
                 'distance' => 'required',
-                'time' => 'required',
                 'phone' => 'required',
             ];
             $validator = Validator::make($request->all(), $rules);
@@ -365,16 +371,17 @@ class DriverRepository extends ResponseApi implements DriverRepositoryInterface
                 ->where('phone', '=', $request->phone)
                 ->where('driver_id', '=', Auth::user()->id)
                 ->where('ended', '=', 0)
-                ->whereIn('type', ['new', 'accept'])
+                ->whereIn('type', ['new', 'accept', 'progress'])
                 ->first();
+
+            // $endTime = $checkQuickTrip->updated_at->diffInMinutes(Carbon::now());
 
             if ($checkQuickTrip) {
                 $checkQuickTrip->time_arrive = Carbon::now();
                 $checkQuickTrip->distance = $request->distance;
-                $checkQuickTrip->time = $request->time;
-                $price = $checkQuickTrip->distance * $settigs->km; // Calculate the total price based on the distance
-                $vatTotal = $price * ($settigs->vat / 100); // Calculate 15% of the total price as VAT
-                $total = $price - $vatTotal; // Calculate the total after deducting the VAT
+                $price = $checkQuickTrip->distance * $settigs->km; 
+                $vatTotal = $price * ($settigs->vat / 100); 
+                $total = $price - $vatTotal; 
                 $checkQuickTrip->price = $price;
                 $checkQuickTrip->ended = true;
                 $checkQuickTrip->type = 'complete';
@@ -399,10 +406,10 @@ class DriverRepository extends ResponseApi implements DriverRepositoryInterface
                     }
                     return self::returnResponseDataApi(new TripResource($checkQuickTrip), "تم نهاية الرحلة الفورية بنجاح", 201, 200);
                 } else {
-                    return self::returnResponseDataApi(null, "يوجد خطاء ما اثناء دخول البيانات", 500);
+                    return self::returnResponseDataApi(null, "يوجد خطاء ما اثناء دخول البيانات", 200);
                 }
             } else {
-                return self::returnResponseDataApi(null, "لا يوجد رحلة حالية علي هذا الرقم", 500);
+                return self::returnResponseDataApi(null, "لا يوجد رحلة حالية علي هذا الرقم", 200);
             }
         } catch (\Exception $exception) {
             return self::returnResponseDataApi($exception->getMessage(), 500, 500);
@@ -414,6 +421,8 @@ class DriverRepository extends ResponseApi implements DriverRepositoryInterface
         try {
             $rules = [
                 'trip_id' => 'required',
+                'long' => 'required',
+                'lat' => 'required'
             ];
 
             $validator = Validator::make($request->all(), $rules);
@@ -421,12 +430,14 @@ class DriverRepository extends ResponseApi implements DriverRepositoryInterface
                 $firstError = $validator->errors()->first();
                 return self::returnResponseDataApi(null, $firstError, 422);
             }
+
             $checkTrip = Trip::query()
                 ->where('id', '=', $request->trip_id)
                 ->where('ended', '=', 0)
-                ->where('type', '=', 'new')
-                ->where('driver_id', '=', null)
+                ->whereIn('type', ['new', 'reject']) // Using whereIn for multiple values
+                ->whereNull('driver_id') // Check for null value
                 ->first();
+
             if ($checkTrip) {
                 $checkTrip->driver_id = Auth::user()->id;
                 $checkTrip->type = 'accept';
@@ -445,12 +456,13 @@ class DriverRepository extends ResponseApi implements DriverRepositoryInterface
                     return self::returnResponseDataApi(null, "يوجد خطاء ما اثناء دخول البيانات", 500);
                 }
             } else {
-                return self::returnResponseDataApi(null, "لا يوجد رحلة فارغه بهذا المعرف", 500);
+                return self::returnResponseDataApi(null, "الرحلة غير متاحة أو تم قبولها بالفعل", 404);
             }
         } catch (\Exception $exception) {
             return self::returnResponseDataApi($exception->getMessage(), 500, 500);
         }
-    } // accept trip
+    }
+
 
     public function cancelTrip(Request $request): JsonResponse
     {
@@ -474,13 +486,21 @@ class DriverRepository extends ResponseApi implements DriverRepositoryInterface
             if ($checkTrip) {
                 $checkTrip->driver_id = null;
                 $checkTrip->type = 'new';
+
+                Notification::create([
+                    'user_id' => $checkTrip->user_id,
+                    'trip_id' => $request->trip_id,
+                    'title' => 'الغاء الرحلة',
+                    'description' => 'تم الغاء حجز الرحلة من السائق',
+                    'type' => 'user',
+                ]);
                 if ($checkTrip->save()) {
                     return self::returnResponseDataApi(new TripResource($checkTrip), "تم الغاء الرحلة بنجاح", 201, 200);
                 } else {
                     return self::returnResponseDataApi(null, "يوجد خطاء ما اثناء دخول البيانات", 500);
                 }
             } else {
-                return self::returnResponseDataApi(null, "لا يوجد رحلة فارغه بهذا المعرف", 500);
+                return self::returnResponseDataApi(null, "لا يوجد رحلة فارغه بهذا المعرف", 200);
             }
         } catch (\Exception $exception) {
             return self::returnResponseDataApi($exception->getMessage(), 500, 500);
@@ -492,6 +512,8 @@ class DriverRepository extends ResponseApi implements DriverRepositoryInterface
         try {
             $rules = [
                 'trip_id' => 'required',
+                'long' => 'required',
+                'lat' => 'required',
             ];
 
             $validator = Validator::make($request->all(), $rules);
@@ -499,29 +521,95 @@ class DriverRepository extends ResponseApi implements DriverRepositoryInterface
                 $firstError = $validator->errors()->first();
                 return self::returnResponseDataApi(null, $firstError, 422);
             }
-            $checkTrip = Trip::query()
-                ->where('id', '=', $request->trip_id)
-                ->where('ended', '=', 0)
-                ->where('type', '=', 'accept')
-                ->where('driver_id', '=', Auth::user()->id)
+
+            // Retrieve the trip details
+            $checkTrip = Trip::where('id', $request->trip_id)
+                ->where('ended', 0)
+                ->where('type', 'accept')
+                ->where('driver_id', Auth::id())
                 ->first();
-            if ($checkTrip) {
-                if ($checkTrip->time_ride != null) {
-                    return self::returnResponseDataApi(new TripResource($checkTrip), "تم بالفعل بدا الرحلة بنجاح", 201, 200);
-                }
-                $checkTrip->time_ride = Carbon::now();
-                if ($checkTrip->save()) {
-                    return self::returnResponseDataApi(new TripResource($checkTrip), "تم بدا الرحلة بنجاح", 201, 200);
+
+            // Check if the trip exists
+            if (!$checkTrip) {
+                return self::returnResponseDataApi(null, "لا توجد رحلة فارغة بهذا المعرف", 200);
+            }
+
+            // Retrieve user's location
+            $userLocation = UserLocation::where('user_id', $checkTrip->user_id)
+                ->where('trip_id', $request->trip_id)
+                ->first();
+
+            // Retrieve driver's location
+            $driverLocation = UserLocation::where('user_id', Auth::id())
+                ->where('trip_id', $request->trip_id)
+                ->first();
+
+            if ($driverLocation) {
+                // Update driver's location
+                $driverLocation->lat = $request->lat;
+                $driverLocation->long = $request->long;
+                $driverLocation->save();
+            }
+
+            // Check if both user and driver locations exist
+            if ($userLocation && $driverLocation) {
+                // Calculate distance between two points using Haversine formula
+                $distance = $this->calculateDistance(
+                    $userLocation->lat,
+                    $userLocation->long,
+                    $driverLocation->lat,
+                    $driverLocation->long
+                );
+
+                // Define the maximum allowed distance for starting the trip (e.g., 1 km)
+                $maxDistance = 1000; // in kilometers
+
+                // Compare the distance with the maximum allowed distance
+                if ($distance <= $maxDistance) {
+                    // Update trip status to 'progress'
+                    $checkTrip->type = 'progress';
+                    // Set trip start time if not already set
+                    if (!$checkTrip->time_ride) {
+                        $checkTrip->time_ride = now();
+                    }
+                    $checkTrip->save();
+
+                    return self::returnResponseDataApi(new TripResource($checkTrip), "تم بدء الرحلة بنجاح", 201, 200);
                 } else {
-                    return self::returnResponseDataApi(null, "يوجد خطاء ما اثناء دخول البيانات", 500);
+                    return self::returnResponseDataApi(null, "أنت لست في مكان البداية المناسب", 200);
                 }
             } else {
-                return self::returnResponseDataApi(null, "لا يوجد رحلة فارغه بهذا المعرف", 500);
+                return self::returnResponseDataApi(null, "لا يمكن بدء الرحلة حاليًا. الرجاء التأكد من وجود مواقع صحيحة للمستخدم والسائق", 200);
             }
         } catch (\Exception $exception) {
             return self::returnResponseDataApi($exception->getMessage(), 500, 500);
         }
-    } // start trip
+    }
+
+
+    // Function to calculate distance between two points using Haversine formula
+    private function calculateDistance($lat1, $lon1, $lat2, $lon2)
+    {
+        $earthRadius = 6371; // Radius of the earth in kilometers
+
+        // Convert latitude and longitude from degrees to radians
+        $latFrom = deg2rad($lat1);
+        $lonFrom = deg2rad($lon1);
+        $latTo = deg2rad($lat2);
+        $lonTo = deg2rad($lon2);
+
+        // Calculate the change in coordinates
+        $latDelta = $latTo - $latFrom;
+        $lonDelta = $lonTo - $lonFrom;
+
+        // Apply Haversine formula
+        $angle = 2 * asin(sqrt(pow(sin($latDelta / 2), 2) +
+            cos($latFrom) * cos($latTo) * pow(sin($lonDelta / 2), 2)));
+
+        // Calculate the distance
+        return $angle * $earthRadius;
+    }
+
 
     public function endTrip(Request $request): JsonResponse
     {
@@ -530,7 +618,6 @@ class DriverRepository extends ResponseApi implements DriverRepositoryInterface
             $rules = [
                 'trip_id' => 'required',
                 'distance' => 'required',
-                'time' => 'required',
             ];
             $validator = Validator::make($request->all(), $rules);
             if ($validator->fails()) {
@@ -541,13 +628,14 @@ class DriverRepository extends ResponseApi implements DriverRepositoryInterface
                 ->where('id', '=', $request->trip_id)
                 ->where('driver_id', '=', Auth::user()->id)
                 ->where('ended', '=', 0)
-                ->where('type', 'accept')
+                ->where('type', 'progress')
                 ->first();
 
+            $endTime = $checkTrip->updated_at->diffInMinutes(Carbon::now());
             if ($checkTrip) {
                 $checkTrip->time_arrive = Carbon::now();
                 $checkTrip->distance = $request->distance;
-                $checkTrip->time = $request->time;
+                $checkTrip->time = $endTime;
                 $price = $checkTrip->distance * $settigs->km; // Calculate the total price based on the distance
                 $vatTotal = $price * ($settigs->vat / 100); // Calculate 15% of the total price as VAT
                 $total = $price - $vatTotal; // Calculate the total after deducting the VAT
@@ -568,17 +656,26 @@ class DriverRepository extends ResponseApi implements DriverRepositoryInterface
                                 'total' => $total,
                                 'vat_total' => $vatTotal,
                             ]);
+
+                            Notification::create([
+                                'user_id' => $checkTrip->user_id,
+                                'trip_id' => $request->trip_id,
+                                'title' => 'انتهاء الرحلة',
+                                'description' => 'تم الانتهاء من الرحلة',
+                                'type' => 'user',
+                            ]);
+
                     } else {
                         $wallet->total += $total;
                         $wallet->vat_total += $vatTotal;
                         $wallet->save();
                     }
-                    return self::returnResponseDataApi(new TripResource($checkTrip), "تم نهاية الرحلة الفورية بنجاح", 201, 200);
+                    return self::returnResponseDataApi(new TripResource($checkTrip), "تم نهاية الرحلة بنجاح", 201, 200);
                 } else {
-                    return self::returnResponseDataApi(null, "يوجد خطاء ما اثناء دخول البيانات", 500);
+                    return self::returnResponseDataApi(null, "يوجد خطاء ما اثناء دخول البيانات", 200);
                 }
             } else {
-                return self::returnResponseDataApi(null, "لا يوجد رحلة حالية علي هذا الرقم", 500);
+                return self::returnResponseDataApi(null, "لا يوجد رحلة حالية علي هذا الرقم", 200);
             }
         } catch (\Exception $exception) {
             return self::returnResponseDataApi($exception->getMessage(), 500, 500);
@@ -813,12 +910,16 @@ class DriverRepository extends ResponseApi implements DriverRepositoryInterface
         try {
             $driver_id = auth()->user()->id;
 
+            $trips = Trip::where('driver_id', $driver_id)
+                ->whereIn('type', ['accept', 'progress'])
+                ->first();
             $driver_status = User::where('id', $driver_id)->pluck('status')->first();
             $driver_documents = DriverDocuments::where('driver_id', $driver_id)->first();
             $driver_details = DriverDetails::where('driver_id', $driver_id)->first();
 
             $datails = [
                 'driver_id' => $driver_id,
+                'trip' => $trips,
                 'driver_status' => $driver_status,
                 'city_id' => $driver_details->area->city_id,
                 'driver_details' => $driver_details,
@@ -832,6 +933,26 @@ class DriverRepository extends ResponseApi implements DriverRepositoryInterface
             ];
 
             return self::returnResponseDataApi($datails, 'تم الحصول على بيانات السائق بنجاح', 200);
+        } catch (\Exception $exception) {
+            return self::returnResponseDataApi($exception->getMessage(), 500, 500);
+        }
+    }
+
+    public function getTripStatus(): JsonResponse
+    {
+        try {
+            $id = auth()->user()->id;
+            $tripStatus = Trip::where(function ($query) use ($id) {
+                $query->where('user_id', $id)
+                    ->orWhere('driver_id', $id);
+            })
+                ->where('trip_type', '!=', 'scheduled')
+                ->with('user')
+                ->with('driver')
+                ->latest()
+                ->first();
+
+            return self::returnResponseDataApi($tripStatus, 'تم الحصول على بيانات حالة الرحلة بنجاح', 200);
         } catch (\Exception $exception) {
             return self::returnResponseDataApi($exception->getMessage(), 500, 500);
         }

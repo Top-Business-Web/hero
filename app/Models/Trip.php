@@ -32,6 +32,15 @@ class Trip extends Model
         'created_at'
     ];
 
+    protected $appends = [
+        'start_time',
+    ];
+
+    public function getStartTimeAttribute()
+    {
+        return $this->created_at;
+    }
+
     public function driver(): BelongsTo
     {
         return $this->belongsTo(User::class,'driver_id','id');

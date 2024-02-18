@@ -15,18 +15,16 @@ class CreateSettingsTable extends Migration
     {
         Schema::create('settings', function (Blueprint $table) {
             $table->id();
-
             $table->longText('logo');
             $table->longText('trip_insurance');
             $table->longText('rewards');
             $table->longText('about');
+            $table->string('phone');
             $table->longText('support');
             $table->longText('safety_roles');
             $table->longText('polices');
             $table->bigInteger('km');
             $table->bigInteger('vat');
-
-
             $table->timestamps();
             $table->softDeletes();
         });
