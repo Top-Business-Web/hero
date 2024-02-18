@@ -2,6 +2,7 @@
 
 namespace App\Repository\Api\Driver;
 
+use App\Traits\FirebaseNotification;
 use DB;
 use Carbon\Carbon;
 use App\Models\Trip;
@@ -25,7 +26,7 @@ use App\Interfaces\Api\Driver\DriverRepositoryInterface;
 
 class DriverRepository extends ResponseApi implements DriverRepositoryInterface
 {
-    use PhotoTrait;
+    use PhotoTrait, FirebaseNotification;
 
     public function registerDriver(Request $request): JsonResponse
     {
@@ -430,6 +431,15 @@ class DriverRepository extends ResponseApi implements DriverRepositoryInterface
                 $checkTrip->driver_id = Auth::user()->id;
                 $checkTrip->type = 'accept';
                 if ($checkTrip->save()) {
+
+                    // send FCM
+                    $fcmD = [
+                        'title'=>'تأكيد الرحلة',
+                        'body' => 'تم تأكيد الرحلة من قبل سائق بنجاح',
+                        'trip_id' => $checkTrip->id
+                    ];
+                    $this->sendFirebaseNotification($fcmD,$checkTrip->user_id);
+                    
                     return self::returnResponseDataApi(new TripResource($checkTrip), "تم تاكيد الرحلة بنجاح", 201, 200);
                 } else {
                     return self::returnResponseDataApi(null, "يوجد خطاء ما اثناء دخول البيانات", 500);
