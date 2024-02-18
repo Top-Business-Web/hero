@@ -2,16 +2,18 @@
 
 namespace App\Traits;
 
+use App\Http\Resources\TripResource;
 use App\Models\Notification;
 use App\Models\PhoneToken;
+use App\Models\Trip;
 use App\Models\User;
 
 trait FirebaseNotification
 {
 
     //firebase server key
-    private string $serverKey = 'fL26RYoMQOCMRfsJZFup3q:APA91bFdDOkBJELWU06H83iLxj-QJBgdvtmKD6ZzzjuGav2is5g18Wb8YbYEwSBec78cKAYRv2d0lutpeoqzz9fdkW-8GmD5X9I0RA0aeHtOmTtPkeC3J_wEVig7bcMbD75Ed1Mv6ft_';
 
+    private string $serverKey = 'AAAAWOla850:APA91bEN_EHuUvHkUIynXTYTXe2QinEsduSoWTn15b9T4lN4laXQ5SuFgDHkM33YPNnAT2oijshaYwIDyZKE5JN-WWiH8hU8fmPTso7rOFKwe8gN2aim1wETZCqDPvHHvctJUatqTQ7p';
 
     public function sendFirebaseNotification($data, $user_id = null, $type = 'user', $create = true, $trip_id = null)
     {
@@ -37,6 +39,11 @@ trait FirebaseNotification
             $tokens = PhoneToken::whereIn('user_id', $userIds)->pluck('token')->toArray();
         }
 
+        if (!isset($data['trip_id'])) {
+            $data['trip_id'] = null;
+        }
+
+
         if ($create === true) {
             //start notification store
             Notification::query()
@@ -44,15 +51,20 @@ trait FirebaseNotification
                     'title' => $data['title'],
                     'description' => $data['body'],
                     'user_id' => $user_id ?? null,
-                    'trip_id' => $trip_id ?? null,
-                    'type' => $type
+                    'type' => $type,
+                    'trip_id' => $data['trip_id']
                 ]);
         }
 
+        $trip = Trip::query()->find(36);
+
         $fields = array(
+            // 'registration_ids' => $tokens,
             'registration_ids' => $tokens,
-            'data' => $data,
+            'notification' => $data,
+            'data' => $trip ? ["trip" => new TripResource($trip)] : null,
         );
+
         $fields = json_encode($fields);
 
         $headers = array(
