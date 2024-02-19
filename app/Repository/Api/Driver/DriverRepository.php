@@ -24,6 +24,7 @@ use App\Http\Resources\WalletResource;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Resources\DriverDocumentResource;
 use App\Interfaces\Api\Driver\DriverRepositoryInterface;
+use App\Traits\FirebaseNotification;
 use Illuminate\Support\Facades\DB as FacadesDB;
 
 class DriverRepository extends ResponseApi implements DriverRepositoryInterface
@@ -442,6 +443,13 @@ class DriverRepository extends ResponseApi implements DriverRepositoryInterface
                 $checkTrip->type = 'accept';
                 if ($checkTrip->save()) {
 
+                    UserLocation::create([
+                        'user_id' => auth()->user()->id,
+                        'trip_id' => $checkTrip->id,
+                        'long' => $request->long,
+                        'lat' => $request->lat,
+                    ]);
+
                     // send FCM
                     $fcmD = [
                         'title' => 'تأكيد الرحلة',
@@ -537,9 +545,9 @@ class DriverRepository extends ResponseApi implements DriverRepositoryInterface
             $userLocation = UserLocation::where('user_id', $checkTrip->user_id)
                 ->where('trip_id', $request->trip_id)
                 ->first();
-
-            // Retrieve driver's location
-            $driverLocation = UserLocation::where('user_id', Auth::id())
+                
+                // Retrieve driver's location
+                $driverLocation = UserLocation::where('user_id', Auth::id())
                 ->where('trip_id', $request->trip_id)
                 ->first();
 
