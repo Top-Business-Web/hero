@@ -21,9 +21,11 @@ use App\Http\Resources\TripResource;
 use App\Traits\FirebaseNotification;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Resources\DriverResource;
+use App\Http\Resources\WalletResource;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Resources\DriverDocumentResource;
 use App\Interfaces\Api\Driver\DriverRepositoryInterface;
+use Illuminate\Support\Facades\DB as FacadesDB;
 
 class DriverRepository extends ResponseApi implements DriverRepositoryInterface
 {
@@ -437,32 +439,21 @@ class DriverRepository extends ResponseApi implements DriverRepositoryInterface
                 ->first();
 
             if ($checkTrip) {
-                if ($checkTrip->type == 'new') { 
-                    $checkTrip->driver_id = Auth::user()->id;
-                    $checkTrip->type = 'accept';
+                $checkTrip->driver_id = Auth::user()->id;
+                $checkTrip->type = 'accept';
+                if ($checkTrip->save()) {
 
-                    if ($checkTrip->save()) {
-                        UserLocation::create([
-                            'user_id' => auth()->user()->id,
-                            'trip_id' => $request->trip_id,
-                            'long' => $request->long,
-                            'lat' => $request->lat,
-                        ]);
-
-                        Notification::create([
-                            'user_id' => $checkTrip->user_id,
-                            'trip_id' => $request->trip_id,
-                            'title' => 'تأكيد الرحلة',
-                            'description' => 'تم قبول الرحلة من السائق',
-                            'type' => 'user',
-                        ]);
-
-                        return self::returnResponseDataApi(new TripResource($checkTrip), "تم تأكيد الرحلة بنجاح", 201, 200);
-                    } else {
-                        return self::returnResponseDataApi(null, "يوجد خطأ ما أثناء دخول البيانات", 500);
-                    }
-                } elseif ($checkTrip->type == 'reject') { 
-                    return self::returnResponseDataApi(null, "تم إلغاء هذه الرحلة من قبل المستخدم", 200);
+                    // send FCM
+                    $fcmD = [
+                        'title'=>'تأكيد الرحلة',
+                        'body' => 'تم تأكيد الرحلة من قبل سائق بنجاح',
+                        'trip_id' => $checkTrip->id
+                    ];
+                    $this->sendFirebaseNotification($fcmD,$checkTrip->user_id);
+                    
+                    return self::returnResponseDataApi(new TripResource($checkTrip), "تم تاكيد الرحلة بنجاح", 201, 200);
+                } else {
+                    return self::returnResponseDataApi(null, "يوجد خطاء ما اثناء دخول البيانات", 500);
                 }
             } else {
                 return self::returnResponseDataApi(null, "الرحلة غير متاحة أو تم قبولها بالفعل", 404);
@@ -715,7 +706,7 @@ class DriverRepository extends ResponseApi implements DriverRepositoryInterface
                     $trips = Trip::query()
                         ->where('type', '=', 'new')
                         ->where('ended', '=', 0)
-                        // ->whereDay('created_at', '=', Carbon::now())
+                        ->whereDay('created_at', '=', Carbon::now())
                         ->orderBy('created_at', 'DESC')
                         ->latest()->get();
                     $data = $trips;
