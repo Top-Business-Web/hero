@@ -706,7 +706,7 @@ class DriverRepository extends ResponseApi implements DriverRepositoryInterface
                     $trips = Trip::query()
                         ->where('type', '=', 'new')
                         ->where('ended', '=', 0)
-                        ->whereDay('created_at', '=', Carbon::now())
+                        // ->whereDay('created_at', '=', Carbon::now())
                         ->orderBy('created_at', 'DESC')
                         ->latest()->get();
                     $data = $trips;
