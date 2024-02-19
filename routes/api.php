@@ -87,4 +87,5 @@ Route::group(['middleware' => 'jwt'],function (){
 Route::get('cities', [UserController::class, 'getAllCities']);
 Route::get('areas', [UserController::class, 'getAllAreas']);
 Route::get('settings', [UserController::class, 'getAllSettings']);
+Route::post('testFcm', [UserController::class, 'testFcm']);
 ########################### END GENERAL ROUTES ################################
