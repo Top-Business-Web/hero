@@ -19,7 +19,6 @@ use App\Models\DriverDocuments;
 use App\Repository\ResponseApi;
 use Illuminate\Http\JsonResponse;
 use App\Http\Resources\TripResource;
-use App\Traits\FirebaseNotification;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Resources\DriverResource;
 use App\Http\Resources\WalletResource;
