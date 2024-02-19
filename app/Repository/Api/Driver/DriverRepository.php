@@ -28,8 +28,7 @@ use App\Interfaces\Api\Driver\DriverRepositoryInterface;
 
 class DriverRepository extends ResponseApi implements DriverRepositoryInterface
 {
-    use PhotoTrait;
-    use FirebaseNotification;
+    use PhotoTrait, FirebaseNotification;
 
     public function registerDriver(Request $request): JsonResponse
     {
