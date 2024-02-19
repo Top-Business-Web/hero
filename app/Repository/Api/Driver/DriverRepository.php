@@ -22,9 +22,11 @@ use App\Http\Resources\TripResource;
 use App\Traits\FirebaseNotification;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Resources\DriverResource;
+use App\Http\Resources\WalletResource;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Resources\DriverDocumentResource;
 use App\Interfaces\Api\Driver\DriverRepositoryInterface;
+use Illuminate\Support\Facades\DB as FacadesDB;
 
 class DriverRepository extends ResponseApi implements DriverRepositoryInterface
 {
@@ -705,7 +707,7 @@ class DriverRepository extends ResponseApi implements DriverRepositoryInterface
                     $trips = Trip::query()
                         ->where('type', '=', 'new')
                         ->where('ended', '=', 0)
-                        // ->whereDay('created_at', '=', Carbon::now())
+                        ->whereDay('created_at', '=', Carbon::now())
                         ->orderBy('created_at', 'DESC')
                         ->latest()->get();
                     $data = $trips;
