@@ -66,7 +66,6 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
                 'phone.exists' => 408,
             ]);
 
-
             $checkUserPhone = User::where('phone', $request->phone)->first();
             if ($checkUserPhone) {
                 return self::returnResponseDataApi(null, 'هذا الهاتف مستخدم بالفعل', 201);
@@ -353,6 +352,9 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
                 $firstError = $validator->errors()->first();
                 return self::returnResponseDataApi(null, $firstError, 422);
             }
+
+            $settigs = Setting::first(['vat', 'km']);
+
             $checkQuickTrip = Trip::query()
                 ->where('user_id', '=', Auth::user()->id)
                 ->where('trip_type', '!=', 'scheduled')
@@ -382,6 +384,22 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
                 'lat' => $request->from_lat,
             ]);
 
+            $fromLong = $createQuickTrip->from_long;
+            $fromLat = $createQuickTrip->from_lat;
+            $toLong = $createQuickTrip->to_long;
+            $toLat = $createQuickTrip->to_lat;
+
+            $distance = $this->calculateDistance(
+                $fromLat,
+                $fromLong,
+                $toLong,
+                $toLat
+            );
+
+            $price = $distance * $settigs->km;
+
+            $createQuickTrip['price'] = $price;
+
             if (isset($createQuickTrip)) {
                 $this->sendFirebaseNotification(['title' => 'رحلة جديدة', 'body' => 'هناك رحلة جديدة في الانتظار'], null, 'all_driver');
                 return self::returnResponseDataApi(new TripResource($createQuickTrip), "تم انشاء طلب الرحلة بنجاح", 201, 200);
@@ -392,6 +410,21 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
             return self::returnResponseDataApi($exception->getMessage(), 500, 500);
         }
     } // start trip
+
+    public function calculateDistance($fromLat, $fromLong, $toLat, $toLong)
+    {
+        $earthRadius = 6371;
+
+        $deltaLat = deg2rad($toLat - $fromLat);
+        $deltaLong = deg2rad($toLong - $fromLong);
+
+        $a = sin($deltaLat / 2) * sin($deltaLat / 2) + cos(deg2rad($fromLat)) * cos(deg2rad($toLat)) * sin($deltaLong / 2) * sin($deltaLong / 2);
+        $c = 2 * atan2(sqrt($a), sqrt(1 - $a));
+
+        $distance = $earthRadius * $c;
+
+        return $distance;
+    }
 
     public function cancelTrip(Request $request): JsonResponse
     {
@@ -610,7 +643,7 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
                 ->with('trip')
                 ->where('user_id', '=', $user->id)
                 ->orWhereIn('type', ['all', 'all_driver'])
-                ->orderBy('created_at', 'desc') 
+                ->orderBy('created_at', 'desc')
                 ->get();
         }
 
