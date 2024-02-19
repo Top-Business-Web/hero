@@ -25,6 +25,7 @@ use App\Http\Resources\WalletResource;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Resources\DriverDocumentResource;
 use App\Interfaces\Api\Driver\DriverRepositoryInterface;
+use App\Traits\FirebaseNotification;
 use Illuminate\Support\Facades\DB as FacadesDB;
 
 class DriverRepository extends ResponseApi implements DriverRepositoryInterface
@@ -144,7 +145,7 @@ class DriverRepository extends ResponseApi implements DriverRepositoryInterface
         try {
             $user = User::find(Auth::user()->id);
             $checkDetails = DriverDetails::query()->where('driver_id', $user->id)->first();
-            $DriverDocuments = DriverDocuments::query()->where('driver_id', Auth::user()->id)->first();
+            $DriverDocuments = DriverDocuments::query()->where('driver_id', $user->id)->first();
             $data = [];
 
             if ($checkDetails) {
@@ -155,12 +156,12 @@ class DriverRepository extends ResponseApi implements DriverRepositoryInterface
 
             if ($DriverDocuments) {
                 $data['driver_documents'] = 1;
+                $data['status'] = $DriverDocuments->status;
             } else {
                 $data['driver_documents'] = 0;
+                $data['status'] = 0;
             }
-            $data['status'] = $DriverDocuments->status;
 
-            // dd($DriverDocuments->status);
 
             return self::returnResponseDataApi($data, "تم الحصول علي البيانات بنجاح", 200);
         } catch (\Exception $e) {
@@ -379,9 +380,9 @@ class DriverRepository extends ResponseApi implements DriverRepositoryInterface
             if ($checkQuickTrip) {
                 $checkQuickTrip->time_arrive = Carbon::now();
                 $checkQuickTrip->distance = $request->distance;
-                $price = $checkQuickTrip->distance * $settigs->km; 
-                $vatTotal = $price * ($settigs->vat / 100); 
-                $total = $price - $vatTotal; 
+                $price = $checkQuickTrip->distance * $settigs->km;
+                $vatTotal = $price * ($settigs->vat / 100);
+                $total = $price - $vatTotal;
                 $checkQuickTrip->price = $price;
                 $checkQuickTrip->ended = true;
                 $checkQuickTrip->type = 'complete';
@@ -445,12 +446,12 @@ class DriverRepository extends ResponseApi implements DriverRepositoryInterface
 
                     // send FCM
                     $fcmD = [
-                        'title'=>'تأكيد الرحلة',
+                        'title' => 'تأكيد الرحلة',
                         'body' => 'تم تأكيد الرحلة من قبل سائق بنجاح',
                         'trip_id' => $checkTrip->id
                     ];
-                    $this->sendFirebaseNotification($fcmD,$checkTrip->user_id);
-                    
+                    $this->sendFirebaseNotification($fcmD, $checkTrip->user_id);
+
                     return self::returnResponseDataApi(new TripResource($checkTrip), "تم تاكيد الرحلة بنجاح", 201, 200);
                 } else {
                     return self::returnResponseDataApi(null, "يوجد خطاء ما اثناء دخول البيانات", 500);
@@ -657,14 +658,13 @@ class DriverRepository extends ResponseApi implements DriverRepositoryInterface
                                 'vat_total' => $vatTotal,
                             ]);
 
-                            Notification::create([
-                                'user_id' => $checkTrip->user_id,
-                                'trip_id' => $request->trip_id,
-                                'title' => 'انتهاء الرحلة',
-                                'description' => 'تم الانتهاء من الرحلة',
-                                'type' => 'user',
-                            ]);
-
+                        Notification::create([
+                            'user_id' => $checkTrip->user_id,
+                            'trip_id' => $request->trip_id,
+                            'title' => 'انتهاء الرحلة',
+                            'description' => 'تم الانتهاء من الرحلة',
+                            'type' => 'user',
+                        ]);
                     } else {
                         $wallet->total += $total;
                         $wallet->vat_total += $vatTotal;
