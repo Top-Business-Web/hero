@@ -21,7 +21,6 @@ use App\Http\Resources\TripResource;
 use App\Traits\FirebaseNotification;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Resources\DriverResource;
-use App\Http\Resources\WalletResource;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Resources\DriverDocumentResource;
 use App\Interfaces\Api\Driver\DriverRepositoryInterface;
