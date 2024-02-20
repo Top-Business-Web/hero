@@ -24,7 +24,7 @@ use App\Http\Resources\WalletResource;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Resources\DriverDocumentResource;
 use App\Interfaces\Api\Driver\DriverRepositoryInterface;
-// use App\Traits\FirebaseNotification;
+use App\Traits\FirebaseNotification;
 use Illuminate\Support\Facades\DB as FacadesDB;
 
 class DriverRepository extends ResponseApi implements DriverRepositoryInterface
