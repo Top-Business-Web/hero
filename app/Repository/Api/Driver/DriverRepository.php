@@ -713,6 +713,7 @@ class DriverRepository extends ResponseApi implements DriverRepositoryInterface
                 } else {
                     $trips = Trip::query()
                         ->where('type', '=', 'new')
+                        ->where('trip_type', '!=','scheduled')
                         ->where('ended', '=', 0)
                         ->whereDay('created_at', '=', Carbon::now())
                         ->orderBy('created_at', 'DESC')
