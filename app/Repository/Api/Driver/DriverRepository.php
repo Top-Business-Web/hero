@@ -24,7 +24,8 @@ use App\Http\Resources\WalletResource;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Resources\DriverDocumentResource;
 use App\Interfaces\Api\Driver\DriverRepositoryInterface;
-// use App\Traits\FirebaseNotification;
+use App\Models\Slider;
+use App\Traits\FirebaseNotification;
 use Illuminate\Support\Facades\DB as FacadesDB;
 
 class DriverRepository extends ResponseApi implements DriverRepositoryInterface
@@ -545,9 +546,9 @@ class DriverRepository extends ResponseApi implements DriverRepositoryInterface
             $userLocation = UserLocation::where('user_id', $checkTrip->user_id)
                 ->where('trip_id', $request->trip_id)
                 ->first();
-                
-                // Retrieve driver's location
-                $driverLocation = UserLocation::where('user_id', Auth::id())
+
+            // Retrieve driver's location
+            $driverLocation = UserLocation::where('user_id', Auth::id())
                 ->where('trip_id', $request->trip_id)
                 ->first();
 
@@ -916,6 +917,11 @@ class DriverRepository extends ResponseApi implements DriverRepositoryInterface
         try {
             $driver_id = auth()->user()->id;
 
+            $sliders = Slider::query()
+                ->select('image', 'link')
+                ->where('status', '=', true)
+                ->get();
+
             $trips = Trip::where('driver_id', $driver_id)
                 ->whereIn('type', ['accept', 'progress'])
                 ->first();
@@ -924,6 +930,7 @@ class DriverRepository extends ResponseApi implements DriverRepositoryInterface
             $driver_details = DriverDetails::where('driver_id', $driver_id)->first();
 
             $datails = [
+                'sliders' => $sliders,
                 'driver_id' => $driver_id,
                 'trip' => $trips,
                 'driver_status' => $driver_status,
