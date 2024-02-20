@@ -255,9 +255,8 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
         $user_id = auth()->user()->id;
 
         $trips = Trip::where('user_id', $user_id)
-            ->whereDate('created_at', '>=', Carbon::now())
             ->where('type', 'new')
-            ->orderBy('created_at', 'asc')
+            ->orderBy('created_at', 'desc')
             ->get();
         $home['sliders'] = Slider::query()
             ->select('image', 'link')
@@ -488,6 +487,8 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
                     'trip_type' => 'scheduled',
                     'created_at' => $scheduleDate,
                 ]);
+                $checkTrip['start_time'] = 'null';
+
 
             if (isset($checkTrip)) {
                 return self::returnResponseDataApi(new TripResource($checkTrip), "تم انشاء طلب الرحلة مجدولة في وقت لاحق بنجاح", 201, 200);
