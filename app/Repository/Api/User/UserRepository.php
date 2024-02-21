@@ -70,11 +70,9 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
             if ($checkUserPhone) {
                 return self::returnResponseDataApi(null, 'هذا الهاتف مستخدم بالفعل', 201);
             }
-                // $checkUserEmail = User::where('email', $request->email)->first();
-                // if ($checkUserEmail) {
-                //     return self::returnResponseDataApi(null, 'هذاالبريد الالكتروني مستخدم بالفعل', 201);
-                // }
-
+            if ($request->has('email') && User::where('email', $request->email)->exists()) {
+                return self::returnResponseDataApi(null, 'هذاالبريد الالكتروني مستخدم بالفعل', 201);
+            }
 
             if ($validator->fails()) {
                 $errors = collect($validator->errors())->flatten(1)[0];
@@ -142,10 +140,22 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
         try {
             // Validation Rules
             $validator = Validator::make($request->all(), [
-                'phone' => 'required',
+                'phone' => 'required|min:10|max:10',
                 'device_type' => 'required',
                 'token' => 'required',
+            ], [
+                'phone.min' => 'يجب ألا ينقص ارقام الهاتف عن 10 ارقام',
+                'phone.max' => 'يجب ألا يزيد ارقام الهاتف عن 10 ارقام',
             ]);
+
+            // Check Validation Result
+            if ($validator->fails()) {
+                $errors = $validator->errors()->first();
+                $statusCode = is_numeric($errors) ? $errors : 201;
+
+                return self::returnResponseDataApi(null, $errors, $statusCode, $statusCode);
+            }
+
             $checkPhone = User::where('phone', '=', $request->phone)
                 ->withTrashed()
                 ->first();
@@ -158,14 +168,6 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
                     ->first();
                 if ($user) {
                     return self::returnResponseDataApi(null, "يوجد حساب محذوف بهذا الرقم يرجي التواصل مع الدعم", 409, 409);
-                }
-
-                // Check Validation Result
-                if ($validator->fails()) {
-                    $errors = $validator->errors()->first();
-                    $statusCode = is_numeric($errors) ? $errors : 422;
-
-                    return self::returnResponseDataApi(null, $errors, $statusCode, $statusCode);
                 }
 
                 // Authenticate User
@@ -487,7 +489,15 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
                     'trip_type' => 'scheduled',
                     'created_at' => $scheduleDate,
                 ]);
-                $checkTrip['start_time'] = 'null';
+
+            UserLocation::create([
+                'user_id' => auth()->user()->id,
+                'trip_id' => $checkTrip->id,
+                'long' => $request->from_long,
+                'lat' => $request->from_lat,
+            ]);
+
+            $checkTrip['start_time'] = 'null';
 
 
             if (isset($checkTrip)) {

@@ -712,7 +712,7 @@ class DriverRepository extends ResponseApi implements DriverRepositoryInterface
                 } else {
                     $trips = Trip::query()
                         ->where('type', '=', 'new')
-                        ->where('trip_type', '!=','scheduled')
+                        ->where('trip_type', '!=', 'scheduled')
                         ->where('ended', '=', 0)
                         ->whereDay('created_at', '=', Carbon::now())
                         ->orderBy('created_at', 'DESC')
@@ -768,7 +768,7 @@ class DriverRepository extends ResponseApi implements DriverRepositoryInterface
         try {
             $setting = Setting::first(['vat', 'km']);
             $driver = Auth::user();
-            $toDay = Carbon::now()->format('Y-m-d');
+            $toDay = Carbon::yesterday()->format('Y-m-d');
             $lastWeek = Carbon::now()->subDays(7)->format('Y-m-d');
             $from = Carbon::parse($request->from)->format('Y-m-d');
             $to = Carbon::parse($request->to)->format('Y-m-d');
@@ -798,9 +798,9 @@ class DriverRepository extends ResponseApi implements DriverRepositoryInterface
                 $trip = Trip::query()
                     ->where('driver_id', '=', $driver->id)
                     ->where('type', '=', 'complete')
-                    ->where('ended', '=', true)
+                    ->where('ended', '=', 1)
                     ->whereDate('updated_at', '<=', $toDay)
-                    ->whereDate('updated_at', '>=', $lastWeek);
+                    ->whereDate('updated_at', '>=', $lastWeek)->get();
 
                 $wallet = DriverWallet::query()
                     ->where('driver_id', '=', $driver->id)
@@ -815,8 +815,8 @@ class DriverRepository extends ResponseApi implements DriverRepositoryInterface
                 $profit['total'] = $profit['total_trips_price'];
                 $profit['vat_total'] = $wallet->sum('vat_total');
                 $profit['net_total'] = $profit['total'] - $profit['vat_total'];
-                $profit['from'] = $toDay;
-                $profit['to'] = $lastWeek;
+                $profit['from'] = $lastWeek;
+                $profit['to'] = $toDay;
 
 
                 // Retrieve wallet days as before
@@ -846,7 +846,7 @@ class DriverRepository extends ResponseApi implements DriverRepositoryInterface
                 $toDayCarbon = Carbon::parse($toDay);
 
                 // Add all days between lastWeek and today to the collection
-                while ($currentDay->lt($toDayCarbon)) {
+                while ($currentDay->lte($toDayCarbon)) {
                     $dates->push($currentDay->toDateString());
                     $currentDay->addDay();
                 }
@@ -920,8 +920,16 @@ class DriverRepository extends ResponseApi implements DriverRepositoryInterface
 
             $sliders = Slider::query()
                 ->select('image', 'link')
-                ->where('status', '=', true)
+                ->where('status', true)
                 ->get();
+
+            $sliderData = [];
+            foreach ($sliders as $slider) {
+                $sliderData[] = [
+                    'image' => 'https://hero.topbusiness.io/' . $slider->image,
+                    'link' => $slider->link,
+                ];
+            }
 
             $trips = Trip::where('driver_id', $driver_id)
                 ->whereIn('type', ['accept', 'progress'])
@@ -931,7 +939,7 @@ class DriverRepository extends ResponseApi implements DriverRepositoryInterface
             $driver_details = DriverDetails::where('driver_id', $driver_id)->first();
 
             $datails = [
-                'sliders' => $sliders,
+                'sliders' =>  $sliderData,
                 'driver_id' => $driver_id,
                 'trip' => $trips,
                 'driver_status' => $driver_status,
