@@ -800,8 +800,9 @@ class DriverRepository extends ResponseApi implements DriverRepositoryInterface
                     ->where('driver_id', '=', $driver->id)
                     ->where('type', '=', 'complete')
                     ->where('ended', '=', 1)
-                    ->whereDate('updated_at', '<=', $toDay)
-                    ->whereDate('updated_at', '>=', $lastWeek)->get();
+                    // ->whereDate('updated_at', '<=', $toDay)
+                    ->whereBetween('updated_at', [$toDay, $lastWeek])->get();
+                    // ->whereDate('updated_at', '>', $lastWeek)->get();
 
                 $wallet = DriverWallet::query()
                     ->where('driver_id', '=', $driver->id)
