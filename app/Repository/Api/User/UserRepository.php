@@ -54,7 +54,7 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
             $rules = [
                 'name' => 'required|string|max:50',
                 'email' => 'nullable',
-                'phone' => 'required|numeric',
+                'phone' => 'required|min:14|max:14',
                 'img' => 'nullable|image',
                 'type' => 'required|in:user,driver',
                 'birth' => 'required',
@@ -62,17 +62,17 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
                 'token' => 'required'
             ];
             $validator = Validator::make($request->all(), $rules, [
-                'phone.numeric' => 407,
-                'phone.exists' => 408,
+                'phone.min' => 'يجب ألا ينقص ارقام الهاتف عن 10 ارقام',
+                'phone.max' => 'يجب ألا يزيد ارقام الهاتف عن 10 ارقام',
             ]);
 
             $checkUserPhone = User::where('phone', $request->phone)->first();
             if ($checkUserPhone) {
                 return self::returnResponseDataApi(null, 'هذا الهاتف مستخدم بالفعل', 201);
             }
-            if ($request->has('email') && User::where('email', $request->email)->exists()) {
+            if ($request->has('email') && $request->email !== null && User::where('email', $request->email)->exists()) {
                 return self::returnResponseDataApi(null, 'هذاالبريد الالكتروني مستخدم بالفعل', 201);
-            }
+            }            
 
             if ($validator->fails()) {
                 $errors = collect($validator->errors())->flatten(1)[0];
@@ -140,7 +140,7 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
         try {
             // Validation Rules
             $validator = Validator::make($request->all(), [
-                'phone' => 'required|min:10|max:10',
+                'phone' => 'required|min:14|max:14',
                 'device_type' => 'required',
                 'token' => 'required',
             ], [
