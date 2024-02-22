@@ -17,24 +17,28 @@ class NotificationSeeder extends Seeder
         $data = [
             [
                 'user_id' => '1',
+                'trip_id' => '1',
                 'title' => 'new trip',
                 'description' => 'Commodo laboris aliquip commodo ad deserunt et.',
                 'seen' => '1',
             ],
             [
                 'user_id' => '2',
+                'trip_id' => '2',
                 'title' => 'complete trip',
                 'description' => 'Commodo laboris aliquip commodo ad deserunt et.',
                 'seen' => '1',
             ],
             [
                 'user_id' => '3',
+                'trip_id' => '3',
                 'title' => 'new cairo',
                 'description' => 'Commodo laboris aliquip commodo ad deserunt et.',
                 'seen' => '1',
             ],
             [
                 'user_id' => '4',
+                'trip_id' => '4',
                 'title' => 'salam',
                 'description' => 'Commodo laboris aliquip commodo ad deserunt et.',
                 'seen' => '1',
