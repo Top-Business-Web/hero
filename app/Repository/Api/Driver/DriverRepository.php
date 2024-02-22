@@ -2,7 +2,6 @@
 
 namespace App\Repository\Api\Driver;
 
-use App\Traits\FirebaseNotification;
 use DB;
 use Carbon\Carbon;
 use App\Models\Trip;
@@ -379,9 +378,9 @@ class DriverRepository extends ResponseApi implements DriverRepositoryInterface
             if ($checkQuickTrip) {
                 $checkQuickTrip->time_arrive = Carbon::now();
                 $checkQuickTrip->distance = $request->distance;
-                $price = $checkQuickTrip->distance * $settigs->km; 
-                $vatTotal = $price * ($settigs->vat / 100); 
-                $total = $price - $vatTotal; 
+                $price = $checkQuickTrip->distance * $settigs->km;
+                $vatTotal = $price * ($settigs->vat / 100);
+                $total = $price - $vatTotal;
                 $checkQuickTrip->price = $price;
                 $checkQuickTrip->ended = true;
                 $checkQuickTrip->type = 'complete';
@@ -450,7 +449,7 @@ class DriverRepository extends ResponseApi implements DriverRepositoryInterface
                         'trip_id' => $checkTrip->id
                     ];
                     $this->sendFirebaseNotification($fcmD,$checkTrip->user_id);
-                    
+
                     return self::returnResponseDataApi(new TripResource($checkTrip), "تم تاكيد الرحلة بنجاح", 201, 200);
                 } else {
                     return self::returnResponseDataApi(null, "يوجد خطاء ما اثناء دخول البيانات", 500);
