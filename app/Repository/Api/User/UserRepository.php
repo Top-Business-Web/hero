@@ -53,8 +53,8 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
 
             $rules = [
                 'name' => 'required|string|max:50',
-                'email' => 'nullable|email',
-                'phone' => 'required|numeric',
+                'email' => 'nullable',
+                'phone' => 'required|min:14|max:14',
                 'img' => 'nullable|image',
                 'type' => 'required|in:user,driver',
                 'birth' => 'required',
@@ -62,20 +62,17 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
                 'token' => 'required'
             ];
             $validator = Validator::make($request->all(), $rules, [
-                'phone.numeric' => 407,
-                'phone.exists' => 408,
+                'phone.min' => 'يجب ألا ينقص ارقام الهاتف عن 10 ارقام',
+                'phone.max' => 'يجب ألا يزيد ارقام الهاتف عن 10 ارقام',
             ]);
-
 
             $checkUserPhone = User::where('phone', $request->phone)->first();
             if ($checkUserPhone) {
                 return self::returnResponseDataApi(null, 'هذا الهاتف مستخدم بالفعل', 201);
             }
-            $checkUserEmail = User::where('email', $request->email)->first();
-            if ($checkUserEmail) {
+            if ($request->has('email') && $request->email !== null && User::where('email', $request->email)->exists()) {
                 return self::returnResponseDataApi(null, 'هذاالبريد الالكتروني مستخدم بالفعل', 201);
-            }
-
+            }            
 
             if ($validator->fails()) {
                 $errors = collect($validator->errors())->flatten(1)[0];
@@ -143,10 +140,22 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
         try {
             // Validation Rules
             $validator = Validator::make($request->all(), [
-                'phone' => 'required',
+                'phone' => 'required|min:14|max:14',
                 'device_type' => 'required',
                 'token' => 'required',
+            ], [
+                'phone.min' => 'يجب ألا ينقص ارقام الهاتف عن 10 ارقام',
+                'phone.max' => 'يجب ألا يزيد ارقام الهاتف عن 10 ارقام',
             ]);
+
+            // Check Validation Result
+            if ($validator->fails()) {
+                $errors = $validator->errors()->first();
+                $statusCode = is_numeric($errors) ? $errors : 201;
+
+                return self::returnResponseDataApi(null, $errors, $statusCode, $statusCode);
+            }
+
             $checkPhone = User::where('phone', '=', $request->phone)
                 ->withTrashed()
                 ->first();
@@ -159,14 +168,6 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
                     ->first();
                 if ($user) {
                     return self::returnResponseDataApi(null, "يوجد حساب محذوف بهذا الرقم يرجي التواصل مع الدعم", 409, 409);
-                }
-
-                // Check Validation Result
-                if ($validator->fails()) {
-                    $errors = $validator->errors()->first();
-                    $statusCode = is_numeric($errors) ? $errors : 422;
-
-                    return self::returnResponseDataApi(null, $errors, $statusCode, $statusCode);
                 }
 
                 // Authenticate User
@@ -256,9 +257,8 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
         $user_id = auth()->user()->id;
 
         $trips = Trip::where('user_id', $user_id)
-            ->whereDate('created_at', '>=', Carbon::now())
             ->where('type', 'new')
-            ->orderBy('created_at', 'asc')
+            ->orderBy('created_at', 'desc')
             ->get();
         $home['sliders'] = Slider::query()
             ->select('image', 'link')
@@ -353,6 +353,9 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
                 $firstError = $validator->errors()->first();
                 return self::returnResponseDataApi(null, $firstError, 422);
             }
+
+            $settigs = Setting::first(['vat', 'km']);
+
             $checkQuickTrip = Trip::query()
                 ->where('user_id', '=', Auth::user()->id)
                 ->where('trip_type', '!=', 'scheduled')
@@ -382,8 +385,24 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
                 'lat' => $request->from_lat,
             ]);
 
+            $fromLong = $createQuickTrip->from_long;
+            $fromLat = $createQuickTrip->from_lat;
+            $toLong = $createQuickTrip->to_long;
+            $toLat = $createQuickTrip->to_lat;
+
+            $distance = $this->calculateDistance(
+                $fromLat,
+                $fromLong,
+                $toLong,
+                $toLat
+            );
+
+            $price = $distance * $settigs->km;
+
+            $createQuickTrip['price'] = $price;
+
             if (isset($createQuickTrip)) {
-                $this->sendFirebaseNotification(['title' => 'رحلة جديدة', 'body' => 'هناك رحلة جديدة في الانتظار'], null, 'all_driver');
+                // $this->sendFirebaseNotification(['title' => 'رحلة جديدة', 'body' => 'هناك رحلة جديدة في الانتظار'], null, 'all_driver');
                 return self::returnResponseDataApi(new TripResource($createQuickTrip), "تم انشاء طلب الرحلة بنجاح", 201, 200);
             } else {
                 return self::returnResponseDataApi(null, "يوجد خطاء ما اثناء دخول البيانات", 500);
@@ -392,6 +411,21 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
             return self::returnResponseDataApi($exception->getMessage(), 500, 500);
         }
     } // start trip
+
+    public function calculateDistance($fromLat, $fromLong, $toLat, $toLong)
+    {
+        $earthRadius = 6371;
+
+        $deltaLat = deg2rad($toLat - $fromLat);
+        $deltaLong = deg2rad($toLong - $fromLong);
+
+        $a = sin($deltaLat / 2) * sin($deltaLat / 2) + cos(deg2rad($fromLat)) * cos(deg2rad($toLat)) * sin($deltaLong / 2) * sin($deltaLong / 2);
+        $c = 2 * atan2(sqrt($a), sqrt(1 - $a));
+
+        $distance = $earthRadius * $c;
+
+        return $distance;
+    }
 
     public function cancelTrip(Request $request): JsonResponse
     {
@@ -455,6 +489,16 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
                     'trip_type' => 'scheduled',
                     'created_at' => $scheduleDate,
                 ]);
+
+            UserLocation::create([
+                'user_id' => auth()->user()->id,
+                'trip_id' => $checkTrip->id,
+                'long' => $request->from_long,
+                'lat' => $request->from_lat,
+            ]);
+
+            $checkTrip['start_time'] = 'null';
+
 
             if (isset($checkTrip)) {
                 return self::returnResponseDataApi(new TripResource($checkTrip), "تم انشاء طلب الرحلة مجدولة في وقت لاحق بنجاح", 201, 200);
@@ -610,7 +654,7 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
                 ->with('trip')
                 ->where('user_id', '=', $user->id)
                 ->orWhereIn('type', ['all', 'all_driver'])
-                ->orderBy('created_at', 'desc') 
+                ->orderBy('created_at', 'desc')
                 ->get();
         }
 

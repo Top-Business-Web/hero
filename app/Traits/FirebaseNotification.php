@@ -11,8 +11,6 @@ use App\Models\User;
 trait FirebaseNotification
 {
 
-    //firebase server key
-
     private string $serverKey = 'AAAAWOla850:APA91bEN_EHuUvHkUIynXTYTXe2QinEsduSoWTn15b9T4lN4laXQ5SuFgDHkM33YPNnAT2oijshaYwIDyZKE5JN-WWiH8hU8fmPTso7rOFKwe8gN2aim1wETZCqDPvHHvctJUatqTQ7p';
 
     public function sendFirebaseNotification($data, $user_id = null, $type = 'user', $create = true, $trip_id = null)
