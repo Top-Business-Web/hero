@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateUserLocationsTable extends Migration
+class CreateNotificationSeensTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,16 +13,15 @@ class CreateUserLocationsTable extends Migration
      */
     public function up()
     {
-        Schema::create('user_locations', function (Blueprint $table) {
+        Schema::create('notification_seens', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')
                 ->constrained('users')
                 ->cascadeOnDelete();
-            $table->foreignId('trip_id')
-                ->constrained('trips')
+            $table->foreignId('notification_id')
+                ->constrained('notifications')
                 ->cascadeOnDelete();
-            $table->string('lat');
-            $table->string('long');
+            $table->tinyInteger('status');
             $table->timestamps();
         });
     }
@@ -34,6 +33,6 @@ class CreateUserLocationsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('user_locations');
+        Schema::dropIfExists('notification_seens');
     }
 }

@@ -19,6 +19,7 @@ class SettingSeeder extends Seeder
                 'logo' => 'assets/uploads/logo.png',
                 'vat' => '15',
                 'km' => '750',
+                'phone' => '0213156484784',
                 'trip_insurance' => 'Nulla deserunt nisi et excepteur proident nostrud dolor quis aliquip elit.',
                 'rewards' => 'Ullamco consectetur fugiat deserunt consequat in et.',
                 'about' => 'Eiusmod voluptate nisi ea quis mollit cillum eiusmod mollit quis mollit.',

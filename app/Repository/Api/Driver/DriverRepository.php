@@ -457,7 +457,7 @@ class DriverRepository extends ResponseApi implements DriverRepositoryInterface
                         'body' => 'تم تأكيد الرحلة من قبل سائق بنجاح',
                         'trip_id' => $checkTrip->id
                     ];
-                    $this->sendFirebaseNotification($fcmD, $checkTrip->user_id);
+                    // $this->sendFirebaseNotification($fcmD, $checkTrip->user_id);
 
                     return self::returnResponseDataApi(new TripResource($checkTrip), "تم تاكيد الرحلة بنجاح", 201, 200);
                 } else {
