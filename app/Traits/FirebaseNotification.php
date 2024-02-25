@@ -54,13 +54,17 @@ trait FirebaseNotification
                 ]);
         }
 
-        $trip = Trip::query()->find(36);
+        if (isset($data['trip_id'])) {
+            $trip = Trip::query()->find($data['trip_id']);
+        }
+
+        $trip = $data['trip_id'];
 
         $fields = array(
             // 'registration_ids' => $tokens,
             'registration_ids' => $tokens,
             'notification' => $data,
-            'data' => $trip ? ["trip" => new TripResource($trip)] : null,
+            'data' => $trip != null ? ["trip" => new TripResource($trip)] : [],
         );
 
         $fields = json_encode($fields);

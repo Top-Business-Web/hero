@@ -14,6 +14,9 @@ class NotificationRepository implements NotificationInterface
 {
     use FirebaseNotification;
 
+    /**
+     * @throws \Exception
+     */
     public function index($request)
     {
         if ($request->ajax()) {
