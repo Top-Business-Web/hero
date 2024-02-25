@@ -17,6 +17,7 @@ class Kernel extends ConsoleKernel
     {
         $schedule->command('trip:delete-old')->hourly();
         $schedule->command('trip:changeTrip')->hourly();
+        $schedule->command('check:schedule')->hourly();
     }
 
 

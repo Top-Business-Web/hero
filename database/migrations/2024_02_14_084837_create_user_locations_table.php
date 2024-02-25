@@ -18,6 +18,9 @@ class CreateUserLocationsTable extends Migration
             $table->foreignId('user_id')
                 ->constrained('users')
                 ->cascadeOnDelete();
+            $table->foreignId('driver_id')
+                ->constrained('users')
+                ->cascadeOnDelete();
             $table->foreignId('trip_id')
                 ->constrained('trips')
                 ->cascadeOnDelete();

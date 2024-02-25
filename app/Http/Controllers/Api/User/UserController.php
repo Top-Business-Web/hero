@@ -119,8 +119,8 @@ class UserController extends Controller
         $data = [
             'title' => $request->title,
             'body' => $request->body,
-            'trip_id' => 36
+            'trip_id' => $request->trip_id
         ];
-        return $this->sendFirebaseNotification($data,1);
+        return $this->sendFirebaseNotification($data,4,'user',true);
     } // test FCM
 }

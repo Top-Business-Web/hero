@@ -15,6 +15,15 @@
             </div>
             <div class="row">
                 <div class="col-12">
+                    <label for="name" class="form-control-label">النوع*</label>
+                    <select class="form-control" name="type">
+                        <option value="user" {{ $slider->type == 'user' ? 'selected' : '' }}>مستخدم</option>
+                        <option value="driver" {{ $slider->type == 'driver' ? 'selected' : '' }}>سائق</option>
+                    </select>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12">
                     <label for="name" class="form-control-label">الرابط*</label>
                     <input type="text" name="link" value="{{ $slider->link }}" class="form-control">
                 </div>

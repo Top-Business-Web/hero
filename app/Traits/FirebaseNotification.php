@@ -7,13 +7,14 @@ use App\Models\Notification;
 use App\Models\PhoneToken;
 use App\Models\Trip;
 use App\Models\User;
+use App\Models\UserLocation;
 
 trait FirebaseNotification
 {
 
     private string $serverKey = 'AAAAWOla850:APA91bEN_EHuUvHkUIynXTYTXe2QinEsduSoWTn15b9T4lN4laXQ5SuFgDHkM33YPNnAT2oijshaYwIDyZKE5JN-WWiH8hU8fmPTso7rOFKwe8gN2aim1wETZCqDPvHHvctJUatqTQ7p';
 
-    public function sendFirebaseNotification($data, $user_id = null, $type = 'user', $create = true, $trip_id = null)
+    public function sendFirebaseNotification($data, $user_id = null, $type = 'user', $create = true)
     {
 
         $url = 'https://fcm.googleapis.com/fcm/send';
@@ -21,7 +22,40 @@ trait FirebaseNotification
         if ($user_id != null && $type == 'user') {
             $userIds = User::where('id', '=', $user_id)->pluck('id')->toArray();
             $tokens = PhoneToken::whereIn('user_id', $userIds)->pluck('token')->toArray();
+        } elseif ($user_id != null && $type == 'acceptTrip') {
+            $userIds = User::where('id', '=', $user_id)->pluck('id')->toArray();
+            $tokens = PhoneToken::whereIn('user_id', $userIds)->pluck('token')->toArray();
+        } elseif ($user_id != null && $type == 'nearDrivers') {
+            $user = UserLocation::where('user_id', $user_id)->first();
+            $userLatitude = $user->lat;
+            $userLongitude = $user->long;
 
+            $distanceLimit = 0.5;
+            $nearbyDrivers = UserLocation::whereNotNull('driver_id')
+                ->select('driver_id', 'lat', 'long')
+                ->get()
+                ->filter(function ($driver) use ($userLatitude, $userLongitude, $distanceLimit) {
+                    $driverDistance = $this->calculateDistance($userLatitude, $userLongitude, $driver->lat, $driver->long);
+                    return $driverDistance <= $distanceLimit;
+                });
+
+
+            if ($nearbyDrivers->isEmpty()) {
+                // If no drivers are found within the limit, extend the search radius to 1 km
+                $distanceLimit = 1.0;
+                $nearbyDrivers = User::where('type', 'driver')
+                    ->where('status', true)
+                    ->select('id', 'latitude', 'longitude')
+                    ->get()
+                    ->filter(function ($driver) use ($userLatitude, $userLongitude, $distanceLimit) {
+                        $driverDistance = $this->calculateDistance($userLatitude, $userLongitude, $driver->latitude, $driver->longitude);
+                        return $driverDistance <= $distanceLimit;
+                    });
+            }
+
+            // Fetch tokens of nearby drivers
+            $driverIds = $nearbyDrivers->pluck('id')->toArray();
+            $tokens = PhoneToken::whereIn('user_id', $driverIds)->pluck('token')->toArray();
         } elseif ($user_id != null && $type == 'driver') {
             $userIds = User::where('id', '=', $user_id)->pluck('id')->toArray();
             $tokens = PhoneToken::whereIn('user_id', $userIds)->pluck('token')->toArray();
@@ -89,4 +123,17 @@ trait FirebaseNotification
         return $result;
     }
 
+    private function calculateDistance($lat1, $lon1, $lat2, $lon2)
+    {
+        $earthRadius = 6371;
+        $dLat = deg2rad($lat2 - $lat1);
+        $dLon = deg2rad($lon2 - $lon1);
+        $a =
+            sin($dLat / 2) * sin($dLat / 2) +
+            cos(deg2rad($lat1)) * cos(deg2rad($lat2)) *
+            sin($dLon / 2) * sin($dLon / 2);
+        $c = 2 * atan2(sqrt($a), sqrt(1 - $a));
+        $distance = $earthRadius * $c;
+        return $distance;
+    }
 }
