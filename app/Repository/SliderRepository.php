@@ -33,11 +33,17 @@ class SliderRepository implements SliderInterface
                 })
                 ->editColumn('link', function ($slider) {
                     return '<a href="' . $slider->link . '" target="_blank" style="background-color: #007bff; color: #fff; padding: 5px; cursor: pointer; text-decoration: none; border: 1px solid #007bff; border-radius: 5px;">' . $slider->link . '</a>';
-                })  
+                })
                 ->editColumn('image', function ($slider) {
                     return '
                     <img alt="image" onclick="window.open(this.src)" class="avatar avatar-md rounded-circle" src="' . asset($slider->image) . '">
                     ';
+                })
+                ->editColumn('type', function ($slider) {
+                    if ($slider->type == 'user')
+                        return 'مستخدم';
+                    else
+                        return 'سائق';
                 })
                 ->escapeColumns([])
                 ->make(true);

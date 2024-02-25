@@ -452,12 +452,12 @@ class DriverRepository extends ResponseApi implements DriverRepositoryInterface
                     ]);
 
                     // send FCM
-                    $fcmD = [
+                    $data = [
                         'title' => 'تأكيد الرحلة',
                         'body' => 'تم تأكيد الرحلة من قبل سائق بنجاح',
                         'trip_id' => $checkTrip->id
                     ];
-                    $this->sendFirebaseNotification($fcmD,$checkTrip->user_id);
+                    $this->sendFirebaseNotification($data,$checkTrip->user_id, 'acceptTrip', true);
 
                     return self::returnResponseDataApi(new TripResource($checkTrip), "تم تاكيد الرحلة بنجاح", 201, 200);
                 } else {
@@ -921,6 +921,7 @@ class DriverRepository extends ResponseApi implements DriverRepositoryInterface
 
             $sliders = Slider::query()
                 ->select('image', 'link')
+                ->where('type', 'driver')
                 ->where('status', true)
                 ->get();
 

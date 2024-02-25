@@ -15,11 +15,10 @@ class CreateSlidersTable extends Migration
     {
         Schema::create('sliders', function (Blueprint $table) {
             $table->id();
-
+            $table->enum('type', ['user', 'driver']);
             $table->text('image');
             $table->text('link');
             $table->boolean('status')->default(false);
-
             $table->timestamps();
             $table->softDeletes();
         });
