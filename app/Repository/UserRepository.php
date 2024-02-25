@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Interfaces\UserInterface;
+use App\Models\DriverDocuments;
 use App\Models\User;
 use App\Traits\PhotoTrait;
 use Illuminate\Support\Facades\Hash;
@@ -96,16 +97,18 @@ class UserRepository implements UserInterface
     {
         $user = User::findOrFail($request->id);
 
-        ($user->status == 1) ? $user->status = 0 : $user->status = 1;
+        $driver_document = DriverDocuments::where('driver_id')->get();
+
+        ($driver_document->status == 1) ? $driver_document->status = 0 : $driver_document->status = 1;
         $data = [
             'title' => 'تفعيل الحساب',
             'body' => 'تم تفعيل حسابك من قبل الادمن',
         ];
-        $this-> $this->sendFirebaseNotification($data,$request->id, 'acceptDriver', true);
+         $this->sendFirebaseNotification($data,$request->id, 'acceptDriver', true);
 
-        $user->save();
+        $driver_document->save();
 
-        if ($user->status == 1) {
+        if ($driver_document->status == 1) {
             return response()->json('200');
         } else {
             return response()->json('201');
