@@ -98,7 +98,7 @@ trait FirebaseNotification
             // 'registration_ids' => $tokens,
             'registration_ids' => $tokens,
             'notification' => $data,
-            'data' => $trip != null ? ["trip" => new TripResource($trip)] : [],
+            'data' => $trip != null ? ["trip" => $trip] : [],
         );
 
         $fields = json_encode($fields);
