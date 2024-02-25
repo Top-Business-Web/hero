@@ -7,10 +7,11 @@ use App\Models\User;
 use App\Traits\PhotoTrait;
 use Illuminate\Support\Facades\Hash;
 use Yajra\DataTables\Facades\DataTables;
+use App\Traits\FirebaseNotification;
 
 class UserRepository implements UserInterface
 {
-    use PhotoTrait;
+    use PhotoTrait, FirebaseNotification;
 
     public function indexPerson($request)
     {
@@ -96,6 +97,11 @@ class UserRepository implements UserInterface
         $user = User::findOrFail($request->id);
 
         ($user->status == 1) ? $user->status = 0 : $user->status = 1;
+        $data = [
+            'title' => 'تفعيل الحساب',
+            'body' => 'تم تفعيل حسابك من قبل الادمن',
+        ];
+        $this-> $this->sendFirebaseNotification($data,$request->id, 'acceptDriver', true);
 
         $user->save();
 
