@@ -25,6 +25,9 @@ trait FirebaseNotification
         } elseif ($user_id != null && $type == 'acceptTrip') {
             $userIds = User::where('id', '=', $user_id)->pluck('id')->toArray();
             $tokens = PhoneToken::whereIn('user_id', $userIds)->pluck('token')->toArray();
+        }elseif ($user_id != null && $type == 'acceptDriver') {
+            $userIds = User::where('id', '=', $user_id)->pluck('id')->toArray();
+            $tokens = PhoneToken::whereIn('user_id', $userIds)->pluck('token')->toArray();
         } elseif ($user_id !== null && $type === 'nearDrivers') {
             $user = UserLocation::where('user_id', $user_id)->first();
 
@@ -89,7 +92,6 @@ trait FirebaseNotification
 
 
         if ($create === true) {
-            //start notification store
             Notification::query()
                 ->create([
                     'title' => $data['title'],
