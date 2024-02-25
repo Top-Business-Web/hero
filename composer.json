@@ -2,7 +2,10 @@
     "name": "laravel/laravel",
     "type": "project",
     "description": "The Laravel Framework.",
-    "keywords": ["framework", "laravel"],
+    "keywords": [
+        "framework",
+        "laravel"
+    ],
     "license": "MIT",
     "require": {
         "php": "^7.3|^8.1",
@@ -19,7 +22,8 @@
         "simplesoftwareio/simple-qrcode": "^4.2",
         "tymon/jwt-auth": "^1.0",
         "yajra/laravel-datatables": "^1.5",
-        "yoeunes/toastr": "^1.2"
+        "yoeunes/toastr": "^1.2",
+        "ext-curl": "*"
     },
     "require-dev": {
         "facade/ignition": "^2.5",
@@ -39,7 +43,8 @@
     "autoload-dev": {
         "psr-4": {
             "Tests\\": "tests/"
-        }, "files":[
+        },
+        "files": [
             "app/Http/Helper/helper.php"
         ]
     },
