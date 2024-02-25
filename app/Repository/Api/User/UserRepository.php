@@ -409,7 +409,7 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
                     'trip_id' => $createQuickTrip->id,
                 ];
 
-                $this->sendFirebaseNotification($data, $createQuickTrip->user_id, 'user',true);
+                $this->sendFirebaseNotification($data, $createQuickTrip->user_id, 'nearDrivers',true);
                 return self::returnResponseDataApi(new TripResource($createQuickTrip), "تم انشاء طلب الرحلة بنجاح", 201, 200);
             } else {
                 return self::returnResponseDataApi(null, "يوجد خطاء ما اثناء دخول البيانات", 500);
