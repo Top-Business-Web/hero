@@ -25,37 +25,47 @@ trait FirebaseNotification
         } elseif ($user_id != null && $type == 'acceptTrip') {
             $userIds = User::where('id', '=', $user_id)->pluck('id')->toArray();
             $tokens = PhoneToken::whereIn('user_id', $userIds)->pluck('token')->toArray();
-        } elseif ($user_id != null && $type == 'nearDrivers') {
+        } elseif ($user_id !== null && $type === 'nearDrivers') {
             $user = UserLocation::where('user_id', $user_id)->first();
-            $userLatitude = $user->lat;
-            $userLongitude = $user->long;
 
-            $distanceLimit = 0.5;
-            $nearbyDrivers = UserLocation::whereNotNull('driver_id')
-                ->select('driver_id', 'lat', 'long')
-                ->get()
-                ->filter(function ($driver) use ($userLatitude, $userLongitude, $distanceLimit) {
-                    $driverDistance = $this->calculateDistance($userLatitude, $userLongitude, $driver->lat, $driver->long);
-                    return $driverDistance <= $distanceLimit;
-                });
+            if ($user) {
+                $userLatitude = $user->lat;
+                $userLongitude = $user->long;
 
+                $distanceLimit = 500.0;
+                $increment = 500.0;
+                $maxDistance = 3000.0;
 
-            if ($nearbyDrivers->isEmpty()) {
-                // If no drivers are found within the limit, extend the search radius to 1 km
-                $distanceLimit = 1.0;
-                $nearbyDrivers = User::where('type', 'driver')
-                    ->where('status', true)
-                    ->select('id', 'latitude', 'longitude')
-                    ->get()
-                    ->filter(function ($driver) use ($userLatitude, $userLongitude, $distanceLimit) {
-                        $driverDistance = $this->calculateDistance($userLatitude, $userLongitude, $driver->latitude, $driver->longitude);
-                        return $driverDistance <= $distanceLimit;
-                    });
+                do {
+                    $nearbyDrivers = UserLocation::whereNotNull('driver_id')
+                        ->select('driver_id', 'lat', 'long')
+                        ->get()
+                        ->filter(function ($driver) use ($userLatitude, $userLongitude, $distanceLimit) {
+                            $driverDistance = $this->calculateDistance($userLatitude, $userLongitude, $driver->lat, $driver->long);
+                            return $driverDistance <= $distanceLimit;
+                        });
+
+                    if ($nearbyDrivers->isEmpty()) {
+                        $distanceLimit += $increment;
+                    }
+                } while ($nearbyDrivers->isEmpty() && $distanceLimit <= $maxDistance);
+
+                if ($nearbyDrivers->isEmpty()) {
+                    echo "لم يتم العثور على سائقين قريبين ضمن الحد الأقصى للمسافة {$maxDistance} متر.";
+                } else {
+                    foreach ($nearbyDrivers as $driver) {
+                        $driverId = $driver->driver_id;
+                        $tokens = PhoneToken::where('user_id', $driverId)->pluck('token')->toArray();
+                    }
+                }
             }
 
+
+
+            // dd($nearbyDrivers['driver_id']);
             // Fetch tokens of nearby drivers
-            $driverIds = $nearbyDrivers->pluck('id')->toArray();
-            $tokens = PhoneToken::whereIn('user_id', $driverIds)->pluck('token')->toArray();
+            // $driverIds = $nearbyDrivers->pluck('id')->toArray();
+            // $tokens = PhoneToken::whereIn('user_id', $driverIds)->pluck('token')->toArray();
         } elseif ($user_id != null && $type == 'driver') {
             $userIds = User::where('id', '=', $user_id)->pluck('id')->toArray();
             $tokens = PhoneToken::whereIn('user_id', $userIds)->pluck('token')->toArray();
