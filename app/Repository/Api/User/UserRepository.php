@@ -728,7 +728,7 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
                         'body' => 'تم تقييمك من قبل السائق',
                     ];
 
-                    $this->sendFirebaseNotification($data, $checkTrip->driver_id, 'nearDrivers',true);
+                    $this->sendFirebaseNotification($data, $checkTrip->driver_id, 'user',true);
 
                 if (isset($createTripRate)) {
                     return self::returnResponseDataApi(new TripRateResource($createTripRate), "تم انشاء التقييم بنجاح", 201);
