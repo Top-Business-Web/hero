@@ -112,10 +112,9 @@ trait FirebaseNotification
             'registration_ids' => $tokens,
             // 'registration_ids' => [
             //     'eQ-0llOfRjWs3CIsYY01lp:APA91bEngdZOmfU_aHljt9kKB-RhPH9ATAuR65lgyNMPDQl2hRkZ7KEifBiJhbVH_fHRuPOXMz6g_1YuN6BgenqVWnpBGRlzci9oLEpJmkYUJ4cCEIBqHP_-Huphoc5k9UM8ktbjBSrb',
-            //     'cA6EDB_iRi6-8NP9pJDLMW:APA91bEGWDMblSV8trcI4WKc2VBQInTVmKVytrgkZEdyw6UvygV486cc4LmfAg7xHTMLIApeuJBamclK6zRYExG3W9USPd8MOl1kztb-28gFUGxPDHs0WU9KUVitqlh52wxtqRTTVxi3'
             // ],
             'notification' => $data,
-            'data' => $trip != null ? ["trip" => $trip] : [],
+            'data' => $trip != null ? ["trip" => $trip] : null,
         );
 
         $fields = json_encode($fields);
