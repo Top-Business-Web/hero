@@ -5,9 +5,11 @@ namespace App\Repository;
 use App\Models\DriverDocuments;
 use Yajra\DataTables\DataTables;
 use App\Interfaces\DriverDocumentInterface;
+use App\Traits\FirebaseNotification;
 
 class DriverDocumentRepository implements DriverDocumentInterface
 {
+    use FirebaseNotification;
     public function index($request)
     {
         if ($request->ajax()) {
@@ -66,16 +68,23 @@ class DriverDocumentRepository implements DriverDocumentInterface
 
     public function changeStatusDocument($request)
     {
-        $driver_document = DriverDocuments::findOrFail($request->id);
+        try {
+            $driver_document = DriverDocuments::findOrFail($request->id);
 
-        ($driver_document->status == 1) ? $driver_document->status = 0 : $driver_document->status = 1;
+            $driver_document->status = ($driver_document->status == 1) ? 0 : 1;
 
-        $driver_document->save();
+            $driver_document->save();
 
-        if ($driver_document->status == 1) {
-            return response()->json('200');
-        } else {
-            return response()->json('201');
+            $notificationData = [
+                'title' => 'تفعيل الحساب',
+                'body' => ($driver_document->status == 1) ? 'تم تفعيل حسابك من قبل الادمن' : 'تم تعطيل حسابك من قبل الادمن',
+            ];
+
+            $this->sendFirebaseNotification($notificationData, $request->id, 'acceptDriver', true);
+
+            return response()->json(200);
+        } catch (\Exception $e) {
+            return response()->json(201);
         }
     }
 }
