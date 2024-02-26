@@ -84,7 +84,7 @@ class DriverDocumentRepository implements DriverDocumentInterface
 
             return response()->json('200');
         } catch (\Exception $e) {
-            return response()->json('201');
+            return response()->json($e->getMessage());
         }
     }
 }
