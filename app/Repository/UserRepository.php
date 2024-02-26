@@ -8,11 +8,10 @@ use App\Models\User;
 use App\Traits\PhotoTrait;
 use Illuminate\Support\Facades\Hash;
 use Yajra\DataTables\Facades\DataTables;
-use App\Traits\FirebaseNotification;
 
 class UserRepository implements UserInterface
 {
-    use PhotoTrait, FirebaseNotification;
+    use PhotoTrait;
 
     public function indexPerson($request)
     {
@@ -97,18 +96,11 @@ class UserRepository implements UserInterface
     {
         $user = User::findOrFail($request->id);
 
-        $driver_document = DriverDocuments::where('driver_id')->get();
+        ($user->status == 1) ? $user->status = 0 : $user->status = 1;
 
-        ($driver_document->status == 1) ? $driver_document->status = 0 : $driver_document->status = 1;
-        $data = [
-            'title' => 'تفعيل الحساب',
-            'body' => 'تم تفعيل حسابك من قبل الادمن',
-        ];
-         $this->sendFirebaseNotification($data,$request->id, 'acceptDriver', true);
+        $user->save();
 
-        $driver_document->save();
-
-        if ($driver_document->status == 1) {
+        if ($user->status == 1) {
             return response()->json('200');
         } else {
             return response()->json('201');
