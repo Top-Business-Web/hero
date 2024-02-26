@@ -71,6 +71,8 @@ class DriverDocumentRepository implements DriverDocumentInterface
         try {
             $driver_document = DriverDocuments::findOrFail($request->id);
 
+            $driver_id = $driver_document->driver_id;
+
             $driver_document->status = ($driver_document->status == 1) ? 0 : 1;
 
             $driver_document->save();
@@ -80,8 +82,8 @@ class DriverDocumentRepository implements DriverDocumentInterface
                 'body' => ($driver_document->status == 1) ? 'تم تفعيل حسابك من قبل الادمن' : 'تم تعطيل حسابك من قبل الادمن',
             ];
 
-            
-            return $this->sendFirebaseNotification($notificationData, $request->id, 'acceptDriver');
+
+            return $this->sendFirebaseNotification($notificationData, $driver_id, 'acceptDriver');
 
             return response()->json('200');
         } catch (\Exception $e) {

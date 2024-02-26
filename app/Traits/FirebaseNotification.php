@@ -28,7 +28,6 @@ trait FirebaseNotification
         }elseif ($user_id != null && $type == 'acceptDriver') {
             $userIds = User::where('id', '=', $user_id)->pluck('id')->toArray();
             $tokens = PhoneToken::whereIn('user_id', $userIds)->pluck('token')->toArray();
-            dd($userIds, $tokens);
         } elseif ($user_id !== null && $type === 'nearDrivers') {
             $user = UserLocation::where('user_id', $user_id)->first();
 
