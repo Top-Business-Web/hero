@@ -12,6 +12,7 @@ class UserLocation extends Model
     protected $fillable = [
         'user_id',
         'trip_id',
+        'driver_id',
         'lat',
         'long'
     ];
