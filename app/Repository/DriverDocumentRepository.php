@@ -80,6 +80,7 @@ class DriverDocumentRepository implements DriverDocumentInterface
                 'body' => ($driver_document->status == 1) ? 'تم تفعيل حسابك من قبل الادمن' : 'تم تعطيل حسابك من قبل الادمن',
             ];
 
+            
             return $this->sendFirebaseNotification($notificationData, $request->id, 'acceptDriver');
 
             return response()->json('200');
