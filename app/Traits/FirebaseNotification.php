@@ -114,7 +114,7 @@ trait FirebaseNotification
             //     'eQ-0llOfRjWs3CIsYY01lp:APA91bEngdZOmfU_aHljt9kKB-RhPH9ATAuR65lgyNMPDQl2hRkZ7KEifBiJhbVH_fHRuPOXMz6g_1YuN6BgenqVWnpBGRlzci9oLEpJmkYUJ4cCEIBqHP_-Huphoc5k9UM8ktbjBSrb',
             // ],
             'notification' => $data,
-            'data' => $trip != null ? ["trip" => $trip] : null,
+            'data' => $trip != null ? ["trip" => $trip,'type'=> $type] : ['type'=> $type],
         );
 
         $fields = json_encode($fields);
