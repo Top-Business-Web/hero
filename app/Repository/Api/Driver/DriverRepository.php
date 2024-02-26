@@ -998,9 +998,12 @@ class DriverRepository extends ResponseApi implements DriverRepositoryInterface
 
             $driverId = Auth::id();
 
-            $location = UserLocation::updateOrCreate(['driver_id', $driverId], [
+            UserLocation::updateOrCreate(
+                [
+                'driver_id'=> $driverId
+                ],[
                 'lat' => $request->input('lat'),
-                'long' => $request->input('long'),
+                'long' => $request->input('long')
             ]);
 
             return response()->json(['message' => 'تم تحديث موقع السائق بنجاح', 'code' => 200], 200);
