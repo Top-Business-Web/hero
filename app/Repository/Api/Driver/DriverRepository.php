@@ -457,7 +457,7 @@ class DriverRepository extends ResponseApi implements DriverRepositoryInterface
                         'body' => 'تم تأكيد الرحلة من قبل سائق بنجاح',
                         'trip_id' => $checkTrip->id
                     ];
-                    $this->sendFirebaseNotification($data,$checkTrip->user_id, 'acceptTrip', true);
+                    $this->sendFirebaseNotification($data, $checkTrip->user_id, 'acceptTrip', true);
 
                     return self::returnResponseDataApi(new TripResource($checkTrip), "تم تاكيد الرحلة بنجاح", 201, 200);
                 } else {
@@ -801,7 +801,7 @@ class DriverRepository extends ResponseApi implements DriverRepositoryInterface
                     ->where('ended', '=', 1)
                     // ->whereDate('updated_at', '<=', $toDay)
                     ->whereBetween('updated_at', [$toDay, $lastWeek])->get();
-                    // ->whereDate('updated_at', '>', $lastWeek)->get();
+                // ->whereDate('updated_at', '>', $lastWeek)->get();
 
                 $wallet = DriverWallet::query()
                     ->where('driver_id', '=', $driver->id)
@@ -979,6 +979,39 @@ class DriverRepository extends ResponseApi implements DriverRepositoryInterface
             return self::returnResponseDataApi($tripStatus, 'تم الحصول على بيانات حالة الرحلة بنجاح', 200);
         } catch (\Exception $exception) {
             return self::returnResponseDataApi($exception->getMessage(), 500, 500);
+        }
+    }
+
+    public function driverLocation(Request $request): JsonResponse
+    {
+        try {
+            $rules = [
+                'lat' => 'required|numeric',
+                'long' => 'required|numeric',
+            ];
+
+            $validator = Validator::make($request->all(), $rules);
+
+            if ($validator->fails()) {
+                return response()->json(['error' => $validator->errors()->first()], 422);
+            }
+
+            $driverId = Auth::id();
+
+            $location = UserLocation::where('driver_id', $driverId)->first();
+
+            if (!$location) {
+                return response()->json(['error' => 'لم يتم العثور على موقع السائق', 'code' => 200], 404);
+            }
+
+            $location->lat = $request->input('lat');
+            $location->long = $request->input('long');
+
+            $location->save();
+
+            return response()->json(['message' => 'تم تحديث موقع السائق بنجاح', 'code' => 200], 200);
+        } catch (\Exception $exception) {
+            return response()->json(['error' => $exception->getMessage()], 500);
         }
     }
 }

@@ -24,5 +24,6 @@ interface DriverRepositoryInterface{
     public function getInfoDriver();
     public function getTripStatus(): JsonResponse;
     public function driverProfit(Request $request): JsonResponse;
+    public function driverLocation(Request $request): JsonResponse;
     //Made By https://github.com/eldapour (eldapour)
 }
