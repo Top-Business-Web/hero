@@ -141,14 +141,13 @@
                 },
                 success: function(data) {
                     if (data == '200') {
-                        toastr.success('تم الموافقة على البيانات بنجاح');
+                        toastr.success('تم التفعيل بنجاح');
                         $('.dataTable').DataTable().ajax.reload();
                     } else {
-                        toastr.success('تم رفض البيانات');
+                        toastr.success('تم الغاء التفعيل بنجاح');
                         $('.dataTable').DataTable().ajax.reload();
                     }
                 }
-
             });
         });
     </script>
