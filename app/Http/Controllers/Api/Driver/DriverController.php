@@ -60,6 +60,4 @@ class DriverController extends Controller
     {
         return $this->driverRepository->getInfoDriver();
     } // getInfoDriver
-
-
 }
