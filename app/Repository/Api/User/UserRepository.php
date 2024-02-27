@@ -728,7 +728,7 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
                 // Send notification to the appropriate user (driver or passenger)
                 $data = [
                     'title' => 'تم التقييم',
-                    'body' => 'تم تقييمك من قبل ' . ($loggedInUserId === $checkTrip->driver_id ? 'السائق' : 'المستخدم'),
+                    'body' => 'تم تقييمك من قبل ' . ($loggedInUserId === $checkTrip->driver_id ? $checkTrip->driver->name : $checkTrip->user->name),
                 ];
                 $this->sendFirebaseNotification($data, $otherUserId, $loggedInUserId === $checkTrip->driver_id ? 'user' : 'driver', true);
 
