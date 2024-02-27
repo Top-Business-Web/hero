@@ -702,7 +702,7 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
 
             if ($checkTrip) {
                 if ($checkTrip->type == 'complete') {
-                    // Check if the current user has already rated this trip
+
                     $existingTripRate = TripRates::where('trip_id', $request->trip_id)
                         ->where('from', Auth::user()->id)
                         ->first();
@@ -714,7 +714,6 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
                     return self::returnResponseDataApi(null, "تاكد من حالة الرحلة انها مكتملة", 200, 200);
                 }
 
-                // Determine whether the logged-in user is the driver or the passenger
                 $loggedInUserId = Auth::user()->id;
                 $otherUserId = $loggedInUserId === $checkTrip->driver_id ? $checkTrip->user_id : $checkTrip->driver_id;
 
@@ -729,7 +728,7 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
                 // Send notification to the appropriate user (driver or passenger)
                 $data = [
                     'title' => 'تم التقييم',
-                    'body' => 'تم تقييمك من قبل ' . ($loggedInUserId === $checkTrip->driver_id ? 'السائق' : 'المستخدم'),
+                    'body' => 'تم تقييمك من قبل ' . ($loggedInUserId === $checkTrip->driver_id ? 'المستخدم' : 'السائق'),
                 ];
                 $this->sendFirebaseNotification($data, $otherUserId, $loggedInUserId === $checkTrip->driver_id ? 'user' : 'driver', true);
 
