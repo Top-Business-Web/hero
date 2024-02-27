@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Traits;
 
 trait GeneralTrait
@@ -9,17 +10,17 @@ trait GeneralTrait
         return app()->getLocale();
     }
 
-    public function returnError($msg,$status = 400)
+    public function returnError($msg, $status = 400)
     {
         return response()->json([
             'data' => null,
             'msg' => $msg,
             'status' => $status,
-        ],200);
+        ], 200);
     }
 
 
-    public function returnSuccessMessage($msg = "",$data = null)
+    public function returnSuccessMessage($msg = "", $data = null)
     {
         return [
             'data' => null,
@@ -28,20 +29,32 @@ trait GeneralTrait
         ];
     }
 
-    public function returnData($key, $value, $msg = "",$code=200)
+    public function returnData($key, $value, $msg = "", $code = 200)
     {
         return response()->json([
             $key => $value,
             'msg' => $msg,
             'status' => $code,
-        ],200);
+        ], 200);
     }
 
-
-
-    public function returnValidationError($code = "E001", $validator,$status=200)
+    public function calculateDistance($lat1, $lon1, $lat2, $lon2)
     {
-        return $this->returnError($code, $validator->errors()->first(),$status);
+        $earthRadius = 6371;
+        $dLat = deg2rad($lat2 - $lat1);
+        $dLon = deg2rad($lon2 - $lon1);
+        $a =
+            sin($dLat / 2) * sin($dLat / 2) +
+            cos(deg2rad($lat1)) * cos(deg2rad($lat2)) *
+            sin($dLon / 2) * sin($dLon / 2);
+        $c = 2 * atan2(sqrt($a), sqrt(1 - $a));
+        $distance = $earthRadius * $c;
+        return $distance;
+    }
+
+    public function returnValidationError($code = "E001", $validator, $status = 200)
+    {
+        return $this->returnError($code, $validator->errors()->first(), $status);
     }
 
 
@@ -225,5 +238,4 @@ trait GeneralTrait
         else
             return "";
     }
-
 }

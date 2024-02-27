@@ -25,6 +25,7 @@ use Illuminate\Support\Facades\Validator;
 use App\Http\Resources\DriverDocumentResource;
 use App\Interfaces\Api\Driver\DriverRepositoryInterface;
 use App\Models\Slider;
+use App\Traits\GeneralTrait;
 use App\Traits\FirebaseNotification;
 use Illuminate\Support\Facades\DB as FacadesDB;
 
@@ -616,76 +617,97 @@ class DriverRepository extends ResponseApi implements DriverRepositoryInterface
 
     public function endTrip(Request $request): JsonResponse
     {
-        $settigs = Setting::first(['vat', 'km']);
+        $settings = Setting::first(['vat', 'km']);
+
         try {
             $rules = [
                 'trip_id' => 'required',
-                'distance' => 'required',
                 'to_address' => 'required',
                 'to_lat' => 'required',
                 'to_long' => 'required',
             ];
+
             $validator = Validator::make($request->all(), $rules);
+
             if ($validator->fails()) {
                 $firstError = $validator->errors()->first();
                 return self::returnResponseDataApi(null, $firstError, 422);
             }
-            $checkTrip = Trip::query()
-                ->where('id', '=', $request->trip_id)
-                ->where('driver_id', '=', Auth::user()->id)
-                ->where('ended', '=', 0)
+
+            $checkTrip = Trip::where('id', $request->trip_id)
+                ->where('driver_id', Auth::user()->id)
+                ->where('ended', 0)
                 ->where('type', 'progress')
                 ->first();
 
+            if (!$checkTrip) {
+                return self::returnResponseDataApi(null, "لا يوجد رحلة بهذا المعرف", 200);
+            }
+
             $endTime = $checkTrip->updated_at->diffInMinutes(Carbon::now());
-            if ($checkTrip) {
-                $checkTrip->time_arrive = Carbon::now();
-                $checkTrip->distance = $request->distance;
-                $checkTrip->time = $endTime;
-                $price = $checkTrip->distance * $settigs->km;
-                $vatTotal = $price * ($settigs->vat / 100);
-                $total = $price - $vatTotal;
-                $checkTrip->price = $price;
-                $checkTrip->ended = true;
-                $checkTrip->type = 'complete';
+            $checkTrip->time_arrive = Carbon::now();
 
-                if ($checkTrip->save()) {
-                    $wallet = DriverWallet::query()
-                        ->where('driver_id', '=', Auth::user()->id)
-                        ->whereDay('day', '=', Carbon::now())
-                        ->first();
-                    if (!$wallet) {
-                        $wallet = DriverWallet::query()
-                            ->create([
-                                'driver_id' => Auth::user()->id,
-                                'day' => Carbon::now(),
-                                'total' => $total,
-                                'vat_total' => $vatTotal,
-                            ]);
-
-                        Notification::create([
-                            'user_id' => $checkTrip->user_id,
-                            'trip_id' => $request->trip_id,
-                            'title' => 'انتهاء الرحلة',
-                            'description' => 'تم الانتهاء من الرحلة',
-                            'type' => 'user',
-                        ]);
-                    } else {
-                        $wallet->total += $total;
-                        $wallet->vat_total += $vatTotal;
-                        $wallet->save();
-                    }
-                    return self::returnResponseDataApi(new TripResource($checkTrip), "تم نهاية الرحلة بنجاح", 201, 200);
-                } else {
-                    return self::returnResponseDataApi(null, "يوجد خطاء ما اثناء دخول البيانات", 200);
-                }
+            if ($checkTrip->trip_type == 'without') {
+                $fromLat = $checkTrip->from_lat;
+                $fromLong = $checkTrip->from_long;
+                $toLat = $request->to_lat;
+                $toLong = $request->to_long;
+                $checkTrip->to_long = $toLong;
+                $checkTrip->to_lat = $toLat;
+                $checkTrip->to_address = $request->to_address;
             } else {
-                return self::returnResponseDataApi(null, "لا يوجد رحلة حالية علي هذا الرقم", 200);
+                $fromLat = $checkTrip->from_lat;
+                $fromLong = $checkTrip->from_long;
+                $toLat = $checkTrip->to_lat;
+                $toLong = $checkTrip->to_long;
+            }
+
+            $distance = $this->calculateDistance($fromLat, $fromLong, $toLat, $toLong);
+
+            $price = $distance * $settings->km;
+            $vatTotal = $price * ($settings->vat / 100);
+            $total = $price - $vatTotal;
+
+            $checkTrip->distance = $distance;
+            $checkTrip->time = $endTime;
+            $checkTrip->price = $price;
+            $checkTrip->ended = true;
+            $checkTrip->type = 'complete';
+
+            if ($checkTrip->save()) {
+                $wallet = DriverWallet::where('driver_id', Auth::user()->id)
+                    ->whereDay('day', Carbon::now())
+                    ->first();
+
+                if (!$wallet) {
+                    $wallet = DriverWallet::create([
+                        'driver_id' => Auth::user()->id,
+                        'day' => Carbon::now(),
+                        'total' => $total,
+                        'vat_total' => $vatTotal,
+                    ]);
+                } else {
+                    $wallet->total += $total;
+                    $wallet->vat_total += $vatTotal;
+                    $wallet->save();
+                }
+
+                Notification::create([
+                    'user_id' => $checkTrip->user_id,
+                    'trip_id' => $request->trip_id,
+                    'title' => 'انتهاء الرحلة',
+                    'description' => 'تم الانتهاء من الرحلة',
+                    'type' => 'user',
+                ]);
+
+                return self::returnResponseDataApi(new TripResource($checkTrip), "تم نهاية الرحلة بنجاح", 201, 200);
+            } else {
+                return self::returnResponseDataApi(null, "يوجد خطاء ما اثناء دخول البيانات", 200);
             }
         } catch (\Exception $exception) {
             return self::returnResponseDataApi($exception->getMessage(), 500, 500);
         }
-    } // end trip
+    }
 
     public function driverAllTrip(Request $request): JsonResponse
     {
