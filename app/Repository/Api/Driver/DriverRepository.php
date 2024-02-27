@@ -622,9 +622,9 @@ class DriverRepository extends ResponseApi implements DriverRepositoryInterface
         try {
             $rules = [
                 'trip_id' => 'required',
-                'to_address' => 'required',
-                'to_lat' => 'required',
-                'to_long' => 'required',
+                'to_address' => 'nullable',
+                'to_lat' => 'nullable',
+                'to_long' => 'nullable',
             ];
 
             $validator = Validator::make($request->all(), $rules);
