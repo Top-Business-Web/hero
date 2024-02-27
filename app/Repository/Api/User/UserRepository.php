@@ -72,7 +72,7 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
             }
             if ($request->has('email') && $request->email !== null && User::where('email', $request->email)->exists()) {
                 return self::returnResponseDataApi(null, 'هذاالبريد الالكتروني مستخدم بالفعل', 201);
-            }            
+            }
 
             if ($validator->fails()) {
                 $errors = collect($validator->errors())->flatten(1)[0];
@@ -409,7 +409,7 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
                     'trip_id' => $createQuickTrip->id,
                 ];
 
-                $this->sendFirebaseNotification($data, $createQuickTrip->user_id, 'nearDrivers',true);
+                $this->sendFirebaseNotification($data, $createQuickTrip->user_id, 'nearDrivers', true);
                 return self::returnResponseDataApi(new TripResource($createQuickTrip), "تم انشاء طلب الرحلة بنجاح", 201, 200);
             } else {
                 return self::returnResponseDataApi(null, "يوجد خطاء ما اثناء دخول البيانات", 500);
@@ -652,9 +652,8 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
                 ->with('trip')
                 ->where('user_id', '=', $user->id)
                 ->orWhereIn('type', ['all', 'all_user'])
-                ->orderBy('created_at', 'desc') // Order notifications from newest to oldest
+                ->orderBy('created_at', 'desc')
                 ->get();
-            // Retrieve all matching notifications, not just the first one
             $tripIds = $notifications->pluck('trip_id')->toArray();
         } elseif ($user->type == 'driver') {
             $notifications = Notification::query()
@@ -699,14 +698,15 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
                 return self::returnResponseDataApi(null, $firstError, 422, 422);
             }
 
-            $checkTrip = Trip::query()
-                ->where('id', $request->trip_id)->first();
+            $checkTrip = Trip::query()->where('id', $request->trip_id)->first();
 
             if ($checkTrip) {
                 if ($checkTrip->type == 'complete') {
+                    // Check if the current user has already rated this trip
                     $existingTripRate = TripRates::where('trip_id', $request->trip_id)
                         ->where('from', Auth::user()->id)
                         ->first();
+
                     if ($existingTripRate) {
                         return self::returnResponseDataApi(null, "تم تقييم الرحلة بالفعل", 500, 200);
                     }
@@ -714,21 +714,26 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
                     return self::returnResponseDataApi(null, "تاكد من حالة الرحلة انها مكتملة", 200, 200);
                 }
 
-                $createTripRate = TripRates::query()
-                    ->create([
-                        'trip_id' => $request->trip_id,
-                        'from' => Auth::user()->id,
-                        'to' => $checkTrip->driver_id,
-                        'rate' => $request->rate,
-                        'description' => $request->description,
-                    ]);
+                // Determine whether the logged-in user is the driver or the passenger
+                $loggedInUserId = Auth::user()->id;
+                $otherUserId = $loggedInUserId === $checkTrip->driver_id ? $checkTrip->user_id : $checkTrip->driver_id;
 
-                    $data = [
-                        'title' => 'تم التقييم',
-                        'body' => 'تم تقييمك من قبل السائق',
-                    ];
+                $createTripRate = TripRates::query()->create([
+                    'trip_id' => $request->trip_id,
+                    'from' => $loggedInUserId,
+                    'to' => $otherUserId,
+                    'rate' => $request->rate,
+                    'description' => $request->description,
+                ]);
 
-                    $this->sendFirebaseNotification($data, $checkTrip->driver_id, 'user',true);
+                // Send notification to the appropriate user (driver or passenger)
+                $data = [
+                    'title' => 'تم التقييم',
+                    'body' => 'تم تقييمك من قبل ' . ($loggedInUserId === $checkTrip->driver_id ? 'المستخدم' : 'السائق'),
+                ];
+                $this->sendFirebaseNotification($data, $otherUserId, $loggedInUserId === $checkTrip->driver_id ? 'user' : 'driver', true);
+
+
 
                 if (isset($createTripRate)) {
                     return self::returnResponseDataApi(new TripRateResource($createTripRate), "تم انشاء التقييم بنجاح", 201);
