@@ -3,21 +3,21 @@
 namespace App\Repository;
 
 use App\Interfaces\UserInterface;
-use App\Models\DriverDocuments;
 use App\Models\User;
 use App\Traits\PhotoTrait;
-use Illuminate\Support\Facades\Hash;
 use Yajra\DataTables\Facades\DataTables;
+use App\Traits\FirebaseNotification;
+use Mockery\Expectation;
 
 class UserRepository implements UserInterface
 {
-    use PhotoTrait;
+    use PhotoTrait, FirebaseNotification;
 
     public function indexPerson($request)
     {
         if ($request->ajax()) {
             $users = User::query()
-            ->where('type', '=', 'user')->latest()->get();
+                ->where('type', '=', 'user')->latest()->get();
             return DataTables::of($users)
                 ->addColumn('action', function ($users) {
                     return '
@@ -94,15 +94,28 @@ class UserRepository implements UserInterface
 
     public function changeStatusUser($request)
     {
-        $user = User::findOrFail($request->id);
 
-        ($user->status == 1) ? $user->status = 0 : $user->status = 1;
+        try {
 
-        $user->save();
+            $request->validate([
+                'id' => 'required|integer|exists:users,id',
+            ]);
 
-        if ($user->status == 1) {
+            $user = User::findOrFail($request->id);
+
+            ($user->status == 1) ? $user->status = 0 : $user->status = 1;
+
+            $user->save();
+
+            $notificationData = [
+                'title' => 'تفعيل الحساب',
+                'body' => ($user->status == 1) ? 'تم تفعيل حسابك من قبل الادمن' : 'تم تعطيل حسابك من قبل الادمن',
+            ];
+
+            return $this->sendFirebaseNotification($notificationData, $user->id, 'user');
+
             return response()->json('200');
-        } else {
+        } catch (Expectation $e) {
             return response()->json('201');
         }
     }

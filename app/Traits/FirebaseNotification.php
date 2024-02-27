@@ -66,11 +66,6 @@ trait FirebaseNotification
             }
 
 
-
-            // dd($nearbyDrivers['driver_id']);
-            // Fetch tokens of nearby drivers
-            // $driverIds = $nearbyDrivers->pluck('id')->toArray();
-            // $tokens = PhoneToken::whereIn('user_id', $driverIds)->pluck('token')->toArray();
         } elseif ($user_id != null && $type == 'driver') {
             $userIds = User::where('id', '=', $user_id)->pluck('id')->toArray();
             $tokens = PhoneToken::whereIn('user_id', $userIds)->pluck('token')->toArray();
