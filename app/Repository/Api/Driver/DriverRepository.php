@@ -621,6 +621,9 @@ class DriverRepository extends ResponseApi implements DriverRepositoryInterface
             $rules = [
                 'trip_id' => 'required',
                 'distance' => 'required',
+                'to_address' => 'required',
+                'to_lat' => 'required',
+                'to_long' => 'required',
             ];
             $validator = Validator::make($request->all(), $rules);
             if ($validator->fails()) {
@@ -639,9 +642,9 @@ class DriverRepository extends ResponseApi implements DriverRepositoryInterface
                 $checkTrip->time_arrive = Carbon::now();
                 $checkTrip->distance = $request->distance;
                 $checkTrip->time = $endTime;
-                $price = $checkTrip->distance * $settigs->km; // Calculate the total price based on the distance
-                $vatTotal = $price * ($settigs->vat / 100); // Calculate 15% of the total price as VAT
-                $total = $price - $vatTotal; // Calculate the total after deducting the VAT
+                $price = $checkTrip->distance * $settigs->km;
+                $vatTotal = $price * ($settigs->vat / 100);
+                $total = $price - $vatTotal;
                 $checkTrip->price = $price;
                 $checkTrip->ended = true;
                 $checkTrip->type = 'complete';
