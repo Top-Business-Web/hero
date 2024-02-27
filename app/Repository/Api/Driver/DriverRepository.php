@@ -140,34 +140,29 @@ class DriverRepository extends ResponseApi implements DriverRepositoryInterface
         }
     } // registerDriverDoc
 
+
     public function checkDocument(Request $request): JsonResponse
     {
         try {
-            $user = User::find(Auth::user()->id);
-            $checkDetails = DriverDetails::query()->where('driver_id', $user->id)->first();
-            $DriverDocuments = DriverDocuments::query()->where('driver_id', $user->id)->first();
-            $data = [];
+            $user = Auth::user();
 
-            if ($checkDetails) {
-                $data['driver_details'] = 1;
+            if ($user->type === 'driver') {
+                $checkDetails = DriverDetails::where('driver_id', $user->id)->first();
+                $driverDocuments = DriverDocuments::where('driver_id', $user->id)->first();
+                $data = [
+                    'driver_details' => $checkDetails ? 1 : 0,
+                    'driver_documents' => $driverDocuments ? 1 : 0,
+                    'status' => $driverDocuments ? $driverDocuments->status : 0,
+                ];
             } else {
-                $data['driver_details'] = 0;
+                return self::returnResponseDataApi(null, 'المستخدم ليس سائق.', 403); // Return a 403 Forbidden status if the user is not a driver
             }
 
-            if ($DriverDocuments) {
-                $data['driver_documents'] = 1;
-                $data['status'] = $DriverDocuments->status;
-            } else {
-                $data['driver_documents'] = 0;
-                $data['status'] = 0;
-            }
-
-
-            return self::returnResponseDataApi($data, "تم الحصول علي البيانات بنجاح", 200);
+            return self::returnResponseDataApi($data, "تم استرداد البيانات بنجاح.", 200);
         } catch (\Exception $e) {
-            return self::returnResponseDataApi($e->getMessage(), 'هناك خطا ما حاول في وقت لاحق', 500);
+            return self::returnResponseDataApi(null, 'حدث خطأ. الرجاء معاودة المحاولة في وقت لاحق.', 500);
         }
-    } // check Document
+    }
 
     public function changeStatus(Request $request): JsonResponse
     {
