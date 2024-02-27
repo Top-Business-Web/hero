@@ -8,6 +8,7 @@ use App\Models\PhoneToken;
 use App\Models\Trip;
 use App\Models\User;
 use App\Models\UserLocation;
+use Illuminate\Support\Facades\Auth;
 
 trait FirebaseNotification
 {
@@ -25,11 +26,12 @@ trait FirebaseNotification
         } elseif ($user_id != null && $type == 'acceptTrip') {
             $userIds = User::where('id', '=', $user_id)->pluck('id')->toArray();
             $tokens = PhoneToken::whereIn('user_id', $userIds)->pluck('token')->toArray();
-        }elseif ($user_id != null && $type == 'acceptDriver') {
+        } elseif ($user_id != null && $type == 'acceptDriver') {
             $userIds = User::where('id', '=', $user_id)->pluck('id')->toArray();
             $tokens = PhoneToken::whereIn('user_id', $userIds)->pluck('token')->toArray();
-        } elseif ($user_id !== null && $type === 'nearDrivers') {
-            $user = UserLocation::where('user_id', $user_id)->first();
+        } elseif ($user_id == null && $type === 'nearDrivers') {
+            $userId = Auth::user();
+            $user = UserLocation::where('user_id', $userId->id)->first();
 
             if ($user) {
                 $userLatitude = $user->lat;
@@ -60,12 +62,12 @@ trait FirebaseNotification
                     foreach ($nearbyDrivers as $driver) {
                         $driverId = $driver->driver_id;
                         $driverTokens = PhoneToken::where('user_id', $driverId)->pluck('token')->toArray();
+                        $driverIds = PhoneToken::where('user_id', $driverId)->pluck('id');
+
                         $tokens = array_merge($tokens, $driverTokens);
                     }
                 }
             }
-
-
         } elseif ($user_id != null && $type == 'driver') {
             $userIds = User::where('id', '=', $user_id)->pluck('id')->toArray();
             $tokens = PhoneToken::whereIn('user_id', $userIds)->pluck('token')->toArray();
@@ -87,6 +89,19 @@ trait FirebaseNotification
 
 
         if ($create === true) {
+            // if ($driverIds != null) {
+            //     foreach ($driverIds as $driver) {
+            //         dd($driver);
+            //         Notification::query()
+            //             ->create([
+            //                 'title' => $data['title'],
+            //                 'description' => $data['body'],
+            //                 'user_id' => $user_id ?? null,
+            //                 'type' => $type,
+            //                 'trip_id' => $data['trip_id']
+            //             ]);
+            //     }
+            // }
             Notification::query()
                 ->create([
                     'title' => $data['title'],
@@ -109,7 +124,7 @@ trait FirebaseNotification
             //     'eQ-0llOfRjWs3CIsYY01lp:APA91bEngdZOmfU_aHljt9kKB-RhPH9ATAuR65lgyNMPDQl2hRkZ7KEifBiJhbVH_fHRuPOXMz6g_1YuN6BgenqVWnpBGRlzci9oLEpJmkYUJ4cCEIBqHP_-Huphoc5k9UM8ktbjBSrb',
             // ],
             'notification' => $data,
-            'data' => $trip != null ? ["trip" => $trip,'type'=> $type] : ['type'=> $type],
+            'data' => $trip != null ? ["trip" => $trip, 'type' => $type] : ['type' => $type],
         );
 
         $fields = json_encode($fields);
