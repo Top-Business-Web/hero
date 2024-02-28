@@ -5,9 +5,12 @@ namespace App\Console\Commands;
 use App\Models\Trip;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
+use App\Traits\FirebaseNotification;
 
 class ChangeTripTypes extends Command
 {
+
+    use FirebaseNotification;
     /**
      * The name and signature of the console command.
      *
@@ -49,6 +52,13 @@ class ChangeTripTypes extends Command
             if ($currentTime->gte($scheduledTime)) {
                 $trip->update(['trip_type' => 'with']);
             }
+            $data = [
+                'title' => 'رحلة جديدة',
+                'body' => 'هناك رحلة جديدة في الانتظار',
+                'trip_id' => $trip->id,
+            ];
+
+            $this->sendFirebaseNotification($data, $trip->user_id, 'nearDrivers');
         }
         $this->info('Change trip types Changed successfully.');
     }
