@@ -63,7 +63,7 @@ trait FirebaseNotification
                     foreach ($nearbyDrivers as $driver) {
                         $driverId = $driver->driver_id;
                         $driverTokens = PhoneToken::where('user_id', $driverId)->pluck('token')->toArray();
-                        $driverIds = PhoneToken::where('user_id', $driverId)->pluck('id');
+                        $driverIds = PhoneToken::where('user_id', $driverId)->pluck('user_id');
                         $tokens = array_merge($tokens, $driverTokens);
 
                         foreach ($driverIds as $driver) {
