@@ -62,7 +62,7 @@ class SendProfitDriverWeekly extends Command
             ];
 
             $driverId = User::find($driver->driver_id);
-            $this->sendFirebaseNotification($data, $driverId, 'user');
+            $this->sendFirebaseNotification($data, $driverId->id, 'user');
         }
 
         $this->info('Weekly profits calculated and notifications sent successfully.');
