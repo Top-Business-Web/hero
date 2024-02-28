@@ -59,12 +59,23 @@ trait FirebaseNotification
                     echo "لم يتم العثور على سائقين قريبين ضمن الحد الأقصى للمسافة {$maxDistance} متر.";
                 } else {
                     $tokens = [];
+                    $driverIds = [];
                     foreach ($nearbyDrivers as $driver) {
                         $driverId = $driver->driver_id;
                         $driverTokens = PhoneToken::where('user_id', $driverId)->pluck('token')->toArray();
                         $driverIds = PhoneToken::where('user_id', $driverId)->pluck('id');
-
                         $tokens = array_merge($tokens, $driverTokens);
+
+                        foreach ($driverIds as $driver) {
+                            Notification::query()
+                                ->create([
+                                    'title' => $data['title'],
+                                    'description' => $data['body'],
+                                    'user_id' => $driver ?? null,
+                                    'type' => $type,
+                                    'trip_id' => $data['trip_id']
+                                ]);
+                        }
                     }
                 }
             }
@@ -87,30 +98,14 @@ trait FirebaseNotification
             $data['trip_id'] = null;
         }
 
-
-        if ($create === true) {
-            // if ($driverIds != null) {
-            //     foreach ($driverIds as $driver) {
-            //         dd($driver);
-            //         Notification::query()
-            //             ->create([
-            //                 'title' => $data['title'],
-            //                 'description' => $data['body'],
-            //                 'user_id' => $user_id ?? null,
-            //                 'type' => $type,
-            //                 'trip_id' => $data['trip_id']
-            //             ]);
-            //     }
-            // }
-            Notification::query()
-                ->create([
-                    'title' => $data['title'],
-                    'description' => $data['body'],
-                    'user_id' => $user_id ?? null,
-                    'type' => $type,
-                    'trip_id' => $data['trip_id']
-                ]);
-        }
+        Notification::query()
+            ->create([
+                'title' => $data['title'],
+                'description' => $data['body'],
+                'user_id' => $user_id ?? null,
+                'type' => $type,
+                'trip_id' => $data['trip_id']
+            ]);
 
         if (isset($data['trip_id'])) {
             $trip = Trip::query()->find($data['trip_id']);
