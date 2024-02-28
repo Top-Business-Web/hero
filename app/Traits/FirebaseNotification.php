@@ -98,14 +98,17 @@ trait FirebaseNotification
             $data['trip_id'] = null;
         }
 
-        Notification::query()
-            ->create([
-                'title' => $data['title'],
-                'description' => $data['body'],
-                'user_id' => $user_id ?? null,
-                'type' => $type,
-                'trip_id' => $data['trip_id']
-            ]);
+        if ($type != 'nearDrivers') {
+            Notification::query()
+                ->create([
+                    'title' => $data['title'],
+                    'description' => $data['body'],
+                    'user_id' => $user_id ?? null,
+                    'type' => $type,
+                    'trip_id' => $data['trip_id']
+                ]);
+        }
+
 
         if (isset($data['trip_id'])) {
             $trip = Trip::query()->find($data['trip_id']);
