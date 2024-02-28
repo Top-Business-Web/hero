@@ -413,7 +413,7 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
                     'trip_id' => $createQuickTrip->id,
                 ];
 
-                $this->sendFirebaseNotification($data, null, 'nearDrivers', true);
+                $this->sendFirebaseNotification($data, null, 'nearDrivers');
                 return self::returnResponseDataApi(new TripResource($createQuickTrip), "تم انشاء طلب الرحلة بنجاح", 201, 200);
             } else {
                 return self::returnResponseDataApi(null, "يوجد خطاء ما اثناء دخول البيانات", 500);
@@ -735,7 +735,7 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
                     'title' => 'تم التقييم',
                     'body' => 'تم تقييمك من قبل ' . ($loggedInUserId === $checkTrip->driver_id ? $checkTrip->driver->name : $checkTrip->user->name),
                 ];
-                $this->sendFirebaseNotification($data, $otherUserId, $loggedInUserId === $checkTrip->driver_id ? 'user' : 'driver', true);
+                $this->sendFirebaseNotification($data, $otherUserId, $loggedInUserId === $checkTrip->driver_id ? 'user' : 'driver');
 
 
 
