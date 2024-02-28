@@ -386,19 +386,23 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
                 'lat' => $request->from_lat,
             ]);
 
-            $fromLong = $createQuickTrip->from_long;
-            $fromLat = $createQuickTrip->from_lat;
-            $toLong = $createQuickTrip->to_long;
-            $toLat = $createQuickTrip->to_lat;
+            if ($request->trip_type === 'without') {
+                $price = null;
+            } else {
+                $fromLong = $createQuickTrip->from_long;
+                $fromLat = $createQuickTrip->from_lat;
+                $toLong = $createQuickTrip->to_long;
+                $toLat = $createQuickTrip->to_lat;
 
-            $distance = $this->calculateDistance(
-                $fromLat,
-                $fromLong,
-                $toLong,
-                $toLat
-            );
+                $distance = $this->calculateDistance(
+                    $fromLat,
+                    $fromLong,
+                    $toLong,
+                    $toLat
+                );
 
-            $price = $distance * $settigs->km;
+                $price = $distance * $settigs->km;
+            }
 
             $createQuickTrip['price'] = $price;
 
@@ -417,7 +421,8 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
         } catch (\Exception $exception) {
             return self::returnResponseDataApi($exception->getMessage(), 500, 500);
         }
-    } // start trip
+    }
+
 
     public function calculateDistance($fromLat, $fromLong, $toLat, $toLong)
     {
