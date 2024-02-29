@@ -121,10 +121,23 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
             if (isset($storeNewUser)) {
                 $credentials = ['phone' => $request->phone, 'password' => '123456'];
                 $storeNewUser['token'] = auth()->guard('user-api')->attempt($credentials);
-                PhoneToken::query()->updateOrCreate(['user_id' => $storeNewUser['id'], 'device_type' => request()->device_type], [
-                    'device_type' => request()->device_type,
-                    'token' => request()->token
-                ]);
+
+                $existingToken = PhoneToken::where('token', $request->token)
+                    ->where('device_type', $request->device_type)
+                    ->first();
+
+                if ($existingToken) {
+                    $existingToken->update([
+                        'user_id' => $storeNewUser['id'],
+                    ]);
+                } else {
+                    PhoneToken::query()->create([
+                        'user_id' => $storeNewUser['id'],
+                        'device_type' => $request->device_type,
+                        'token' => $request->token
+                    ]);
+                }
+
                 return self::returnResponseDataApi(new UserResource($storeNewUser), "تم تسجيل بيانات المستخدم بنجاح", 200);
             } else {
                 return self::returnResponseDataApi(null, "يوجد خطاء ما اثناء دخول البيانات", 500);
@@ -170,19 +183,27 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
                     return self::returnResponseDataApi(null, "يوجد حساب محذوف بهذا الرقم يرجي التواصل مع الدعم", 409, 409);
                 }
 
-                // Authenticate User
                 $credentials = ['phone' => $request->phone, 'password' => '123456'];
                 $token = Auth::guard('user-api')->attempt($credentials);
 
-                // Get User and Attach Token
                 $user = Auth::guard('user-api')->user();
                 $user['token'] = $token;
 
-                // Update or Create PhoneToken
-                PhoneToken::query()->updateOrCreate(
-                    ['user_id' => $user->id, 'device_type' => $request->device_type],
-                    ['device_type' => $request->device_type, 'token' => $request->token]
-                );
+                $existingToken = PhoneToken::where('token', $request->token)
+                    ->where('device_type', $request->device_type)
+                    ->first();
+
+                if ($existingToken) {
+                    $existingToken->update([
+                        'user_id' => $user->id,
+                    ]);
+                } else {
+                    PhoneToken::query()->create([
+                        'user_id' => $user->id,
+                        'device_type' => $request->device_type,
+                        'token' => $request->token
+                    ]);
+                }
 
                 return self::returnResponseDataApi(new UserResource($user), "تم تسجيل الدخول بنجاح", 200, 200);
             }
@@ -190,6 +211,7 @@ class UserRepository extends ResponseApi implements UserRepositoryInterface
             return self::returnResponseDataApi(null, $exception->getMessage(), 500, 500);
         }
     } // login
+
 
     public function logout(): JsonResponse
     {
