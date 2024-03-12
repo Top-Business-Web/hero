@@ -37,6 +37,20 @@
         </li>
 
         <li class="slide">
+            <a class="side-menu__item" href="{{route('insurances-drivers.index')}}">
+                <i class="fa fa-car side-menu__icon"></i>
+                <span class="side-menu__label">تأمينات السائقين</span>
+            </a>
+        </li>
+
+        <li class="slide">
+            <a class="side-menu__item" href="{{route('insurances-payments.index')}}">
+                <i class="fa fa-car side-menu__icon"></i>
+                <span class="side-menu__label">عمليات دفع التأمينات</span>
+            </a>
+        </li>
+
+        <li class="slide">
             <a class="side-menu__item" href="{{route('city.index')}}">
                 <i class="fa fa-city side-menu__icon"></i>
                 <span class="side-menu__label">المدن</span>

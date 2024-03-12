@@ -12,6 +12,8 @@ use App\Interfaces\AuthInterface;
 use App\Interfaces\CityInterface;
 use App\Interfaces\DriverDocumentInterface;
 use App\Interfaces\DriverInterface;
+use App\Interfaces\InsuranceDriverInterface;
+use App\Interfaces\InsurancePaymentInterface;
 use App\Interfaces\NotificationInterface;
 use App\Interfaces\SettingInterface;
 use App\Interfaces\SliderInterface;
@@ -23,6 +25,8 @@ use App\Repository\AuthRepository;
 use App\Repository\CityRepository;
 use App\Repository\DriverDocumentRepository;
 use App\Repository\DriverRepository;
+use App\Repository\InsuranceDriverRepository;
+use App\Repository\InsurancePaymentRepository;
 use App\Repository\NotificationRepository;
 use App\Repository\SettingRepository;
 use App\Repository\SliderRepository;
@@ -52,6 +56,8 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(CityInterface::class,CityRepository::class);
         $this->app->bind(SliderInterface::class,SliderRepository::class);
         $this->app->bind(SettingInterface::class,SettingRepository::class);
+        $this->app->bind(InsuranceDriverInterface::class,InsuranceDriverRepository::class);
+        $this->app->bind(InsurancePaymentInterface::class,InsurancePaymentRepository::class);
 
         // ----------------------------------------------------------------
 
