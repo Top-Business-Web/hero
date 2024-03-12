@@ -7,6 +7,8 @@ use App\Http\Controllers\Admin\AuthController;
 use App\Http\Controllers\Admin\CityController;
 use App\Http\Controllers\Admin\DriverController;
 use App\Http\Controllers\Admin\DriverDocumentController;
+use App\Http\Controllers\Admin\InsuranceDriverController;
+use App\Http\Controllers\Admin\InsurancePaymentController;
 use App\Http\Controllers\Admin\InvoiceSettingController;
 use App\Http\Controllers\Admin\NotificationController;
 use App\Http\Controllers\Admin\OrderController;
@@ -83,6 +85,12 @@ Route::group(['prefix'=>'admin','middleware'=>'auth:admin'],function (){
     #============================ Notification =====================================
     Route::resource('notifications',NotificationController::class);
     Route::POST('notifications/delete',[NotificationController::class,'delete'])->name('notification_delete');
+
+    #============================ Insurance Driver =====================================
+    Route::resource('insurances-drivers',InsuranceDriverController::class);
+
+    #============================ Insurance Payment =====================================
+    Route::resource('insurances-payments',InsurancePaymentController::class);
 
 
 });

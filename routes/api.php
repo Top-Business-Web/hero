@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\Driver\DriverController;
 use App\Http\Controllers\Api\Driver\TripController as DriverTripController;
 use App\Http\Controllers\Api\User\CheckPhoneController;
 use App\Http\Controllers\Api\User\UserController;
+use App\Http\Controllers\Api\ZainCashController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -89,4 +90,6 @@ Route::get('cities', [UserController::class, 'getAllCities']);
 Route::get('areas', [UserController::class, 'getAllAreas']);
 Route::get('settings', [UserController::class, 'getAllSettings']);
 Route::post('testFcm', [UserController::class, 'testFcm']);
+Route::post('zain', [ZainCashController::class, 'initialTransaction']);
+Route::post('payTransaction', [ZainCashController::class, 'payTransaction']);
 ########################### END GENERAL ROUTES ################################
