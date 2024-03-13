@@ -49,7 +49,7 @@ return [
     | Set 'test' to false for the test environment or true for the live environment
     | after you have obtained all credentials from ZainCash.
     */
-    'test' => env('ZAINCASH_TEST', true),
+    'test' => env('ZAINCASH_TEST', false),
     'test_url' => env('ZAINCASH_TEST_URL', 'https://test.zaincash.iq/'),
     'live_url' => env('ZAINCASH_LIVE_URL', 'https://api.zaincash.iq/'),
 
