@@ -80,7 +80,10 @@ class Process implements \IteratorAggregate
     private $processPipes;
 
     private $latestSignal;
+<<<<<<< HEAD
     private $cachedExitCode;
+=======
+>>>>>>> 152c5ac8b3fa0942a784ef128282fb9c55e17786
 
     private static $sigchild;
 
@@ -1346,6 +1349,7 @@ class Process implements \IteratorAggregate
         $this->processInformation = proc_get_status($this->process);
         $running = $this->processInformation['running'];
 
+<<<<<<< HEAD
         // In PHP < 8.3, "proc_get_status" only returns the correct exit status on the first call.
         // Subsequent calls return -1 as the process is discarded. This workaround caches the first
         // retrieved exit status for consistent results in later calls, mimicking PHP 8.3 behavior.
@@ -1359,6 +1363,8 @@ class Process implements \IteratorAggregate
             }
         }
 
+=======
+>>>>>>> 152c5ac8b3fa0942a784ef128282fb9c55e17786
         $this->readPipes($running && $blocking, '\\' !== \DIRECTORY_SEPARATOR || !$running);
 
         if ($this->fallbackStatus && $this->isSigchildEnabled()) {

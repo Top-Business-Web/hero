@@ -621,10 +621,16 @@ class Table
                 if (!strstr($cell ?? '', "\n")) {
                     continue;
                 }
+<<<<<<< HEAD
                 $eol = str_contains($cell ?? '', "\r\n") ? "\r\n" : "\n";
                 $escaped = implode($eol, array_map([OutputFormatter::class, 'escapeTrailingBackslash'], explode($eol, $cell)));
                 $cell = $cell instanceof TableCell ? new TableCell($escaped, ['colspan' => $cell->getColspan()]) : $escaped;
                 $lines = explode($eol, str_replace($eol, '<fg=default;bg=default></>'.$eol, $cell));
+=======
+                $escaped = implode("\n", array_map([OutputFormatter::class, 'escapeTrailingBackslash'], explode("\n", $cell)));
+                $cell = $cell instanceof TableCell ? new TableCell($escaped, ['colspan' => $cell->getColspan()]) : $escaped;
+                $lines = explode("\n", str_replace("\n", "<fg=default;bg=default></>\n", $cell));
+>>>>>>> 152c5ac8b3fa0942a784ef128282fb9c55e17786
                 foreach ($lines as $lineKey => $line) {
                     if ($colspan > 1) {
                         $line = new TableCell($line, ['colspan' => $colspan]);
@@ -686,9 +692,14 @@ class Table
                 $nbLines = $cell->getRowspan() - 1;
                 $lines = [$cell];
                 if (strstr($cell, "\n")) {
+<<<<<<< HEAD
                     $eol = str_contains($cell, "\r\n") ? "\r\n" : "\n";
                     $lines = explode($eol, str_replace($eol, '<fg=default;bg=default>'.$eol.'</>', $cell));
                     $nbLines = \count($lines) > $nbLines ? substr_count($cell, $eol) : $nbLines;
+=======
+                    $lines = explode("\n", str_replace("\n", "<fg=default;bg=default>\n</>", $cell));
+                    $nbLines = \count($lines) > $nbLines ? substr_count($cell, "\n") : $nbLines;
+>>>>>>> 152c5ac8b3fa0942a784ef128282fb9c55e17786
 
                     $rows[$line][$column] = new TableCell($lines[0], ['colspan' => $cell->getColspan(), 'style' => $cell->getStyle()]);
                     unset($lines[0]);

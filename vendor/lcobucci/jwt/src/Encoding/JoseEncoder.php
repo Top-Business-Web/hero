@@ -6,6 +6,7 @@ namespace Lcobucci\JWT\Encoding;
 use JsonException;
 use Lcobucci\JWT\Decoder;
 use Lcobucci\JWT\Encoder;
+<<<<<<< HEAD
 
 use function base64_decode;
 use function base64_encode;
@@ -14,6 +15,12 @@ use function json_decode;
 use function json_encode;
 use function rtrim;
 use function strtr;
+=======
+use Lcobucci\JWT\SodiumBase64Polyfill;
+
+use function json_decode;
+use function json_encode;
+>>>>>>> 152c5ac8b3fa0942a784ef128282fb9c55e17786
 
 use const JSON_THROW_ON_ERROR;
 use const JSON_UNESCAPED_SLASHES;
@@ -48,11 +55,19 @@ final class JoseEncoder implements Encoder, Decoder
 
     public function base64UrlEncode(string $data): string
     {
+<<<<<<< HEAD
         return rtrim(strtr(base64_encode($data), '+/', '-_'), '=');
+=======
+        return SodiumBase64Polyfill::bin2base64(
+            $data,
+            SodiumBase64Polyfill::SODIUM_BASE64_VARIANT_URLSAFE_NO_PADDING
+        );
+>>>>>>> 152c5ac8b3fa0942a784ef128282fb9c55e17786
     }
 
     public function base64UrlDecode(string $data): string
     {
+<<<<<<< HEAD
         // Padding isn't added back because it isn't strictly necessary for decoding with PHP
         $decodedContent = base64_decode(strtr($data, '-_', '+/'), true);
 
@@ -61,5 +76,11 @@ final class JoseEncoder implements Encoder, Decoder
         }
 
         return $decodedContent;
+=======
+        return SodiumBase64Polyfill::base642bin(
+            $data,
+            SodiumBase64Polyfill::SODIUM_BASE64_VARIANT_URLSAFE_NO_PADDING
+        );
+>>>>>>> 152c5ac8b3fa0942a784ef128282fb9c55e17786
     }
 }

@@ -1,7 +1,18 @@
 {
     "name": "lcobucci/jwt",
     "description": "A simple library to work with JSON Web Token and JSON Web Signature",
+<<<<<<< HEAD
     "type": "library",
+=======
+    "license": [
+        "BSD-3-Clause"
+    ],
+    "type": "library",
+    "keywords": [
+        "JWT",
+        "JWS"
+    ],
+>>>>>>> 152c5ac8b3fa0942a784ef128282fb9c55e17786
     "authors": [
         {
             "name": "Luís Cobucci",
@@ -9,6 +20,7 @@
             "role": "Developer"
         }
     ],
+<<<<<<< HEAD
     "keywords": [
         "JWT",
         "JWS"
@@ -34,6 +46,29 @@
         "phpstan/phpstan-strict-rules": "^0.12",
         "phpunit/php-invoker": "^3.1",
         "phpunit/phpunit": "^9.4"
+=======
+    "require": {
+        "php": "^7.4 || ^8.0",
+        "ext-hash": "*",
+        "ext-json": "*",
+        "ext-mbstring": "*",
+        "ext-openssl": "*",
+        "ext-sodium": "*",
+        "lcobucci/clock": "^2.0 || ^3.0"
+    },
+    "require-dev": {
+        "infection/infection": "^0.21",
+        "lcobucci/coding-standard": "^6.0",
+        "mikey179/vfsstream": "^1.6.7",
+        "phpbench/phpbench": "^1.2",
+        "phpstan/extension-installer": "^1.0",
+        "phpstan/phpstan": "^1.4",
+        "phpstan/phpstan-deprecation-rules": "^1.0",
+        "phpstan/phpstan-phpunit": "^1.0",
+        "phpstan/phpstan-strict-rules": "^1.0",
+        "phpunit/php-invoker": "^3.1",
+        "phpunit/phpunit": "^9.5"
+>>>>>>> 152c5ac8b3fa0942a784ef128282fb9c55e17786
     },
     "autoload": {
         "psr-4": {
@@ -51,6 +86,7 @@
         }
     },
     "config": {
+<<<<<<< HEAD
         "preferred-install": "dist",
         "sort-packages": true
     },
@@ -58,5 +94,15 @@
         "branch-alias": {
             "dev-master": "4.0-dev"
         }
+=======
+        "allow-plugins": {
+            "dealerdirect/phpcodesniffer-composer-installer": true,
+            "phpstan/extension-installer": true,
+            "infection/extension-installer": true,
+            "ocramius/package-versions": true
+        },
+        "preferred-install": "dist",
+        "sort-packages": true
+>>>>>>> 152c5ac8b3fa0942a784ef128282fb9c55e17786
     }
 }

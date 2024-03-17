@@ -1,4 +1,5 @@
 <?php declare(strict_types = 1);
+<<<<<<< HEAD
 /*
  * This file is part of PharIo\Manifest.
  *
@@ -13,4 +14,9 @@ namespace PharIo\Manifest;
 use RuntimeException;
 
 class ManifestDocumentException extends RuntimeException implements Exception {
+=======
+namespace PharIo\Manifest;
+
+class ManifestDocumentException extends \RuntimeException implements Exception {
+>>>>>>> 152c5ac8b3fa0942a784ef128282fb9c55e17786
 }

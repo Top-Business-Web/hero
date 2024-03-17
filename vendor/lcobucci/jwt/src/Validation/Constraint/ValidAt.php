@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Lcobucci\JWT\Validation\Constraint;
 
 use DateInterval;
+<<<<<<< HEAD
 use DateTimeInterface;
 use Lcobucci\Clock\Clock;
 use Lcobucci\JWT\Token;
@@ -32,10 +33,25 @@ final class ValidAt implements Constraint
         }
 
         return $leeway;
+=======
+use Lcobucci\Clock\Clock;
+use Lcobucci\JWT\Token;
+use Lcobucci\JWT\Validation\Constraint;
+
+/** @deprecated Use \Lcobucci\JWT\Validation\Constraint\LooseValidAt */
+final class ValidAt implements Constraint
+{
+    private LooseValidAt $constraint;
+
+    public function __construct(Clock $clock, ?DateInterval $leeway = null)
+    {
+        $this->constraint = new LooseValidAt($clock, $leeway);
+>>>>>>> 152c5ac8b3fa0942a784ef128282fb9c55e17786
     }
 
     public function assert(Token $token): void
     {
+<<<<<<< HEAD
         $now = $this->clock->now();
 
         $this->assertIssueTime($token, $now->add($this->leeway));
@@ -65,5 +81,8 @@ final class ValidAt implements Constraint
         if (! $token->hasBeenIssuedBefore($now)) {
             throw new ConstraintViolation('The token was issued in the future');
         }
+=======
+        $this->constraint->assert($token);
+>>>>>>> 152c5ac8b3fa0942a784ef128282fb9c55e17786
     }
 }

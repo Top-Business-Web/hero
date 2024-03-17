@@ -11,8 +11,11 @@ return array(
     'A6digital\\Image\\Facades\\DefaultProfileImage' => $vendorDir . '/a6digital/laravel-default-profile-image/src/A6digital/Image/Facades/DefaultProfileImage.php',
     'App\\Console\\Commands\\ChangeTripTypes' => $baseDir . '/app/Console/Commands/ChangeTripTypes.php',
     'App\\Console\\Commands\\DeleteOldTripTypes' => $baseDir . '/app/Console/Commands/DeleteOldTripTypes.php',
+<<<<<<< HEAD
     'App\\Console\\Commands\\SendProfitDriverWeekly' => $baseDir . '/app/Console/Commands/SendProfitDriverWeekly.php',
     'App\\Console\\Commands\\checkScheduleTrip' => $baseDir . '/app/Console/Commands/checkScheduleTrip.php',
+=======
+>>>>>>> 152c5ac8b3fa0942a784ef128282fb9c55e17786
     'App\\Console\\Kernel' => $baseDir . '/app/Console/Kernel.php',
     'App\\Events\\NewMessage' => $baseDir . '/app/Events/NewMessage.php',
     'App\\Exceptions\\Handler' => $baseDir . '/app/Exceptions/Handler.php',
@@ -22,8 +25,11 @@ return array(
     'App\\Http\\Controllers\\Admin\\CityController' => $baseDir . '/app/Http/Controllers/Admin/CityController.php',
     'App\\Http\\Controllers\\Admin\\DriverController' => $baseDir . '/app/Http/Controllers/Admin/DriverController.php',
     'App\\Http\\Controllers\\Admin\\DriverDocumentController' => $baseDir . '/app/Http/Controllers/Admin/DriverDocumentController.php',
+<<<<<<< HEAD
     'App\\Http\\Controllers\\Admin\\InsuranceDriverController' => $baseDir . '/app/Http/Controllers/Admin/InsuranceDriverController.php',
     'App\\Http\\Controllers\\Admin\\InsurancePaymentController' => $baseDir . '/app/Http/Controllers/Admin/InsurancePaymentController.php',
+=======
+>>>>>>> 152c5ac8b3fa0942a784ef128282fb9c55e17786
     'App\\Http\\Controllers\\Admin\\InvoiceSettingController' => $baseDir . '/app/Http/Controllers/Admin/InvoiceSettingController.php',
     'App\\Http\\Controllers\\Admin\\NotificationController' => $baseDir . '/app/Http/Controllers/Admin/NotificationController.php',
     'App\\Http\\Controllers\\Admin\\OrderController' => $baseDir . '/app/Http/Controllers/Admin/OrderController.php',
@@ -36,7 +42,10 @@ return array(
     'App\\Http\\Controllers\\Api\\Driver\\TripController' => $baseDir . '/app/Http/Controllers/Api/Driver/TripController.php',
     'App\\Http\\Controllers\\Api\\User\\CheckPhoneController' => $baseDir . '/app/Http/Controllers/Api/User/CheckPhoneController.php',
     'App\\Http\\Controllers\\Api\\User\\UserController' => $baseDir . '/app/Http/Controllers/Api/User/UserController.php',
+<<<<<<< HEAD
     'App\\Http\\Controllers\\Api\\ZainCashController' => $baseDir . '/app/Http/Controllers/Api/ZainCashController.php',
+=======
+>>>>>>> 152c5ac8b3fa0942a784ef128282fb9c55e17786
     'App\\Http\\Controllers\\Controller' => $baseDir . '/app/Http/Controllers/Controller.php',
     'App\\Http\\Helper\\GlobalSelection' => $baseDir . '/app/Http/Helper/GlobalSelection.php',
     'App\\Http\\Kernel' => $baseDir . '/app/Http/Kernel.php',
@@ -58,7 +67,10 @@ return array(
     'App\\Http\\Requests\\AreaUpdateRequest' => $baseDir . '/app/Http/Requests/AreaUpdateRequest.php',
     'App\\Http\\Requests\\CityRequest' => $baseDir . '/app/Http/Requests/CityRequest.php',
     'App\\Http\\Requests\\NotificationStoreRequest' => $baseDir . '/app/Http/Requests/NotificationStoreRequest.php',
+<<<<<<< HEAD
     'App\\Http\\Requests\\Payment\\InitialPaymentRequest' => $baseDir . '/app/Http/Requests/Payment/InitialPaymentRequest.php',
+=======
+>>>>>>> 152c5ac8b3fa0942a784ef128282fb9c55e17786
     'App\\Http\\Requests\\SettingRequest' => $baseDir . '/app/Http/Requests/SettingRequest.php',
     'App\\Http\\Requests\\SliderStoreRequest' => $baseDir . '/app/Http/Requests/SliderStoreRequest.php',
     'App\\Http\\Requests\\SliderUpdateRequest' => $baseDir . '/app/Http/Requests/SliderUpdateRequest.php',
@@ -84,8 +96,11 @@ return array(
     'App\\Interfaces\\CityInterface' => $baseDir . '/app/Interfaces/CityInterface.php',
     'App\\Interfaces\\DriverDocumentInterface' => $baseDir . '/app/Interfaces/DriverDocumentInterface.php',
     'App\\Interfaces\\DriverInterface' => $baseDir . '/app/Interfaces/DriverInterface.php',
+<<<<<<< HEAD
     'App\\Interfaces\\InsuranceDriverInterface' => $baseDir . '/app/Interfaces/InsuranceDriverInterface.php',
     'App\\Interfaces\\InsurancePaymentInterface' => $baseDir . '/app/Interfaces/InsurancePaymentInterface.php',
+=======
+>>>>>>> 152c5ac8b3fa0942a784ef128282fb9c55e17786
     'App\\Interfaces\\InvoiceSettingInterface' => $baseDir . '/app/Interfaces/InvoiceSettingInterface.php',
     'App\\Interfaces\\NotificationInterface' => $baseDir . '/app/Interfaces/NotificationInterface.php',
     'App\\Interfaces\\OrderInterface' => $baseDir . '/app/Interfaces/OrderInterface.php',
@@ -101,9 +116,12 @@ return array(
     'App\\Models\\DriverDetails' => $baseDir . '/app/Models/DriverDetails.php',
     'App\\Models\\DriverDocuments' => $baseDir . '/app/Models/DriverDocuments.php',
     'App\\Models\\DriverWallet' => $baseDir . '/app/Models/DriverWallet.php',
+<<<<<<< HEAD
     'App\\Models\\InsuranceDriver' => $baseDir . '/app/Models/InsuranceDriver.php',
     'App\\Models\\InsurancePayment' => $baseDir . '/app/Models/InsurancePayment.php',
     'App\\Models\\InsurancePaymentLog' => $baseDir . '/app/Models/InsurancePaymentLog.php',
+=======
+>>>>>>> 152c5ac8b3fa0942a784ef128282fb9c55e17786
     'App\\Models\\Notification' => $baseDir . '/app/Models/Notification.php',
     'App\\Models\\PhoneToken' => $baseDir . '/app/Models/PhoneToken.php',
     'App\\Models\\ResetCodePassword' => $baseDir . '/app/Models/ResetCodePassword.php',
@@ -128,8 +146,11 @@ return array(
     'App\\Repository\\CityRepository' => $baseDir . '/app/Repository/CityRepository.php',
     'App\\Repository\\DriverDocumentRepository' => $baseDir . '/app/Repository/DriverDocumentRepository.php',
     'App\\Repository\\DriverRepository' => $baseDir . '/app/Repository/DriverRepository.php',
+<<<<<<< HEAD
     'App\\Repository\\InsuranceDriverRepository' => $baseDir . '/app/Repository/InsuranceDriverRepository.php',
     'App\\Repository\\InsurancePaymentRepository' => $baseDir . '/app/Repository/InsurancePaymentRepository.php',
+=======
+>>>>>>> 152c5ac8b3fa0942a784ef128282fb9c55e17786
     'App\\Repository\\InvoiceSettingRepository' => $baseDir . '/app/Repository/InvoiceSettingRepository.php',
     'App\\Repository\\NotificationRepository' => $baseDir . '/app/Repository/NotificationRepository.php',
     'App\\Repository\\OrderRepository' => $baseDir . '/app/Repository/OrderRepository.php',
@@ -1206,6 +1227,7 @@ return array(
     'Faker\\Provider\\zh_TW\\Text' => $vendorDir . '/fakerphp/faker/src/Faker/Provider/zh_TW/Text.php',
     'Faker\\UniqueGenerator' => $vendorDir . '/fakerphp/faker/src/Faker/UniqueGenerator.php',
     'Faker\\ValidGenerator' => $vendorDir . '/fakerphp/faker/src/Faker/ValidGenerator.php',
+<<<<<<< HEAD
     'Firebase\\JWT\\BeforeValidException' => $vendorDir . '/firebase/php-jwt/src/BeforeValidException.php',
     'Firebase\\JWT\\CachedKeySet' => $vendorDir . '/firebase/php-jwt/src/CachedKeySet.php',
     'Firebase\\JWT\\ExpiredException' => $vendorDir . '/firebase/php-jwt/src/ExpiredException.php',
@@ -1214,6 +1236,8 @@ return array(
     'Firebase\\JWT\\JWTExceptionWithPayloadInterface' => $vendorDir . '/firebase/php-jwt/src/JWTExceptionWithPayloadInterface.php',
     'Firebase\\JWT\\Key' => $vendorDir . '/firebase/php-jwt/src/Key.php',
     'Firebase\\JWT\\SignatureInvalidException' => $vendorDir . '/firebase/php-jwt/src/SignatureInvalidException.php',
+=======
+>>>>>>> 152c5ac8b3fa0942a784ef128282fb9c55e17786
     'Fruitcake\\Cors\\CorsServiceProvider' => $vendorDir . '/fruitcake/laravel-cors/src/CorsServiceProvider.php',
     'Fruitcake\\Cors\\HandleCors' => $vendorDir . '/fruitcake/laravel-cors/src/HandleCors.php',
     'GrahamCampbell\\ResultType\\Error' => $vendorDir . '/graham-campbell/result-type/src/Error.php',
@@ -1604,11 +1628,14 @@ return array(
     'Hamcrest\\Type\\IsString' => $vendorDir . '/hamcrest/hamcrest-php/hamcrest/Hamcrest/Type/IsString.php',
     'Hamcrest\\Util' => $vendorDir . '/hamcrest/hamcrest-php/hamcrest/Hamcrest/Util.php',
     'Hamcrest\\Xml\\HasXPath' => $vendorDir . '/hamcrest/hamcrest-php/hamcrest/Hamcrest/Xml/HasXPath.php',
+<<<<<<< HEAD
     'Hawkiq\\LaravelZaincash\\Facades\\ZainCashFacade' => $vendorDir . '/hawkiq/laravel-zaincash/src/Facades/ZainCashFacade.php',
     'Hawkiq\\LaravelZaincash\\Services\\Live' => $vendorDir . '/hawkiq/laravel-zaincash/src/Services/Live.php',
     'Hawkiq\\LaravelZaincash\\Services\\Local' => $vendorDir . '/hawkiq/laravel-zaincash/src/Services/Local.php',
     'Hawkiq\\LaravelZaincash\\Services\\ZainCash' => $vendorDir . '/hawkiq/laravel-zaincash/src/Services/ZainCash.php',
     'Hawkiq\\LaravelZaincash\\ZainCashServiceProvider' => $vendorDir . '/hawkiq/laravel-zaincash/src/ZainCashServiceProvider.php',
+=======
+>>>>>>> 152c5ac8b3fa0942a784ef128282fb9c55e17786
     'Illuminate\\Auth\\Access\\AuthorizationException' => $vendorDir . '/laravel/framework/src/Illuminate/Auth/Access/AuthorizationException.php',
     'Illuminate\\Auth\\Access\\Events\\GateEvaluated' => $vendorDir . '/laravel/framework/src/Illuminate/Auth/Access/Events/GateEvaluated.php',
     'Illuminate\\Auth\\Access\\Gate' => $vendorDir . '/laravel/framework/src/Illuminate/Auth/Access/Gate.php',
@@ -2838,9 +2865,18 @@ return array(
     'Lcobucci\\JWT\\Encoding\\JoseEncoder' => $vendorDir . '/lcobucci/jwt/src/Encoding/JoseEncoder.php',
     'Lcobucci\\JWT\\Encoding\\MicrosecondBasedDateConversion' => $vendorDir . '/lcobucci/jwt/src/Encoding/MicrosecondBasedDateConversion.php',
     'Lcobucci\\JWT\\Encoding\\UnifyAudience' => $vendorDir . '/lcobucci/jwt/src/Encoding/UnifyAudience.php',
+<<<<<<< HEAD
     'Lcobucci\\JWT\\Exception' => $vendorDir . '/lcobucci/jwt/src/Exception.php',
     'Lcobucci\\JWT\\Parser' => $vendorDir . '/lcobucci/jwt/src/Parser.php',
     'Lcobucci\\JWT\\Signer' => $vendorDir . '/lcobucci/jwt/src/Signer.php',
+=======
+    'Lcobucci\\JWT\\Encoding\\UnixTimestampDates' => $vendorDir . '/lcobucci/jwt/src/Encoding/UnixTimestampDates.php',
+    'Lcobucci\\JWT\\Exception' => $vendorDir . '/lcobucci/jwt/src/Exception.php',
+    'Lcobucci\\JWT\\JwtFacade' => $vendorDir . '/lcobucci/jwt/src/JwtFacade.php',
+    'Lcobucci\\JWT\\Parser' => $vendorDir . '/lcobucci/jwt/src/Parser.php',
+    'Lcobucci\\JWT\\Signer' => $vendorDir . '/lcobucci/jwt/src/Signer.php',
+    'Lcobucci\\JWT\\Signer\\Blake2b' => $vendorDir . '/lcobucci/jwt/src/Signer/Blake2b.php',
+>>>>>>> 152c5ac8b3fa0942a784ef128282fb9c55e17786
     'Lcobucci\\JWT\\Signer\\CannotSignPayload' => $vendorDir . '/lcobucci/jwt/src/Signer/CannotSignPayload.php',
     'Lcobucci\\JWT\\Signer\\Ecdsa' => $vendorDir . '/lcobucci/jwt/src/Signer/Ecdsa.php',
     'Lcobucci\\JWT\\Signer\\Ecdsa\\ConversionFailed' => $vendorDir . '/lcobucci/jwt/src/Signer/Ecdsa/ConversionFailed.php',
@@ -2849,10 +2885,23 @@ return array(
     'Lcobucci\\JWT\\Signer\\Ecdsa\\Sha384' => $vendorDir . '/lcobucci/jwt/src/Signer/Ecdsa/Sha384.php',
     'Lcobucci\\JWT\\Signer\\Ecdsa\\Sha512' => $vendorDir . '/lcobucci/jwt/src/Signer/Ecdsa/Sha512.php',
     'Lcobucci\\JWT\\Signer\\Ecdsa\\SignatureConverter' => $vendorDir . '/lcobucci/jwt/src/Signer/Ecdsa/SignatureConverter.php',
+<<<<<<< HEAD
+=======
+    'Lcobucci\\JWT\\Signer\\Ecdsa\\UnsafeSha256' => $vendorDir . '/lcobucci/jwt/src/Signer/Ecdsa/UnsafeSha256.php',
+    'Lcobucci\\JWT\\Signer\\Ecdsa\\UnsafeSha384' => $vendorDir . '/lcobucci/jwt/src/Signer/Ecdsa/UnsafeSha384.php',
+    'Lcobucci\\JWT\\Signer\\Ecdsa\\UnsafeSha512' => $vendorDir . '/lcobucci/jwt/src/Signer/Ecdsa/UnsafeSha512.php',
+    'Lcobucci\\JWT\\Signer\\Eddsa' => $vendorDir . '/lcobucci/jwt/src/Signer/Eddsa.php',
+>>>>>>> 152c5ac8b3fa0942a784ef128282fb9c55e17786
     'Lcobucci\\JWT\\Signer\\Hmac' => $vendorDir . '/lcobucci/jwt/src/Signer/Hmac.php',
     'Lcobucci\\JWT\\Signer\\Hmac\\Sha256' => $vendorDir . '/lcobucci/jwt/src/Signer/Hmac/Sha256.php',
     'Lcobucci\\JWT\\Signer\\Hmac\\Sha384' => $vendorDir . '/lcobucci/jwt/src/Signer/Hmac/Sha384.php',
     'Lcobucci\\JWT\\Signer\\Hmac\\Sha512' => $vendorDir . '/lcobucci/jwt/src/Signer/Hmac/Sha512.php',
+<<<<<<< HEAD
+=======
+    'Lcobucci\\JWT\\Signer\\Hmac\\UnsafeSha256' => $vendorDir . '/lcobucci/jwt/src/Signer/Hmac/UnsafeSha256.php',
+    'Lcobucci\\JWT\\Signer\\Hmac\\UnsafeSha384' => $vendorDir . '/lcobucci/jwt/src/Signer/Hmac/UnsafeSha384.php',
+    'Lcobucci\\JWT\\Signer\\Hmac\\UnsafeSha512' => $vendorDir . '/lcobucci/jwt/src/Signer/Hmac/UnsafeSha512.php',
+>>>>>>> 152c5ac8b3fa0942a784ef128282fb9c55e17786
     'Lcobucci\\JWT\\Signer\\InvalidKeyProvided' => $vendorDir . '/lcobucci/jwt/src/Signer/InvalidKeyProvided.php',
     'Lcobucci\\JWT\\Signer\\Key' => $vendorDir . '/lcobucci/jwt/src/Signer/Key.php',
     'Lcobucci\\JWT\\Signer\\Key\\FileCouldNotBeRead' => $vendorDir . '/lcobucci/jwt/src/Signer/Key/FileCouldNotBeRead.php',
@@ -2864,6 +2913,15 @@ return array(
     'Lcobucci\\JWT\\Signer\\Rsa\\Sha256' => $vendorDir . '/lcobucci/jwt/src/Signer/Rsa/Sha256.php',
     'Lcobucci\\JWT\\Signer\\Rsa\\Sha384' => $vendorDir . '/lcobucci/jwt/src/Signer/Rsa/Sha384.php',
     'Lcobucci\\JWT\\Signer\\Rsa\\Sha512' => $vendorDir . '/lcobucci/jwt/src/Signer/Rsa/Sha512.php',
+<<<<<<< HEAD
+=======
+    'Lcobucci\\JWT\\Signer\\Rsa\\UnsafeSha256' => $vendorDir . '/lcobucci/jwt/src/Signer/Rsa/UnsafeSha256.php',
+    'Lcobucci\\JWT\\Signer\\Rsa\\UnsafeSha384' => $vendorDir . '/lcobucci/jwt/src/Signer/Rsa/UnsafeSha384.php',
+    'Lcobucci\\JWT\\Signer\\Rsa\\UnsafeSha512' => $vendorDir . '/lcobucci/jwt/src/Signer/Rsa/UnsafeSha512.php',
+    'Lcobucci\\JWT\\Signer\\UnsafeEcdsa' => $vendorDir . '/lcobucci/jwt/src/Signer/UnsafeEcdsa.php',
+    'Lcobucci\\JWT\\Signer\\UnsafeRsa' => $vendorDir . '/lcobucci/jwt/src/Signer/UnsafeRsa.php',
+    'Lcobucci\\JWT\\SodiumBase64Polyfill' => $vendorDir . '/lcobucci/jwt/src/SodiumBase64Polyfill.php',
+>>>>>>> 152c5ac8b3fa0942a784ef128282fb9c55e17786
     'Lcobucci\\JWT\\Token' => $vendorDir . '/lcobucci/jwt/src/Token.php',
     'Lcobucci\\JWT\\Token\\Builder' => $vendorDir . '/lcobucci/jwt/src/Token/Builder.php',
     'Lcobucci\\JWT\\Token\\DataSet' => $vendorDir . '/lcobucci/jwt/src/Token/DataSet.php',
@@ -2874,6 +2932,7 @@ return array(
     'Lcobucci\\JWT\\Token\\RegisteredClaims' => $vendorDir . '/lcobucci/jwt/src/Token/RegisteredClaims.php',
     'Lcobucci\\JWT\\Token\\Signature' => $vendorDir . '/lcobucci/jwt/src/Token/Signature.php',
     'Lcobucci\\JWT\\Token\\UnsupportedHeaderFound' => $vendorDir . '/lcobucci/jwt/src/Token/UnsupportedHeaderFound.php',
+<<<<<<< HEAD
     'Lcobucci\\JWT\\Validation\\Constraint' => $vendorDir . '/lcobucci/jwt/src/Validation/Constraint.php',
     'Lcobucci\\JWT\\Validation\\ConstraintViolation' => $vendorDir . '/lcobucci/jwt/src/Validation/ConstraintViolation.php',
     'Lcobucci\\JWT\\Validation\\Constraint\\IdentifiedBy' => $vendorDir . '/lcobucci/jwt/src/Validation/Constraint/IdentifiedBy.php',
@@ -2885,6 +2944,26 @@ return array(
     'Lcobucci\\JWT\\Validation\\Constraint\\ValidAt' => $vendorDir . '/lcobucci/jwt/src/Validation/Constraint/ValidAt.php',
     'Lcobucci\\JWT\\Validation\\NoConstraintsGiven' => $vendorDir . '/lcobucci/jwt/src/Validation/NoConstraintsGiven.php',
     'Lcobucci\\JWT\\Validation\\RequiredConstraintsViolated' => $vendorDir . '/lcobucci/jwt/src/Validation/RequiredConstraintsViolated.php',
+=======
+    'Lcobucci\\JWT\\UnencryptedToken' => $vendorDir . '/lcobucci/jwt/src/UnencryptedToken.php',
+    'Lcobucci\\JWT\\Validation\\Constraint' => $vendorDir . '/lcobucci/jwt/src/Validation/Constraint.php',
+    'Lcobucci\\JWT\\Validation\\ConstraintViolation' => $vendorDir . '/lcobucci/jwt/src/Validation/ConstraintViolation.php',
+    'Lcobucci\\JWT\\Validation\\Constraint\\CannotValidateARegisteredClaim' => $vendorDir . '/lcobucci/jwt/src/Validation/Constraint/CannotValidateARegisteredClaim.php',
+    'Lcobucci\\JWT\\Validation\\Constraint\\HasClaimWithValue' => $vendorDir . '/lcobucci/jwt/src/Validation/Constraint/HasClaimWithValue.php',
+    'Lcobucci\\JWT\\Validation\\Constraint\\IdentifiedBy' => $vendorDir . '/lcobucci/jwt/src/Validation/Constraint/IdentifiedBy.php',
+    'Lcobucci\\JWT\\Validation\\Constraint\\IssuedBy' => $vendorDir . '/lcobucci/jwt/src/Validation/Constraint/IssuedBy.php',
+    'Lcobucci\\JWT\\Validation\\Constraint\\LeewayCannotBeNegative' => $vendorDir . '/lcobucci/jwt/src/Validation/Constraint/LeewayCannotBeNegative.php',
+    'Lcobucci\\JWT\\Validation\\Constraint\\LooseValidAt' => $vendorDir . '/lcobucci/jwt/src/Validation/Constraint/LooseValidAt.php',
+    'Lcobucci\\JWT\\Validation\\Constraint\\PermittedFor' => $vendorDir . '/lcobucci/jwt/src/Validation/Constraint/PermittedFor.php',
+    'Lcobucci\\JWT\\Validation\\Constraint\\RelatedTo' => $vendorDir . '/lcobucci/jwt/src/Validation/Constraint/RelatedTo.php',
+    'Lcobucci\\JWT\\Validation\\Constraint\\SignedWith' => $vendorDir . '/lcobucci/jwt/src/Validation/Constraint/SignedWith.php',
+    'Lcobucci\\JWT\\Validation\\Constraint\\StrictValidAt' => $vendorDir . '/lcobucci/jwt/src/Validation/Constraint/StrictValidAt.php',
+    'Lcobucci\\JWT\\Validation\\Constraint\\ValidAt' => $vendorDir . '/lcobucci/jwt/src/Validation/Constraint/ValidAt.php',
+    'Lcobucci\\JWT\\Validation\\NoConstraintsGiven' => $vendorDir . '/lcobucci/jwt/src/Validation/NoConstraintsGiven.php',
+    'Lcobucci\\JWT\\Validation\\RequiredConstraintsViolated' => $vendorDir . '/lcobucci/jwt/src/Validation/RequiredConstraintsViolated.php',
+    'Lcobucci\\JWT\\Validation\\SignedWith' => $vendorDir . '/lcobucci/jwt/src/Validation/SignedWith.php',
+    'Lcobucci\\JWT\\Validation\\ValidAt' => $vendorDir . '/lcobucci/jwt/src/Validation/ValidAt.php',
+>>>>>>> 152c5ac8b3fa0942a784ef128282fb9c55e17786
     'Lcobucci\\JWT\\Validation\\Validator' => $vendorDir . '/lcobucci/jwt/src/Validation/Validator.php',
     'Lcobucci\\JWT\\Validator' => $vendorDir . '/lcobucci/jwt/src/Validator.php',
     'League\\CommonMark\\CommonMarkConverter' => $vendorDir . '/league/commonmark/src/CommonMarkConverter.php',
@@ -4188,7 +4267,10 @@ return array(
     'PharIo\\Manifest\\ManifestLoader' => $vendorDir . '/phar-io/manifest/src/ManifestLoader.php',
     'PharIo\\Manifest\\ManifestLoaderException' => $vendorDir . '/phar-io/manifest/src/exceptions/ManifestLoaderException.php',
     'PharIo\\Manifest\\ManifestSerializer' => $vendorDir . '/phar-io/manifest/src/ManifestSerializer.php',
+<<<<<<< HEAD
     'PharIo\\Manifest\\NoEmailAddressException' => $vendorDir . '/phar-io/manifest/src/exceptions/NoEmailAddressException.php',
+=======
+>>>>>>> 152c5ac8b3fa0942a784ef128282fb9c55e17786
     'PharIo\\Manifest\\PhpElement' => $vendorDir . '/phar-io/manifest/src/xml/PhpElement.php',
     'PharIo\\Manifest\\PhpExtensionRequirement' => $vendorDir . '/phar-io/manifest/src/values/PhpExtensionRequirement.php',
     'PharIo\\Manifest\\PhpVersionRequirement' => $vendorDir . '/phar-io/manifest/src/values/PhpVersionRequirement.php',
@@ -5570,7 +5652,10 @@ return array(
     'SimpleSoftwareIO\\QrCode\\Image' => $vendorDir . '/simplesoftwareio/simple-qrcode/src/Image.php',
     'SimpleSoftwareIO\\QrCode\\ImageMerge' => $vendorDir . '/simplesoftwareio/simple-qrcode/src/ImageMerge.php',
     'SimpleSoftwareIO\\QrCode\\QrCodeServiceProvider' => $vendorDir . '/simplesoftwareio/simple-qrcode/src/QrCodeServiceProvider.php',
+<<<<<<< HEAD
     'StellaMaris\\Clock\\ClockInterface' => $vendorDir . '/stella-maris/clock/src/ClockInterface.php',
+=======
+>>>>>>> 152c5ac8b3fa0942a784ef128282fb9c55e17786
     'Stringable' => $vendorDir . '/symfony/polyfill-php80/Resources/stubs/Stringable.php',
     'Symfony\\Component\\Console\\Application' => $vendorDir . '/symfony/console/Application.php',
     'Symfony\\Component\\Console\\Attribute\\AsCommand' => $vendorDir . '/symfony/console/Attribute/AsCommand.php',
@@ -6457,6 +6542,7 @@ return array(
     'Tymon\\JWTAuth\\Validators\\Validator' => $vendorDir . '/tymon/jwt-auth/src/Validators/Validator.php',
     'UnhandledMatchError' => $vendorDir . '/symfony/polyfill-php80/Resources/stubs/UnhandledMatchError.php',
     'ValueError' => $vendorDir . '/symfony/polyfill-php80/Resources/stubs/ValueError.php',
+<<<<<<< HEAD
     'Waad\\ZainCash\\BaseZainCash' => $vendorDir . '/waad/zaincash/src/BaseZainCash.php',
     'Waad\\ZainCash\\Facades\\ZainCash' => $vendorDir . '/waad/zaincash/src/Facades/ZainCash.php',
     'Waad\\ZainCash\\Services\\HttpClient' => $vendorDir . '/waad/zaincash/src/Services/HttpClient.php',
@@ -6471,6 +6557,8 @@ return array(
     'Waad\\ZainCash\\Traits\\getSetAttributes' => $vendorDir . '/waad/zaincash/src/Traits/getSetAttributes.php',
     'Waad\\ZainCash\\ZainCash' => $vendorDir . '/waad/zaincash/src/ZainCash.php',
     'Waad\\ZainCash\\ZainCashServiceProvider' => $vendorDir . '/waad/zaincash/src/ZainCashServiceProvider.php',
+=======
+>>>>>>> 152c5ac8b3fa0942a784ef128282fb9c55e17786
     'Webmozart\\Assert\\Assert' => $vendorDir . '/webmozart/assert/src/Assert.php',
     'Webmozart\\Assert\\InvalidArgumentException' => $vendorDir . '/webmozart/assert/src/InvalidArgumentException.php',
     'Webmozart\\Assert\\Mixin' => $vendorDir . '/webmozart/assert/src/Mixin.php',

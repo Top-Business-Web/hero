@@ -20,8 +20,14 @@ final class IssuedBy implements Constraint
     public function assert(Token $token): void
     {
         if (! $token->hasBeenIssuedBy(...$this->issuers)) {
+<<<<<<< HEAD
             throw new ConstraintViolation(
                 'The token was not issued by the given issuers'
+=======
+            throw ConstraintViolation::error(
+                'The token was not issued by the given issuers',
+                $this
+>>>>>>> 152c5ac8b3fa0942a784ef128282fb9c55e17786
             );
         }
     }
