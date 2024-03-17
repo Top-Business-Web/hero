@@ -37,7 +37,7 @@ class ZainCashController extends Controller
         $checkTransaction = $zainCashPayment->checkTransaction();
 
         // Process transaction
-        $processingTransaction = $zainCashPayment->processingTransaction("9647802999569", '1234');
+        $processingTransaction = $zainCashPayment->processingTransaction($request->phone_number, $request->pin);
 
         return response()->json([
             'checkTransaction' => $checkTransaction,
