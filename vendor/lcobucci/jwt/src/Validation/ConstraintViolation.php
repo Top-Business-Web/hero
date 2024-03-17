@@ -6,6 +6,10 @@ namespace Lcobucci\JWT\Validation;
 use Lcobucci\JWT\Exception;
 use RuntimeException;
 
+<<<<<<< HEAD
+final class ConstraintViolation extends RuntimeException implements Exception
+{
+=======
 use function get_class;
 
 final class ConstraintViolation extends RuntimeException implements Exception
@@ -23,4 +27,5 @@ final class ConstraintViolation extends RuntimeException implements Exception
 
         return $exception;
     }
+>>>>>>> 152c5ac8b3fa0942a784ef128282fb9c55e17786
 }

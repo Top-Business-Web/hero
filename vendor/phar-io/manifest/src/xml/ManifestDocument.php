@@ -2,15 +2,34 @@
 /*
  * This file is part of PharIo\Manifest.
  *
+<<<<<<< HEAD
+ * Copyright (c) Arne Blankerts <arne@blankerts.de>, Sebastian Heuer <sebastian@phpeople.de>, Sebastian Bergmann <sebastian@phpunit.de> and contributors
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ *
+=======
  * (c) Arne Blankerts <arne@blankerts.de>, Sebastian Heuer <sebastian@phpeople.de>, Sebastian Bergmann <sebastian@phpunit.de>
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
+>>>>>>> 152c5ac8b3fa0942a784ef128282fb9c55e17786
  */
 namespace PharIo\Manifest;
 
 use DOMDocument;
 use DOMElement;
+<<<<<<< HEAD
+use Throwable;
+use function count;
+use function file_get_contents;
+use function is_file;
+use function libxml_clear_errors;
+use function libxml_get_errors;
+use function libxml_use_internal_errors;
+use function sprintf;
+=======
+>>>>>>> 152c5ac8b3fa0942a784ef128282fb9c55e17786
 
 class ManifestDocument {
     public const XMLNS = 'https://phar.io/xml/manifest/1.0';
@@ -19,18 +38,43 @@ class ManifestDocument {
     private $dom;
 
     public static function fromFile(string $filename): ManifestDocument {
+<<<<<<< HEAD
+        if (!is_file($filename)) {
+            throw new ManifestDocumentException(
+                sprintf('File "%s" not found', $filename)
+=======
         if (!\file_exists($filename)) {
             throw new ManifestDocumentException(
                 \sprintf('File "%s" not found', $filename)
+>>>>>>> 152c5ac8b3fa0942a784ef128282fb9c55e17786
             );
         }
 
         return self::fromString(
+<<<<<<< HEAD
+            file_get_contents($filename)
+=======
             \file_get_contents($filename)
+>>>>>>> 152c5ac8b3fa0942a784ef128282fb9c55e17786
         );
     }
 
     public static function fromString(string $xmlString): ManifestDocument {
+<<<<<<< HEAD
+        $prev = libxml_use_internal_errors(true);
+        libxml_clear_errors();
+
+        try {
+            $dom = new DOMDocument();
+            $dom->loadXML($xmlString);
+            $errors = libxml_get_errors();
+            libxml_use_internal_errors($prev);
+        } catch (Throwable $t) {
+            throw new ManifestDocumentException($t->getMessage(), 0, $t);
+        }
+
+        if (count($errors) !== 0) {
+=======
         $prev = \libxml_use_internal_errors(true);
         \libxml_clear_errors();
 
@@ -41,6 +85,7 @@ class ManifestDocument {
         \libxml_use_internal_errors($prev);
 
         if (\count($errors) !== 0) {
+>>>>>>> 152c5ac8b3fa0942a784ef128282fb9c55e17786
             throw new ManifestDocumentLoadingException($errors);
         }
 
@@ -94,7 +139,11 @@ class ManifestDocument {
 
         if (!$element instanceof DOMElement) {
             throw new ManifestDocumentException(
+<<<<<<< HEAD
+                sprintf('Element %s missing', $elementName)
+=======
                 \sprintf('Element %s missing', $elementName)
+>>>>>>> 152c5ac8b3fa0942a784ef128282fb9c55e17786
             );
         }
 

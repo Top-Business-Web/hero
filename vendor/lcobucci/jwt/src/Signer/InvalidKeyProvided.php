@@ -10,6 +10,14 @@ final class InvalidKeyProvided extends InvalidArgumentException implements Excep
 {
     public static function cannotBeParsed(string $details): self
     {
+<<<<<<< HEAD
+        return new self('It was not possible to parse your key, reason: ' . $details);
+    }
+
+    public static function incompatibleKey(): self
+    {
+        return new self('This key is not compatible with this signer');
+=======
         return new self('It was not possible to parse your key, reason:' . $details);
     }
 
@@ -38,5 +46,6 @@ final class InvalidKeyProvided extends InvalidArgumentException implements Excep
     {
         return new self('Key provided is shorter than ' . $expectedLength . ' bits,'
             . ' only ' . $actualLength . ' bits provided');
+>>>>>>> 152c5ac8b3fa0942a784ef128282fb9c55e17786
     }
 }

@@ -329,7 +329,11 @@ class HtmlErrorRenderer implements ErrorRendererInterface
     {
         return preg_replace_callback('/in ("|&quot;)?(.+?)\1(?: +(?:on|at))? +line (\d+)/s', function ($match) {
             return 'in '.$this->formatFile($match[2], $match[3]);
+<<<<<<< HEAD
+        }, $text) ?? $text;
+=======
         }, $text);
+>>>>>>> 152c5ac8b3fa0942a784ef128282fb9c55e17786
     }
 
     private function formatLogMessage(string $message, array $context)
