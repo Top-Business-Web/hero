@@ -5,10 +5,6 @@ namespace Lcobucci\JWT\Signer;
 
 use Lcobucci\JWT\Signer;
 
-<<<<<<< HEAD
-=======
-/** @deprecated Deprecated since v4.3 */
->>>>>>> 152c5ac8b3fa0942a784ef128282fb9c55e17786
 final class None implements Signer
 {
     public function algorithmId(): string

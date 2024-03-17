@@ -26,10 +26,7 @@
     "php": "^7.2 || ^8.0",
     "ext-dom": "*",
     "ext-phar": "*",
-<<<<<<< HEAD
     "ext-libxml": "*",
-=======
->>>>>>> 152c5ac8b3fa0942a784ef128282fb9c55e17786
     "ext-xmlwriter": "*",
     "phar-io/version": "^3.0.1"
   },

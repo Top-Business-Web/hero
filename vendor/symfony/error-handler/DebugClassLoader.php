@@ -1097,11 +1097,7 @@ EOTXT;
         $braces = 0;
         for (; $i < $end; ++$i) {
             if (!$inClosure) {
-<<<<<<< HEAD
                 $inClosure = false !== strpos($code[$i], 'function (');
-=======
-                $inClosure = str_contains($code[$i], 'function (');
->>>>>>> 152c5ac8b3fa0942a784ef128282fb9c55e17786
             }
 
             if ($inClosure) {

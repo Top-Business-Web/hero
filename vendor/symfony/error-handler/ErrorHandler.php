@@ -457,11 +457,7 @@ class ErrorHandler
                 return true;
             }
         } else {
-<<<<<<< HEAD
             if (PHP_VERSION_ID < 80303 && false !== strpos($message, '@anonymous')) {
-=======
-            if (false !== strpos($message, '@anonymous')) {
->>>>>>> 152c5ac8b3fa0942a784ef128282fb9c55e17786
                 $backtrace = debug_backtrace(false, 5);
 
                 for ($i = 1; isset($backtrace[$i]); ++$i) {
@@ -469,12 +465,7 @@ class ErrorHandler
                         && ('trigger_error' === $backtrace[$i]['function'] || 'user_error' === $backtrace[$i]['function'])
                     ) {
                         if ($backtrace[$i]['args'][0] !== $message) {
-<<<<<<< HEAD
                             $message = $backtrace[$i]['args'][0];
-=======
-                            $message = $this->parseAnonymousClass($backtrace[$i]['args'][0]);
-                            $logMessage = $this->levels[$type].': '.$message;
->>>>>>> 152c5ac8b3fa0942a784ef128282fb9c55e17786
                         }
 
                         break;
@@ -482,14 +473,11 @@ class ErrorHandler
                 }
             }
 
-<<<<<<< HEAD
             if (false !== strpos($message, "@anonymous\0")) {
                 $message = $this->parseAnonymousClass($message);
                 $logMessage = $this->levels[$type].': '.$message;
             }
 
-=======
->>>>>>> 152c5ac8b3fa0942a784ef128282fb9c55e17786
             $errorAsException = new \ErrorException($logMessage, 0, $type, $file, $line);
 
             if ($throw || $this->tracedErrors & $type) {
