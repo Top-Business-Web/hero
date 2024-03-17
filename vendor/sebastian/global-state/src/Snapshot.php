@@ -101,11 +101,7 @@ class Snapshot
     /**
      * Creates a snapshot of the current global state.
      */
-<<<<<<< HEAD
     public function __construct(?ExcludeList $excludeList = null, bool $includeGlobalVariables = true, bool $includeStaticAttributes = true, bool $includeConstants = true, bool $includeFunctions = true, bool $includeClasses = true, bool $includeInterfaces = true, bool $includeTraits = true, bool $includeIniSettings = true, bool $includeIncludedFiles = true)
-=======
-    public function __construct(ExcludeList $excludeList = null, bool $includeGlobalVariables = true, bool $includeStaticAttributes = true, bool $includeConstants = true, bool $includeFunctions = true, bool $includeClasses = true, bool $includeInterfaces = true, bool $includeTraits = true, bool $includeIniSettings = true, bool $includeIncludedFiles = true)
->>>>>>> 152c5ac8b3fa0942a784ef128282fb9c55e17786
     {
         $this->excludeList = $excludeList ?: new ExcludeList;
 

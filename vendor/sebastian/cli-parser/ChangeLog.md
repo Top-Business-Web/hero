@@ -2,15 +2,12 @@
 
 All notable changes are documented in this file using the [Keep a CHANGELOG](https://keepachangelog.com/) principles.
 
-<<<<<<< HEAD
 ## [1.0.2] - 2024-03-02
 
 ### Changed
 
 * Do not use implicitly nullable parameters
 
-=======
->>>>>>> 152c5ac8b3fa0942a784ef128282fb9c55e17786
 ## [1.0.1] - 2020-09-28
 
 ### Changed
@@ -21,9 +18,6 @@ All notable changes are documented in this file using the [Keep a CHANGELOG](htt
 
 * Initial release
 
-<<<<<<< HEAD
 [1.0.2]: https://github.com/sebastianbergmann/cli-parser/compare/1.0.1...1.0.2
 [1.0.1]: https://github.com/sebastianbergmann/cli-parser/compare/1.0.0...1.0.1
-=======
->>>>>>> 152c5ac8b3fa0942a784ef128282fb9c55e17786
 [1.0.0]: https://github.com/sebastianbergmann/cli-parser/compare/bb7bb3297957927962b0a3335befe7b66f7462e9...1.0.0

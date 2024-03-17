@@ -16,12 +16,4 @@ final class Sha384 extends Hmac
     {
         return 'sha384';
     }
-<<<<<<< HEAD
-=======
-
-    public function minimumBitsLengthForKey(): int
-    {
-        return 384;
-    }
->>>>>>> 152c5ac8b3fa0942a784ef128282fb9c55e17786
 }

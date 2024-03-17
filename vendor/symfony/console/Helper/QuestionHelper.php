@@ -503,23 +503,7 @@ class QuestionHelper extends Helper
             return self::$stdinIsInteractive;
         }
 
-<<<<<<< HEAD
         return self::$stdinIsInteractive = @stream_isatty(fopen('php://stdin', 'r'));
-=======
-        if (\function_exists('stream_isatty')) {
-            return self::$stdinIsInteractive = @stream_isatty(fopen('php://stdin', 'r'));
-        }
-
-        if (\function_exists('posix_isatty')) {
-            return self::$stdinIsInteractive = @posix_isatty(fopen('php://stdin', 'r'));
-        }
-
-        if (!\function_exists('shell_exec')) {
-            return self::$stdinIsInteractive = true;
-        }
-
-        return self::$stdinIsInteractive = (bool) shell_exec('stty 2> '.('\\' === \DIRECTORY_SEPARATOR ? 'NUL' : '/dev/null'));
->>>>>>> 152c5ac8b3fa0942a784ef128282fb9c55e17786
     }
 
     /**
