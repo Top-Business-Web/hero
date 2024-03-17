@@ -3,7 +3,7 @@
         'name' => 'laravel/laravel',
         'pretty_version' => 'dev-master',
         'version' => 'dev-master',
-        'reference' => '3d89830f0897dffcf8a03dd21fe47ef3e3e3dac4',
+        'reference' => 'd2f502490c903f88a1279e74a01ecc47ad310e16',
         'type' => 'project',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -496,7 +496,7 @@
         'laravel/laravel' => array(
             'pretty_version' => 'dev-master',
             'version' => 'dev-master',
-            'reference' => '3d89830f0897dffcf8a03dd21fe47ef3e3e3dac4',
+            'reference' => 'd2f502490c903f88a1279e74a01ecc47ad310e16',
             'type' => 'project',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
@@ -943,8 +943,8 @@
         'psr/log-implementation' => array(
             'dev_requirement' => false,
             'provided' => array(
-                0 => '1.0|2.0',
-                1 => '1.0.0 || 2.0.0 || 3.0.0',
+                0 => '1.0.0 || 2.0.0 || 3.0.0',
+                1 => '1.0|2.0',
             ),
         ),
         'psr/simple-cache' => array(
@@ -963,9 +963,9 @@
             ),
         ),
         'psy/psysh' => array(
-            'pretty_version' => 'v0.12.0',
-            'version' => '0.12.0.0',
-            'reference' => '750bf031a48fd07c673dbe3f11f72362ea306d0d',
+            'pretty_version' => 'v0.12.2',
+            'version' => '0.12.2.0',
+            'reference' => '9185c66c2165bbf4d71de78a69dccf4974f9538d',
             'type' => 'library',
             'install_path' => __DIR__ . '/../psy/psysh',
             'aliases' => array(),
@@ -1122,9 +1122,9 @@
             'dev_requirement' => true,
         ),
         'sebastian/resource-operations' => array(
-            'pretty_version' => '3.0.3',
-            'version' => '3.0.3.0',
-            'reference' => '0f4443cb3a1d92ce809899753bc0d5d5a8dd19a8',
+            'pretty_version' => '3.0.4',
+            'version' => '3.0.4.0',
+            'reference' => '05d5692a7993ecccd56a03e40cd7e5b09b1d404e',
             'type' => 'library',
             'install_path' => __DIR__ . '/../sebastian/resource-operations',
             'aliases' => array(),
