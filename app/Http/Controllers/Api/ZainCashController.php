@@ -40,10 +40,11 @@ class ZainCashController extends Controller
 
         // Process transaction
         $processingTransaction = $zainCashPayment->processingTransaction($request->phone_number, $request->pin);
-
+        
         // Check if the driver already has insurance
         $driverId = auth()->user()->id;
         $insurance = InsurancePayment::where('driver_id', $driverId)->first();
+        // dd($insurance);
 
         if ($insurance) {
             // Update existing insurance record
@@ -52,6 +53,7 @@ class ZainCashController extends Controller
                 'to' => Carbon::now()->addYear()->format('Y-m-d'),
             ]);
         } else {
+            // dd('hi');
             // Create new insurance record
             InsurancePayment::create([
                 'transaction_id' => $processingTransaction['transactionid'],
