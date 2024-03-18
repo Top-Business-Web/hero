@@ -67,14 +67,17 @@ trait FirebaseNotification
                         $tokens = array_merge($tokens, $driverTokens);
 
                         foreach ($driverIds as $driver) {
-                            Notification::query()
-                                ->create([
-                                    'title' => $data['title'],
-                                    'description' => $data['body'],
-                                    'user_id' => $driver ?? null,
-                                    'type' => $type,
-                                    'trip_id' => $data['trip_id']
-                                ]);
+                            $driverId = $driver->driver_id;
+                            if (!Trip::where('driver_id', $driverId)->exists()) {
+                                Notification::query()
+                                    ->create([
+                                        'title' => $data['title'],
+                                        'description' => $data['body'],
+                                        'user_id' => $driver ?? null,
+                                        'type' => $type,
+                                        'trip_id' => $data['trip_id']
+                                    ]);
+                            }
                         }
                     }
                 }
