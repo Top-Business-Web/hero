@@ -14,6 +14,9 @@ class InsurancePaymentRepository implements InsurancePaymentInterface
         if ($request->ajax()) {
             $insurance_payments = InsurancePayment::query()->latest()->get();
             return DataTables::of($insurance_payments)
+            ->editColumn('driver_id', function($insurance_payments) {
+                return $insurance_payments->driver->name;
+            })
                 ->escapeColumns([])
                 ->make(true);
         } else {
