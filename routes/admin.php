@@ -86,9 +86,6 @@ Route::group(['prefix'=>'admin','middleware'=>'auth:admin'],function (){
     Route::resource('notifications',NotificationController::class);
     Route::POST('notifications/delete',[NotificationController::class,'delete'])->name('notification_delete');
 
-    #============================ Insurance Driver =====================================
-    Route::resource('insurances-drivers',InsuranceDriverController::class);
-
     #============================ Insurance Payment =====================================
     Route::resource('insurances-payments',InsurancePaymentController::class);
 

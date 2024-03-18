@@ -13,16 +13,18 @@ class InsurancePayment extends Model
     protected $table = 'insurance_payments';
 
     protected $fillable = [
-        'insurance_driver_id',
-        'trans_action_id',
+        'driver_id',
+        'from',
+        'to',
+        'transaction_id',
         'type',
         'amount',
         'status',
     ];
 
-
-    public function insuranceDriver() : BelongsTo
+    public function driver() : BelongsTo
     {
-        return $this->belongsTo(InsuranceDriver::class);
+        return $this->belongsTo(User::class);
     }
+
 }
