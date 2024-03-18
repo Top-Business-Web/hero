@@ -15,7 +15,7 @@ class InitialPaymentRequest extends FormRequest
     {
         return [
             "phone_number" => ["required", "string", "max:512"],
-            "pin" => ["required", "string", "max:512"],
+            "pin" => ["required", "string", "max:4", "min:4"],
         ];
     }
 }
