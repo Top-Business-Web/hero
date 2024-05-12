@@ -14,8 +14,8 @@ class InitialPaymentRequest extends FormRequest
     public function rules()
     {
         return [
-            "serviceType" => ["required", "string", "max:254"],
-            "orderId" => ["required", "string", "max:512"],
+            "phone_number" => ["required", "string", "max:512"],
+            "pin" => ["required", "string", "max:4", "min:4"],
         ];
     }
 }
