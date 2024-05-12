@@ -17,8 +17,10 @@ class ZainCashController extends Controller
      * @param InitialPaymentRequest $request
      * @return \Illuminate\Http\JsonResponse
      */
-    public function initialTransaction(InitialPaymentRequest $request)
+    public function initialTransaction(Request $request)
     {
+;
+
         $insurance_payment = InsurancePayment::first();
         $zainCashPayment = ZainCash::setAmount(1010)
             ->setServiceType('Book')
