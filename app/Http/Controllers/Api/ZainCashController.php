@@ -19,11 +19,8 @@ class ZainCashController extends Controller
      * @param InitialPaymentRequest $request
      * @return \Illuminate\Http\JsonResponse
      */
-    public function initialTransaction(Request $request)
+    public function initialTransaction(InitialPaymentRequest $request)
     {
-
-
-
         $insurance_payment = InsurancePayment::first();
         $zainCashPayment = ZainCash::setAmount(1010)
         $amount = 1010;
@@ -45,7 +42,7 @@ class ZainCashController extends Controller
 
         // Process transaction
         $processingTransaction = $zainCashPayment->processingTransaction($request->phone_number, $request->pin);
-        
+
         // Check if the driver already has insurance
         $driverId = auth()->user()->id;
         $insurance = InsurancePayment::where('driver_id', $driverId)->first();
