@@ -15,10 +15,12 @@ class CreateInsurancePaymentsTable extends Migration
     {
         Schema::create('insurance_payments', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('insurance_driver_id')
-                ->constrained('insurance_drivers')
+            $table->foreignId('driver_id')
+                ->constrained('users')
                 ->cascadeOnDelete();
-            $table->string('trans_action_id');
+            $table->date('from');
+            $table->date('to');
+            $table->string('transaction_id');
             $table->enum('type', ['google_pay', 'zain_cash', 'visa']);
             $table->integer('amount');
             $table->tinyInteger('status');

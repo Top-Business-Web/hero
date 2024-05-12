@@ -730,14 +730,25 @@ class DriverRepository extends ResponseApi implements DriverRepositoryInterface
                         ->latest()->get();
                     $data = $trips;
                 } else {
-                    $trips = Trip::query()
-                        ->where('type', '=', 'new')
-                        ->where('trip_type', '!=', 'scheduled')
-                        ->where('ended', '=', 0)
-                        ->whereDay('created_at', '=', Carbon::now())
-                        ->orderBy('created_at', 'DESC')
-                        ->latest()->get();
-                    $data = $trips;
+                    $driverId = auth()->user()->id;
+
+                    $existingTrip = Trip::where('driver_id', $driverId)->where('ended', 0)->exists();
+
+                    if ($existingTrip) {
+                        $data = [];
+                    } else {
+                        $trips = Trip::query()
+                            ->where('type', '=', 'new')
+                            ->where('trip_type', '!=', 'scheduled')
+                            ->where('ended', '=', 0)
+                            ->whereDay('created_at', '=', Carbon::now())
+                            ->orderBy('created_at', 'DESC')
+                            ->latest()
+                            ->get();
+
+                        $data = $trips;
+                    }
+
                 }
 
                 if (count($data) > 0) {

@@ -26,7 +26,9 @@
                             <thead>
                             <tr class="fw-bolder text-muted bg-light">
                                 <th class="min-w-25px">#</th>
-                                <th class="min-w-50px">معرف تأمين السائق</th>
+                                <th class="min-w-50px"> اسم السائق</th>
+                                <th class="min-w-50px">من</th>
+                                <th class="min-w-50px">الى</th>
                                 <th class="min-w-50px">معرف العملية</th>
                                 <th class="min-w-50px">النوع</th>
                                 <th class="min-w-50px">المبلغ</th>
@@ -89,8 +91,10 @@
     <script>
         var columns = [
             {data: 'id', name: 'id'},
-            {data: 'insurance_driver_id', name: 'insurance_driver_id'},
-            {data: 'trans_action_id', name: 'trans_action_id'},
+            {data: 'driver_id', name: 'driver_id'},
+            {data: 'from', name: 'from'},
+            {data: 'to', name: 'to'},
+            {data: 'transaction_id', name: 'transaction_id'},
             {data: 'type', name: 'type'},
             {data: 'amount', name: 'amount'},
             {data: 'status', name: 'status'},

@@ -30,9 +30,9 @@ Route::post('auth/login', [UserController::class, 'login']);
 
 
 ######################### START USER ROUTES ###################################
-Route::group(['middleware' => 'jwt'],function (){
+Route::group(['middleware' => 'jwt'], function () {
 
-    Route::get('userHome',[UserController::class,'home']);
+    Route::get('userHome', [UserController::class, 'home']);
     Route::get('logout', [UserController::class, 'logout']);
     Route::post('editProfile', [UserController::class, 'editProfile']);
     Route::post('deleteAccount', [UserController::class, 'deleteAccount']);
@@ -50,7 +50,6 @@ Route::group(['middleware' => 'jwt'],function (){
     Route::post('createScheduleTrip', [UserController::class, 'createScheduleTrip']);
     Route::get('userAllTrip', [UserController::class, 'userAllTrip']);
     Route::post('createTripRate', [UserController::class, 'createTripRate']);
-
 });
 ########################### END USER ROUTES ###################################
 
@@ -58,7 +57,7 @@ Route::group(['middleware' => 'jwt'],function (){
 
 
 ######################### START DRIVER ROUTES #################################
-Route::group(['middleware' => 'jwt'],function (){
+Route::group(['middleware' => 'jwt'], function () {
 
     Route::post('storeDriverDetails', [DriverController::class, 'registerDriver']);
     Route::post('updateDriverDetails', [DriverController::class, 'updateDriverDetails']);
@@ -76,9 +75,11 @@ Route::group(['middleware' => 'jwt'],function (){
     Route::post('cancelTrip', [DriverTripController::class, 'cancelTrip']);
     Route::post('startTrip', [DriverTripController::class, 'startTrip']);
     Route::post('endTrip', [DriverTripController::class, 'endTrip']);
-    Route::get('driverAllTrip',[DriverTripController::class,'driverAllTrip']);
-    Route::get('getTripStatus', [DriverTripController::class,'getTripStatus']);
+    Route::get('driverAllTrip', [DriverTripController::class, 'driverAllTrip']);
+    Route::get('getTripStatus', [DriverTripController::class, 'getTripStatus']);
     Route::post('driverLocation', [DriverTripController::class, 'driverLocation']);
+    Route::post('zain', [ZainCashController::class, 'initialTransaction']);
+    Route::post('payTransaction', [ZainCashController::class, 'payTransaction']);
 });
 ######################### END DRIVER ROUTES ###################################
 
@@ -90,6 +91,4 @@ Route::get('cities', [UserController::class, 'getAllCities']);
 Route::get('areas', [UserController::class, 'getAllAreas']);
 Route::get('settings', [UserController::class, 'getAllSettings']);
 Route::post('testFcm', [UserController::class, 'testFcm']);
-Route::post('zain', [ZainCashController::class, 'initialTransaction']);
-Route::post('payTransaction', [ZainCashController::class, 'payTransaction']);
 ########################### END GENERAL ROUTES ################################

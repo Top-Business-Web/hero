@@ -17,7 +17,7 @@ trait FirebaseNotification
 
     public function sendFirebaseNotification($data, $user_id = null, $type = 'user', $create = true)
     {
-
+        $checkTripD = [];
         $url = 'https://fcm.googleapis.com/fcm/send';
 
         if ($user_id != null && $type == 'user') {
@@ -63,19 +63,33 @@ trait FirebaseNotification
                     foreach ($nearbyDrivers as $driver) {
                         $driverId = $driver->driver_id;
                         $driverTokens = PhoneToken::where('user_id', $driverId)->pluck('token')->toArray();
-                        $driverIds = PhoneToken::where('user_id', $driverId)->pluck('user_id');
+                        $driverIds = PhoneToken::where('user_id', $driverId)->pluck('user_id')->toArray();
                         $tokens = array_merge($tokens, $driverTokens);
+                        
+                        
 
                         foreach ($driverIds as $driver) {
-                            Notification::query()
-                                ->create([
+                            $driverId = $driver;
+                        
+                        $checkTrip1= Trip::query()
+                                    ->where('driver_id', $driverId)
+                                    ->where('type','!=','complete')
+                                    ->pluck('driver_id')->toArray();
+                                    
+                        $checkTripD [] = PhoneToken::whereIn('user_id', $checkTrip1)->pluck('token')->toArray();
+                        
+                            if (count($checkTripD) != 0) 
+                            {
+                                Notification::query()->create([
                                     'title' => $data['title'],
                                     'description' => $data['body'],
-                                    'user_id' => $driver ?? null,
+                                    'user_id' => $driverId ?? null,
                                     'type' => $type,
                                     'trip_id' => $data['trip_id']
                                 ]);
+                            }
                         }
+
                     }
                 }
             }
@@ -115,6 +129,12 @@ trait FirebaseNotification
         }
 
         $trip = $data['trip_id'];
+
+        foreach ($checkTripD as $subArray) {
+            foreach ($subArray as $value) {
+                $tokens = array_values(array_diff($tokens, [$value]));
+            }
+        }
 
         $fields = array(
             'registration_ids' => $tokens,
