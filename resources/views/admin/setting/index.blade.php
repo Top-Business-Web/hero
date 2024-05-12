@@ -84,7 +84,7 @@
             </div>
         </div>
     </div>
-    </div>about
+    </div>
     @include('admin/layouts/myAjaxHelper')
 @endsection
 @section('ajaxCalls')
